@@ -1,0 +1,27 @@
+<div>
+
+    <div class="modal-header text-white bg-secondary">
+        <span><i class="fa fa-plus"></i> <span translate="CLONE"></span></span>
+    </div>
+
+    <div class="modal-body">
+        <label ng-if="label" translate="NAME">:</label>
+        <div>
+            <input class="form-control" type="text" ng-model="ngDialogData.target" />
+        </div>
+        <div class="row m-2" >
+            <div class="col">
+                <input type="checkbox" ng-model="ngDialogData.includeRules" /> <span translate="INCLUDERULES"></span>
+            </div>
+            <div  class="col">
+                <input type="checkbox" ng-model="ngDialogData.includeData" /> <span translate="INCLUDEDATA"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn action" ng-click="closeThisDialog(0)" translate="CANCEL"></button>
+        <button type="button" class="btn btn-secondary action" ng-disabled="!ngDialogData.target.length" ng-click="ngDialogData.clone(ngDialogData)" translate="OK"></button>
+    </div>
+
+</div>

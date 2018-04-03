@@ -1,0 +1,19 @@
+{
+    "ACTIVEONLY": "Active Only",
+    "CANCEL": "Cancel",
+    "CLEAR": "Clear",
+    "CONTEXT": "Context",
+    "ELAPSEDTIME": "Elapsed (s)",
+    "FUNCTION": "Function",
+    "ID": "Id",
+    "INFO": "Info",
+    "OBJECTNAME": "Object Name",
+    "OBJECTTYPE": "Object Type",
+    "PAUSE": "Pause",
+    "NAME": "Name",
+    "SEARCH": "Search",
+    "STATE": "State",
+    "THREADS": "Threads",
+    "TYPE": "Type",
+    "WAITTIME": "Wait (s)"
+}
