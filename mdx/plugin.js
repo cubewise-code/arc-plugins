@@ -23,24 +23,29 @@ arc.directive("cubewiseMdx", function () {
         link: function ($scope, element, attrs) {
 
         },
-        controller: ["$scope", "$rootScope", "$http", "$tm1", "$translate", function ($scope, $rootScope, $http, $tm1, $translate) {        
+        controller: ["$scope", "$rootScope", "$http", "$tm1", "$translate", "$timeout", function ($scope, $rootScope, $http, $tm1, $translate, $timeout) {        
 
             // Create the tabs
             $scope.tabs = [];
             // Store the active tab index
-            $scope.activeTab = 0;
-            $scope.queryCounter = 0;
+            $scope.selections = {
+               activeTab: 0,
+               queryCounter: 0
+            };
 
             $scope.addTab = function(){
                 // Add a tab
-                $scope.queryCounter++;
+                $scope.selections.queryCounter++;
                 $scope.tabs.push({
-                    name: $translate.instant("QUERY") + " " + $scope.queryCounter,
+                    name: $translate.instant("QUERY") + " " + $scope.selections.queryCounter,
                     mdx: "SELECT \n"
                         + "\tNON EMPTY {[Version].[Actual], [Version].[Budget]} ON COLUMNS, \n"
                         + "\tNON EMPTY {TM1SUBSETALL([Account])} ON ROWS \n"
                         + "FROM [General Ledger] \n"
                         + "WHERE ([Department].[Corporate], [Year].[2012])"
+                });
+                $timeout(function(){
+                  $scope.selections.activeTab = $scope.tabs.length - 1;
                 });
             };
 
@@ -54,7 +59,7 @@ arc.directive("cubewiseMdx", function () {
 
             $scope.tabSelected = function(){
                 // This is required to resize the MDX panel after clicking on a tab
-                $scope.$broadcast("auto-height-resize");
+                //$scope.$broadcast("auto-height-resize");
             };
 
             $scope.toggleQuery = function(tab){
@@ -71,17 +76,10 @@ arc.directive("cubewiseMdx", function () {
                 _editor.$blockScrolling = Infinity;
                 _editor.setFontSize($rootScope.uiPrefs.fontSize);
                 _editor.setShowPrintMargin(false);
-                // Set the content of the editor using the active tab
-                _editor.setValue($scope.tabs[$scope.activeTab].mdx, -1);
-            };
-
-            $scope.editorChanged = function(args){
-                // First argument is the change, the second is a reference to the editor
-                $scope.tabs[$scope.activeTab].mdx = args[1].getValue();
             };
 
             $scope.execute = function(){
-                var tab = $scope.tabs[$scope.activeTab];
+                var tab = $scope.tabs[$scope.selections.activeTab];
                 tab.result = null;
                 tab.executing = true;
                 $scope.message = null;

@@ -21,7 +21,7 @@
       </div>     
     </div>
 
-    <uib-tabset active="activeTab">
+    <uib-tabset active="selections.activeTab">
 
       <uib-tab ng-repeat="tab in tabs" select="tabSelected()">
         <uib-tab-heading>
@@ -48,7 +48,7 @@
                 </div>
                 <input type="text" class="form-control" ng-model="tab.name">
               </div>
-              <pre ui-ace="{ onLoad : editorLoaded, onChange: editorChanged }" style="height: 200px;"></pre>
+              <pre ui-ace="{ onLoad : editorLoaded }" ng-model="tab.mdx" style="height: 200px;"></pre>
             </div>
           </div>
 
