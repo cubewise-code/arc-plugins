@@ -95,6 +95,7 @@ arc.directive("cubewiseMdx", function () {
                             $scope.message = success.data.error.message;
                         }
                     } else {
+                        $tm1.cellsetDelete($scope.instance, success.data.ID);
                         // Success
                         var regex = /FROM\s\[(.*)\]/g;
                         var match = regex.exec(tab.mdx);
