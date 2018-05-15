@@ -1,3 +1,9 @@
+# Arc for TM1 Issues
+The place for TM1 developer to share Arc for TM1 plugins.
+
+## About Arc for TM1
+<img align="right" width="50%" src="https://static1.squarespace.com/static/5268c662e4b0269256614e9a/t/5ab047476d2a73ff3a99a5fc/1521502030061/arc-logo.png?format=1000w" />
+
 There are 4 arguments to pass through to the plugin function:
     name:   The name to use for the plugin, this must be unique or an error will occur.
             Use your name or domain as a prefix to make it unique
