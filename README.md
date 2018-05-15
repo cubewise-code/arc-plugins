@@ -15,6 +15,6 @@ Arc for TM1 is the ultimate modern developer tool for TM1 and Planning Analytics
 * User-defined **plugins** and **pages**.
 
 ## About Plugins
-Before going any further we recommend reading these two Help article
+Before going any further we recommend you reading these two Help articles:
 * [How plugins work](https://code.cubewise.com/arc-docs/how-plugins-work)
 * [How to create your plugins](https://code.cubewise.com/arc-docs/how-to-create-your-plugins)
