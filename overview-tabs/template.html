@@ -1,0 +1,59 @@
+<div class="mdx">
+
+    <div class="row">
+        <!-- SHOW CONFIGURATIONS TABLE-->
+        <div class="col-md-6">
+            <table class="table table-hover table-sm">
+                <thead>
+                    <tr>
+                        <th class="text-center"> </th>
+                        <th class="text-center"> Property </th>
+                        <th class="text-center"> Value </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="config in configurations">
+                        <td>
+                            <i class="fa fa-server" aria-hidden="true"></i>
+                        </td>
+                        <td> {{config.key}} </td>
+                        <td> {{config.value}} </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="row">
+    </div>
+    <!-- SHOW TM1 OBJECTS-->
+    <div class="row">
+        <div class="col-md-12">
+            <uib-tabset active="active">
+                <uib-tab ng-repeat="object in tm1ObjectsTabs" index="$index + 1">
+                    <uib-tab-heading>
+                        <i class="fa {{object.icon}}"></i> {{object.key}} ({{object.count}})
+                    </uib-tab-heading>
+                    <!--{{object.body}}-->
+                    <div class="col-md-6">
+                        <table class="table table-hover table-sm">
+                            <thead>
+                                <tr>
+                                    <th class="text-center"> Name </th>
+                                    <th class="text-center"> {{object.col1}} </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="elt in object.body">
+                                    <td> {{elt.Name}} </td>
+                                    <td> {{elt[object.col1]}} </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </uib-tab>
+            </uib-tabset>
+        </div>
+    </div>
+
+</div>

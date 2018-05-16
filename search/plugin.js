@@ -1,5 +1,5 @@
 
-arc.run(['$rootScope', function($rootScope) {
+arc.run(['$rootScope', function ($rootScope) {
 
     $rootScope.plugin("cubewiseArcSearch", "Search", "page", {
         menu: "tools",
@@ -17,38 +17,63 @@ arc.directive("cubewiseArcSearch", function () {
         restrict: "EA",
         replace: true,
         scope: {
-            instance: "=tm1Instance"  
+            instance: "=tm1Instance"
         },
         templateUrl: "__/plugins/search/template.html",
         link: function ($scope, element, attrs) {
 
         },
-        controller: ["$scope", "$rootScope", "$http", "$tm1", "$translate", "$timeout", function ($scope, $rootScope, $http, $tm1, $translate, $timeout) {        
+        controller: ["$scope", "$rootScope", "$http", "$tm1", "$translate", "$timeout", function ($scope, $rootScope, $http, $tm1, $translate, $timeout) {
 
-            // Create the tabs
-            $scope.tabs = [];
             // Store the active tab index
             $scope.selections = {
-               activeTab: 0,
-               queryCounter: 0
+                dimension: '',
+                hierarchy: '',
+                subset: ''
             };
 
-            $scope.$on("login-reload", function(event, args) {
-                
+            $scope.lists = {
+                dimensions: [],
+                hierarchies: [],
+                subsets: []
+            }
+
+            // GET DIMENSION DATA
+            $scope.getDimensionsList = function () {
+                $http.get(encodeURIComponent($scope.instance) + "/Dimensions").then(function (dimensionsData) {
+                    $scope.lists.dimensions = dimensionsData.data.value;
+                });
+            };
+            $scope.getDimensionsList();
+
+            // GET HIERARCHY DATA
+            $scope.getHierarchies = function () {
+                $http.get(encodeURIComponent($scope.instance) + "/Dimensions('"+$scope.selections.dimension+"')/Hierarchies").then(function (hierarchiesData) {
+                    $scope.lists.hierarchies = hierarchiesData.data.value;
+                });
+            };
+            // GET SUBSET DATA
+            $scope.getSubsets = function () {
+                $http.get(encodeURIComponent($scope.instance) + "/Dimensions('"+$scope.selections.dimension+"')/Hierarchies('"+$scope.selections.subset+"')/Subsets").then(function (subsetsData) {
+                    $scope.lists.subsets = subsetsData.data.value;
+                });
+            };
+            $scope.$on("login-reload", function (event, args) {
+
             });
-                
-            $scope.$on("close-tab", function(event, args) {
+
+            $scope.$on("close-tab", function (event, args) {
                 // Event to capture when a user has clicked close on the tab
-                if(args.page == "cubewiseArcSearch" && args.instance == $scope.instance && args.name == null){
+                if (args.page == "cubewiseArcSearch" && args.instance == $scope.instance && args.name == null) {
                     // The page matches this one so close it
-                    $rootScope.close(args.page, {instance: $scope.instance});
+                    $rootScope.close(args.page, { instance: $scope.instance });
                 }
             });
 
-            $scope.$on("$destroy", function(event){
-   
+            $scope.$on("$destroy", function (event) {
+
             });
-        
+
 
         }]
     };

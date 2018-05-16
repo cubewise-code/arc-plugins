@@ -1,11 +1,155 @@
 <div class="mdx">
+    <style>
+        .outside_box {
+            border: 0px solid #FFF;
+            margin-top: 0px;
+            padding: 0px;
+            background: #333;
+            color: #fff;
+            z-index: 0;
+            height: 0px;
+            min-height: 180px;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+            border-color: 1px solid #000;
+            background-color: #fff;
+            /* For browsers that do not support gradients */
+            -webkit-transition: height 0.3s;
+            -moz-transition: height 0.3s;
+            transition: height 0.3s;
+            min-width: 200px;
+            max-width: 200px;
+            border: thin solid #ccc;
+            float: none;
+            margin: 10px;
+            display: -ms-inline-grid;
+            top: 0px;
+        }
 
-    <div class="col-md-6">
-        <button class="btn btn-default" ng-click="testFunction();selections.test='From Button'">
-            Get configuration 2
-        </button> 
+        .card-btn {
+            position: relative;
+            padding: 0px;
+            background-color: transparent;
+        }
+
+        .card-holder {
+            background-color: transparent;
+            color: #fff;
+            padding: 30px;
+        }
+
+        .white-icon {
+            color: #fff;
+        }
+        .card {
+            padding-left: 0px;
+            padding-right: 0px;
+            left: 0px;
+            right: auto;
+            color: #fff !important;
+        }
+        .object {
+            background-color: #247BA0 !important;
+        }
+        .admin {
+            background-color: #FF1654 !important;
+        }
+        .plugins {
+            background-color: #B2DBBF !important;
+        }
+        .inner-card {
+            pointer-events: none;
+            text-align: center;
+            pointer-events: none;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .inner-card-heading {
+            width: 100%;
+            font-size: 1em;
+            position: absolute;
+            top: 100%;
+            padding-left: 0px;
+            margin: 0 auto;
+            color: rgba(0, 0, 0, 0.6)
+        }
+
+        .inner-card-footer {
+            position: relative;
+            bottom: 0px;
+            padding-top: 10px;
+            font-size: 0.9em;
+            color: rgba(0, 0, 0, 0.6);
+            width: 100%;
+            height: 50px;
+            text-align: center;
+            border: none;
+            background-color: #fff;
+        }
+
+        .inner-card-text {
+            padding: 30px;
+            text-align: center;
+        }
+
+        .ourcontent {
+            /* Initially we don't want any height, and we want the contents to be hidden */
+            position: absolute;
+            color: #666;
+            bottom: -1px;
+            height: 180px;
+            background-color: #fff;
+            max-height: 0px;
+            max-width: 100%;
+            overflow: hidden;
+            width: 100%;
+            z-index: 999;
+
+            /* Set our transitions up. */
+            -webkit-transition: max-height 0.5s;
+            -moz-transition: max-height 0.5s;
+            transition: max-height 0.5s;
+        }
+
+        .outside_box:hover .ourcontent {
+            /* On hover, set the max-height to something large. In this case there's an obvious limit. */
+            max-height: 180px;
+        }
+    </style>
+    <div class="row">
+        <!-- SHOW menus TABLE-->
+        <div class="col-md-12">
+            <div class="col-md-2 outside_box" ng-repeat="item in menus">
+
+                <a href="{{item. link}}{{instance}}" class="card-holder">
+                    <div class="col-md-12 ourcontent card" ng-class="item. class">
+                        <!-- contenteditable=""  -->
+                        <p class="inner-card-text">
+                            {{item. description}}
+                            <br />
+                            <br />
+                            <button class="btn btn-primary card-btn">
+                                <i class="fa fa-chevron-circle-down fa-2x white-icon"></i>
+                            </button>
+                        </p>
+                    </div>
+                    <div class="col-md-12 inner-card">
+                        <h1 class="col-md-12 inner-card-heading">
+                            <i class="fa {{item. icon}} fa-4x"> </i>
+                            <br />
+                            <br />
+                        </h1>
+                        <footer class="inner-card-footer">
+                            <strong>{{item. key}}</strong>
+                            <br/>
+                            <strong ng-if="item. value">({{item. value}})</strong>
+                        </footer>
+                    </div>
+                </a>
+            </div>
+        </div>
     </div>
-    {{selections.test}}
-    {{selections.fromController}}
-  
+
 </div>

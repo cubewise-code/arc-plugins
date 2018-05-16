@@ -1,7 +1,7 @@
 
 arc.run(['$rootScope', function ($rootScope) {
 
-    $rootScope.plugin("cubewiseInstanceOverview", "Overview", "page", {
+    $rootScope.plugin("cubewiseInstanceOverviewList", "Overview List", "page", {
         menu: "tools",
         icon: "fa-eye",
         description: "Instance Overview",
@@ -12,14 +12,14 @@ arc.run(['$rootScope', function ($rootScope) {
 
 }]);
 
-arc.directive("cubewiseInstanceOverview", function () {
+arc.directive("cubewiseInstanceOverviewList", function () {
     return {
         restrict: "EA",
         replace: true,
         scope: {
             instance: "=tm1Instance"
         },
-        templateUrl: "__/plugins/overview/template.html",
+        templateUrl: "__/plugins/overview-list/template.html",
         link: function ($scope, element, attrs) {
 
         },
@@ -32,33 +32,41 @@ arc.directive("cubewiseInstanceOverview", function () {
                 fromController: 'From Controller'
             };
 
-            $scope.menus = [
-                { key: 'Cubes', description: 'See all cubes',value: '', icon: 'cubes', class: 'object', link:'#/cube/' },
-                { key: 'Dimensions', description: 'See all dimensions',value: '', icon: 'dimensions', class: 'object', link:'#/dimensions/' },
-                { key: 'Processes', description: 'See all Processes',value: '', icon: 'processes', class: 'object', link:'#/processes/' },
-                { key: 'Chores', description: 'See all chores',value: '', icon: 'chores', class: 'object',link:'#/chores/' },
-                { key: 'Users', description: 'All TM1 User',value: '', icon: 'fa-user', class: 'admin',link:'' },
-                { key: 'Configuration', description: 'tm1s.cfg settings',value: '', icon: 'configuration', class: 'admin',link:'#/configuration/' },
-                { key: 'Server Logs', description: 'TM1 Server Logs',value: '', icon: 'fa-list-alt', class: 'admin',link:'#/server-logs/' },
-                { key: 'Threads', description: 'All Threads',value: '', icon: 'fa-users', class: 'admin',link:'#/threads/' },
-                { key: 'MDX Query', description: 'Query table with MDX',value: '', icon: 'fa-table', class: 'plugins',link:'#/cubewise-mdx/' }
+            $scope.configurations = [
+                { key: 'ServerName', value: '', icon: 'fa-server', link:'' },
+                { key: 'AdminHost', value: '', icon: 'fa-server', link:'' },
+                { key: 'DataBaseDirectory', value: '', icon: 'fa-server', link:'' },
+                { key: 'Users', value: '', icon: 'fa-users', link:'' },
+                { key: 'Cubes', value: '', icon: 'cubes', link:'#/cube/' },
+                { key: 'Dimensions', value: '', icon: 'dimensions', link:'#/dimensions/' },
+                { key: 'Processes', value: '', icon: 'processes', link:'#/processes/' },
+                { key: 'Chores', value: '', icon: 'chores', link:'#/chores/' },
             ]
 
             $scope.$on("login-reload", function (event, args) {
 
             });
+            // GET CONFIGURATION SETTINGS
+            $scope.getConfiguration = function () {
+                $http.get(encodeURIComponent($scope.instance) + "/Configuration").then(function (config) {
+                    $scope.configurations[0].value = config.data.ServerName;
+                    $scope.configurations[1].value = config.data.AdminHost;
+                    $scope.configurations[2].value = config.data.DataBaseDirectory;
+                });
+            };
+            $scope.getConfiguration();
 
             // GET USERS COUNT
             $scope.getUsersCount = function () {
                 $http.get(encodeURIComponent($scope.instance) + "/Users/$count").then(function (value) {
-                    $scope.menus[4].value = value.data;
+                    $scope.configurations[3].value = value.data;
                 });
             };
             $scope.getUsersCount();
             // GET CUBE COUNT
             $scope.getCubesCount = function () {
                 $http.get(encodeURIComponent($scope.instance) + "/Cubes/$count").then(function (value) {
-                    $scope.menus[0].value = value.data;
+                    $scope.configurations[4].value = value.data;
                 });
             };
             $scope.getCubesCount();
@@ -66,7 +74,7 @@ arc.directive("cubewiseInstanceOverview", function () {
             // GET DIMENSIONS COUNT
             $scope.getDimensionsCount = function () {
                 $http.get(encodeURIComponent($scope.instance) + "/Dimensions/$count").then(function (value) {
-                    $scope.menus[1].value = value.data;
+                    $scope.configurations[5].value = value.data;
                 });
             };
             $scope.getDimensionsCount();
@@ -74,7 +82,7 @@ arc.directive("cubewiseInstanceOverview", function () {
             // GET PROCESSES COUNT
             $scope.getProcessesCount = function () {
                 $http.get(encodeURIComponent($scope.instance) + "/Processes/$count").then(function (value) {
-                    $scope.menus[2].value = value.data;
+                    $scope.configurations[6].value = value.data;
                 });
             };
             $scope.getProcessesCount();
@@ -82,14 +90,14 @@ arc.directive("cubewiseInstanceOverview", function () {
             // GET CHORES COUNT
             $scope.getChoresCount = function () {
                 $http.get(encodeURIComponent($scope.instance) + "/Chores/$count").then(function (value) {
-                    $scope.menus[3].value = value.data;
+                    $scope.configurations[7].value = value.data;
                 });
             };
             $scope.getChoresCount();
 
             $scope.$on("close-tab", function (event, args) {
                 // Event to capture when a user has clicked close on the tab
-                if (args.page == "cubewiseInstanceOverview" && args.instance == $scope.instance && args.name == null) {
+                if (args.page == "cubewiseInstanceOverviewList" && args.instance == $scope.instance && args.name == null) {
                     // The page matches this one so close it
                     $rootScope.close(args.page, { instance: $scope.instance });
                 }

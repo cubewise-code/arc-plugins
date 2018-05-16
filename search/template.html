@@ -1,5 +1,43 @@
 <div class="mdx">
-  
-  
-  
+
+    <div class="row">
+        <div class="col-md-12">
+            Get all subsets for a dimension
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
+            Dimension:
+        </div>
+        <div class="col-md-2">
+            <select class="form-control ng-pristine ng-valid ng-empty ng-touched" ng-model="selections.dimension" ng-change="getHierarchies()"
+                title="">
+                <option value="? undefined:undefined ?" selected="selected">
+                </option>
+                <option ng-repeat="item in lists.dimensions" class="ng-binding ng-scope" value="{{item.Name}}">{{item.Name}}</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            Hierarchies:
+        </div>
+        <div class="col-md-2">
+            <select class="form-control ng-pristine ng-valid ng-empty ng-touched" ng-model="selections.hierarchy" ng-change="getSubsets()"
+                title="">
+                <option value="? undefined:undefined ?" selected="selected">
+                </option>
+                <option ng-repeat="item in lists.hierarchies" class="ng-binding ng-scope" value="{{item.Name}}">{{item.Name}}</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            Subsets:
+        </div>
+        <div class="col-md-2">
+            <select class="form-control ng-pristine ng-valid ng-empty ng-touched" ng-model="selections.subset" ng-change="getViews()"
+                title="">
+                <option value="? undefined:undefined ?" selected="selected">
+                </option>
+                <option ng-repeat="item in lists.subsets" class="ng-binding ng-scope" value="{{item.Name}}">{{item.Name}}</option>
+            </select>
+        </div>
+    </div>
 </div>
