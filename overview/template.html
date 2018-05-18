@@ -1,35 +1,22 @@
-<div class="mdx">
+<div>
     <style>
         .outside_box {
-            border: 0px solid #FFF;
             background: #333;
             color: #fff;
             min-height: 180px;
-            display: inline-block;
-            position: relative;
-            overflow: hidden;
-            border-color: 1px solid #000;
             background-color: #fff;
             /* For browsers that do not support gradients */
-            -webkit-transition: height 0.3s;
-            -moz-transition: height 0.3s;
             transition: height 0.3s;
-            border: thin solid #ccc;
-            float: none;
-            margin: 10px;
-            display: -ms-inline-grid;
         }
 
         .card-btn {
             position: relative;
-            padding: 0px;
             background-color: transparent;
         }
 
         .card-holder {
             background-color: transparent;
             color: #fff;
-            padding: 30px;
         }
 
         .white-icon {
@@ -37,8 +24,7 @@
         }
 
         .card {
-            padding-left: 0px;
-            padding-right: 0px;
+            border: 0;
             left: 0px;
             right: auto;
             color: #fff !important;
@@ -46,17 +32,14 @@
 
         .object {
             background-color: #247BA0 !important;
-            border-bottom: 5px solid #247BA0;
         }
 
         .admin {
             background-color: #FF1654 !important;
-            border-bottom: 5px solid #FF1654;
         }
 
         .plugins {
             background-color: #B2DBBF !important;
-            border-bottom: 5px solid #B2DBBF;
         }
 
         .inner-card {
@@ -68,12 +51,10 @@
         }
 
         .inner-card-heading {
-            width: 100%;
             font-size: 1em;
             position: absolute;
             top: 100%;
             padding-left: 0px;
-            margin: 0 auto;
             color: rgba(0, 0, 0, 0.6)
         }
 
@@ -81,16 +62,16 @@
             position: relative;
             bottom: 0px;
             padding-top: 10px;
-            font-size: 0.9em;
+            font-size: 1.2em;
             color: rgba(0, 0, 0, 0.6);
             width: 100%;
             height: 50px;
             text-align: center;
-            border: none;
             background-color: #fff;
         }
 
         .inner-card-text {
+            font-size: 1em;
             padding: 30px;
             text-align: center;
         }
@@ -99,15 +80,13 @@
             /* Initially we don't want any height, and we want the contents to be hidden */
             position: absolute;
             color: #666;
-            bottom: -1px;
+            bottom: 5px;
             height: 180px;
             background-color: #fff;
             max-height: 0px;
-            max-width: 100%;
             overflow: hidden;
             width: 100%;
             z-index: 999;
-
             /* Set our transitions up. */
             -webkit-transition: max-height 0.5s;
             -moz-transition: max-height 0.5s;
@@ -122,32 +101,27 @@
         .menu-section {
             background-color: #F8F8F8;
         }
+
+        .nopadding {
+            padding: 0px;
+            margin: 0px;
+        }
     </style>
     <div class="row">
         <div class="col-md-12">
+
             <uib-accordion close-others="oneAtATime">
                 <div uib-accordion-group class="panel-default" is-open="options.tm1ObjectsOpen">
                     <uib-accordion-heading>
                         TM1 objects
                         <i class="pull-right fa" ng-class="{'fa-chevron-down': options.tm1ObjectsOpen, 'fa-chevron-right': !options.tm1ObjectsOpen}"></i>
                     </uib-accordion-heading>
+
                     <div class="row">
                         <!-- SHOW menus TABLE-->
-                        <div class="col-md-12">
-                            <div class="col-lg-3 col-md-6 outside_box" ng-repeat="item in tm1Objects">
-
+                        <div class="col-lg-3 col-md-6 outside_box" ng-repeat="item in tm1Objects">
+                            <div class="col-md-12">
                                 <a href="{{item. link}}{{instance}}" class="card-holder">
-                                    <div class="col-md-12 ourcontent card" ng-class="item. class">
-                                        <!-- contenteditable=""  -->
-                                        <p class="inner-card-text">
-                                            {{item. description}}
-                                            <br />
-                                            <br />
-                                            <button class="btn btn-primary card-btn">
-                                                <i class="fa fa-chevron-circle-down fa-2x white-icon"></i>
-                                            </button>
-                                        </p>
-                                    </div>
                                     <div class="col-md-12 inner-card">
                                         <h1 class="col-md-12 inner-card-heading">
                                             <i class="fa {{item. icon}} fa-4x"> </i>
@@ -156,15 +130,25 @@
                                         </h1>
                                         <footer class="inner-card-footer">
                                             <strong>{{item. key}}</strong>
-                                            <br/>
                                             <strong ng-if="item. value">({{item. value}})</strong>
                                         </footer>
                                     </div>
                                 </a>
                             </div>
+                            <div class="col-md-12 ourcontent card">
+                                <!-- contenteditable=""  -->
+                                <div class="inner-card-text {{item.class}}" style="height:180px">
+                                    {{item. description}}
+                                    <br />
+                                    <br />
+                                    <button class="btn btn-primary card-btn">
+                                        <i class="fa fa-chevron-circle-down fa-2x white-icon"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-
                     </div>
+
                 </div>
             </uib-accordion>
         </div>
@@ -182,21 +166,9 @@
                     </uib-accordion-heading>
                     <div class="row">
                         <!-- SHOW menus TABLE-->
-                        <div class="col-md-12">
-                            <div class="col-md-2 outside_box" ng-repeat="item in configurations">
-
+                        <div class="col-lg-3 col-md-6 outside_box" ng-repeat="item in configurations">
+                            <div class="col-md-12">
                                 <a href="{{item. link}}{{instance}}" class="card-holder">
-                                    <div class="col-md-12 ourcontent card" ng-class="item. class">
-                                        <!-- contenteditable=""  -->
-                                        <p class="inner-card-text">
-                                            {{item. description}}
-                                            <br />
-                                            <br />
-                                            <button class="btn btn-primary card-btn">
-                                                <i class="fa fa-chevron-circle-down fa-2x white-icon"></i>
-                                            </button>
-                                        </p>
-                                    </div>
                                     <div class="col-md-12 inner-card">
                                         <h1 class="col-md-12 inner-card-heading">
                                             <i class="fa {{item. icon}} fa-4x"> </i>
@@ -205,11 +177,21 @@
                                         </h1>
                                         <footer class="inner-card-footer">
                                             <strong>{{item. key}}</strong>
-                                            <br/>
                                             <strong ng-if="item. value">({{item. value}})</strong>
                                         </footer>
                                     </div>
                                 </a>
+                            </div>
+                            <div class="col-md-12 ourcontent card">
+                                <!-- contenteditable=""  -->
+                                <div class="inner-card-text {{item.class}}" style="height:180px">
+                                    {{item. description}}
+                                    <br />
+                                    <br />
+                                    <button class="btn btn-primary card-btn">
+                                        <i class="fa fa-chevron-circle-down fa-2x white-icon"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -230,21 +212,9 @@
                     </uib-accordion-heading>
                     <div class="row">
                         <!-- SHOW menus TABLE-->
-                        <div class="col-md-12">
-                            <div class="col-md-2 outside_box" ng-repeat="item in plugins">
-
+                        <div class="col-lg-3 col-md-6 outside_box" ng-repeat="item in plugins">
+                            <div class="col-md-12">
                                 <a href="{{item. link}}{{instance}}" class="card-holder">
-                                    <div class="col-md-12 ourcontent card" ng-class="item. class">
-                                        <!-- contenteditable=""  -->
-                                        <p class="inner-card-text">
-                                            {{item. description}}
-                                            <br />
-                                            <br />
-                                            <button class="btn btn-primary card-btn">
-                                                <i class="fa fa-chevron-circle-down fa-2x white-icon"></i>
-                                            </button>
-                                        </p>
-                                    </div>
                                     <div class="col-md-12 inner-card">
                                         <h1 class="col-md-12 inner-card-heading">
                                             <i class="fa {{item. icon}} fa-4x"> </i>
@@ -253,11 +223,21 @@
                                         </h1>
                                         <footer class="inner-card-footer">
                                             <strong>{{item. key}}</strong>
-                                            <br/>
                                             <strong ng-if="item. value">({{item. value}})</strong>
                                         </footer>
                                     </div>
                                 </a>
+                            </div>
+                            <div class="col-md-12 ourcontent card">
+                                <!-- contenteditable=""  -->
+                                <div class="inner-card-text {{item.class}}" style="height:180px">
+                                    {{item. description}}
+                                    <br />
+                                    <br />
+                                    <button class="btn btn-primary card-btn">
+                                        <i class="fa fa-chevron-circle-down fa-2x white-icon"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
