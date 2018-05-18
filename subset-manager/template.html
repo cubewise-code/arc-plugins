@@ -1,0 +1,150 @@
+<div class="mdx">
+    <style>
+    .popover-class-warning{
+      color: #8a6d3b;
+      background-color: #fcf8e3;
+      border-color: #faebcc;
+      }
+      </style>
+    <div class="row">
+        <div class="col-md-12">
+            <uib-accordion close-others="oneAtATime">
+                <div uib-accordion-group class="panel-default" is-open="options.seeAll">
+                    <uib-accordion-heading>
+                        List of views per subset
+                        <i class="pull-right fa" ng-class="{'fa-chevron-down': options.seeAll, 'fa-chevron-right': !options.seeAll}"></i>
+                    </uib-accordion-heading>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-12">
+                                <table class="table table-hover table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center"> Subset </th>
+                                            <th class="text-center"> Views </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="subset in lists.allViewsPerSubset">
+                                            <td>
+                                                {{subset.name}}
+                                            </td>
+                                            <td>
+                                                <button ng-repeat="view in subset.views" type="button" 
+                                                        style="padding-top:0px;padding-bottom:0px"
+                                                        class="btn btn-default active" 
+                                                        uib-popover="Remove {{subset.name}}" popover-append-to-body="true"
+                                                        popover-trigger="'mouseenter'" popover-class="popover-class-warning"
+                                                        ng-click="">
+                                                    <i class="fa fa-close"></i>
+                                                    {{view}}
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </uib-accordion>
+        </div>
+    </div>
+    <!--SEARCH SUBSET BY DIMENSION-->
+    <div class="row">
+        <div class="col-md-12">
+            <uib-accordion close-others="oneAtATime">
+                <div uib-accordion-group class="panel-default" is-open="options.searchByDimension">
+                    <uib-accordion-heading>
+                        List of subset per views
+                        <i class="pull-right fa" ng-class="{'fa-chevron-down': options.searchByDimension, 'fa-chevron-right': !options.searchByDimension}"></i>
+                    </uib-accordion-heading>
+                    <div class="row">
+                        <div class="col-md-2">
+                            Dimension:
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-control ng-pristine ng-valid ng-empty ng-touched" ng-model="selections.dimension" ng-change="getHierarchies()"
+                                title="">
+                                <option value="? undefined:undefined ?" selected="selected">
+                                </option>
+                                <option ng-repeat="item in lists.dimensions" class="ng-binding ng-scope" value="{{item.Name}}">{{item.Name}}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            Hierarchies:
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-control ng-pristine ng-valid ng-empty ng-touched" ng-model="selections.hierarchy" ng-change="getSubsets()"
+                                title="">
+                                <option value="? undefined:undefined ?" selected="selected">
+                                </option>
+                                <option ng-repeat="item in lists.hierarchies" class="ng-binding ng-scope" value="{{item.Name}}">{{item.Name}}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            Subsets:
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-control ng-pristine ng-valid ng-empty ng-touched" ng-model="selections.subset" ng-change="getViews()"
+                                title="">
+                                <option value="? undefined:undefined ?" selected="selected">
+                                </option>
+                                <option ng-repeat="item in lists.subsets" class="ng-binding ng-scope" value="{{item.Name}}">{{item.Name}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            List of views which are using the subset {{selections.subset}}
+                        </div>
+                        <div class="col-md-12">
+                            <table class="table table-hover table-sm">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center"> Subset </th>
+                                        <th class="text-center"> Dimension </th>
+                                        <th class="text-center"> Hierarchy</th>
+                                        <th class="text-center"> Cube </th>
+                                        <th class="text-center"> View </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="subset in lists.allSubsetsInViews">
+                                        <td>
+                                            <a href="#/dimension/subset/{{instance}}/{{subset.dimension}}/{{subset.hierarchy}}/{{subset.subset}}" ng-click="user_clicks_branch(row.branch)"
+                                                ng-class="[row.branch.item_class]">
+                                                {{subset.subset}}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a href="#/dimension/{{instance}}/{{subset.dimension}}/{{subset.dimension}}?hierarchy={{subset.dimension}}" ng-click="user_clicks_branch(row.branch)"
+                                                ng-class="[row.branch.item_class]">
+                                                {{subset.dimension}}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a href="#/dimension/{{instance}}/{{subset.dimension}}/{{subset.dimension}}?hierarchy={{subset.hierarchy}}" ng-click="user_clicks_branch(row.branch)"
+                                                ng-class="[row.branch.item_class]">
+                                                {{subset.hierarchy}}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            {{subset.cube}}
+                                        </td>
+                                        <td>
+                                            <a href="#/cube/view/{{instance}}/{{subset.cube}}/{{subset.view}}?name={{subset.view}}" ng-click="user_clicks_branch(row.branch)"
+                                                ng-class="[row.branch.item_class]">
+                                                {{subset.view}}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+            </uib-accordion>
+            </div>
+        </div>
+
+    </div>
