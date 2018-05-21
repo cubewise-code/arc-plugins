@@ -14,218 +14,67 @@
     </style>
     <!--SEARCH SUBSET BY DIMENSION-->
     <div class="row">
-        <div class="col-md-12">
-            <uib-accordion close-others="oneAtATime">
-                <div uib-accordion-group class="panel-default" is-open="options.seeAllSubsets">
-                    <uib-accordion-heading>
-                        All subsets
-                        <i class="pull-right fa" ng-class="{'fa-chevron-down': options.seeAllSubsets, 'fa-chevron-right': !options.seeAllSubsets}"></i>
-                    </uib-accordion-heading>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="btn-toolbar pull-right">
-                                <div class="input-group">
-                                    <input type="text" ng-model="select.filterallSubsets" placeholder="Search" class="form-control ng-pristine ng-untouched ng-valid ng-empty"
-                                        style="display:inline; width:200px;">
-                                    <span class="input-group-append">
-                                        <button ng-disabled="saving || !subsetsToDelete.length" class="btn btn-danger" title="Delete" ng-click="deleteObjects()" disabled="disabled">
-                                            <i class="fa fa-fw fa-trash"></i>
-                                        </button>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="col-md-12">
-                                <table class="table table-hover table-sm">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-center"> </th>
-                                            <th class="text-center"> Subset </th>
-                                            <th class="text-center"> Dimension</th>
-                                            <th class="text-center"> Hierarchy</th>
-                                            <th class="text-center"> Expression</th>
-                                            <th class="text-center"> Attributes</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr ng-repeat="item in lists.allSubsets | filter:select.filterallSubsets">
-                                            <td>
-                                                <input type="checkbox" ng-disabled="item.chores.length" ng-model="item.change" ng-change="toggleSubsetsToDelete(item)" class="ng-pristine ng-untouched ng-valid ng-empty"
-                                                    popover-append-to-body="true" popover-trigger="'mouseenter'"
-                                                    popover-class="popover-class-danger">
-                                            </td>
-                                            <td>
-                                                {{item.shortName}}
-                                            </td>
-                                            <td>
-                                                {{item.dimension}}
-                                            </td>
-                                            <td>
-                                                {{item.hierarchy}}
-                                            </td>
-                                            <td>
-                                                {{item.expression}}
-                                            </td>
-                                            <td>
-                                                {{item.attributes}}
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </uib-accordion>
+        <div class="col-md-2">
+            Dimension:
+        </div>
+        <div class="col-md-2">
+            <select class="form-control ng-pristine ng-valid ng-empty ng-touched" ng-model="selections.dimension" ng-change="getHierarchies()"
+                title="">
+                <option value="? undefined:undefined ?" selected="selected">
+                </option>
+                <option ng-repeat="item in lists.dimensions" class="ng-binding ng-scope" value="{{item.Name}}">{{item.Name}}</option>
+            </select>
+        </div>
+        <div class="col-md-2" ng-if="selections.dimension">
+            Hierarchies:
+        </div>
+        <div class="col-md-2" ng-if="selections.dimension">
+            <select class="form-control ng-pristine ng-valid ng-empty ng-touched" ng-model="selections.hierarchy" ng-change="getSubsets()"
+                title="">
+                <option value="? undefined:undefined ?" selected="selected">
+                </option>
+                <option ng-repeat="item in lists.hierarchies" class="ng-binding ng-scope" value="{{item.Name}}">{{item.Name}}</option>
+            </select>
+        </div>
+        <div class="col-md-2" ng-if="selections.hierarchy">
+            Subsets:
+        </div>
+        <div class="col-md-2" ng-if="selections.hierarchy">
+            <select class="form-control ng-pristine ng-valid ng-empty ng-touched" ng-model="selections.subset" ng-change="getSubsetName()"
+                title="">
+                <option value="? undefined:undefined ?" selected="selected">
+                </option>
+                <option ng-repeat="item in lists.subsets" class="ng-binding ng-scope" value="{{item.Name}}">{{item.Name}}</option>
+            </select>
         </div>
     </div>
-    <div class="row">
+    {{viewsToDelete}}
+    <div class="row" ng-if="selections.subsetName" ng-repeat="item in lists.allViewsPerSubset | filter:selections.subsetName">
         <div class="col-md-12">
-            <uib-accordion close-others="oneAtATime">
-                <div uib-accordion-group class="panel-default" is-open="options.seeSubsetsPerView">
-                    <uib-accordion-heading>
-                        List of views per subsets
-                        <i class="pull-right fa" ng-class="{'fa-chevron-down': options.seeSubsetsPerView, 'fa-chevron-right': !options.seeSubsetsPerView}"></i>
-                    </uib-accordion-heading>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="btn-toolbar pull-right">
-                                <div class="input-group">
-                                    <input type="text" ng-model="select.filterallSubsetsPerView" placeholder="Search" class="form-control ng-pristine ng-untouched ng-valid ng-empty"
-                                        style="display:inline; width: 200px;">
-                                    <span class="input-group-append">
-                                        <button ng-disabled="saving || !toDelete.length" class="btn btn-danger" title="Delete" ng-click="deleteObjects()" disabled="disabled">
-                                            <i class="fa fa-fw fa-trash"></i>
-                                        </button>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="col-md-12">
-                                <table class="table table-hover table-sm">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-center"> </th>
-                                            <th class="text-center"> View </th>
-                                            <th class="text-center"> Subsets on Rows</th>
-                                            <th class="text-center"> Subsets on Columns</th>
-                                            <th class="text-center"> Subsets on Titles </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr ng-repeat="item in lists.allSubsetsPerView | filter:select.filterallSubsetsPerView">
-                                            <td>
-                                                <input type="checkbox" ng-disabled="item.chores.length" ng-model="item.change" ng-change="toggleDelete(item)" class="ng-pristine ng-untouched ng-valid ng-empty"
-                                                    uib-popover="Delete item" popover-append-to-body="true" popover-trigger="'mouseenter'"
-                                                    popover-class="popover-class-danger">
-                                            </td>
-                                            <td>
-                                                {{item.name}}
-                                            </td>
-                                            <td>
-                                                <button ng-repeat="subset in item.subsetsRow" type="button" style="padding-top:0px;padding-bottom:0px" class="btn btn-default active"
-                                                    ng-click="">
-                                                    <i class="fa fa-close text-danger" uib-popover="Remove subset {{subset}} from view: {{item.name}}" popover-append-to-body="true"
-                                                        popover-trigger="'mouseenter'" popover-class="popover-class-danger"></i>
-                                                    {{subset}}
-                                                </button>
-                                            </td>
-                                            <td>
-                                                <button ng-repeat="subset in item.subsetsColumn" type="button" style="padding-top:0px;padding-bottom:0px" class="btn btn-default active"
-                                                    ng-click="">
-                                                    <i class="fa fa-close text-danger" uib-popover="Remove subset {{subset}} from view: {{item.name}}" popover-append-to-body="true"
-                                                        popover-trigger="'mouseenter'" popover-class="popover-class-danger"></i>
-                                                    {{subset}}
-                                                </button>
-                                            </td>
-                                            <td>
-                                                <button ng-repeat="subset in item.subsetsTitle" type="button" style="padding-top:0px;padding-bottom:0px" class="btn btn-default active"
-                                                    ng-click="">
-                                                    <i class="fa fa-close text-danger" uib-popover="Remove subset {{subset}} from view: {{item.name}}" popover-append-to-body="true"
-                                                        popover-trigger="'mouseenter'" popover-class="popover-class-danger"></i>
-                                                    {{subset}}
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </uib-accordion>
+            <div class="col-md-12">
+                <table class="table table-hover table-sm">
+                    <thead>
+                        <tr>
+                            <th class="text-center"> </th>
+                            <th class="text-center"> View </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="view in item.views">
+                            <td>
+                                <input type="checkbox" ng-model="change" ng-change="toggleViewsToDelete(view)" class="ng-pristine ng-untouched ng-valid ng-empty">
+                                </input>
+                            </td>
+                            <td>
+                                {{view}}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-12">
-            <uib-accordion close-others="oneAtATime">
-                <div uib-accordion-group class="panel-default" is-open="options.seeViewsPerSubset">
-                    <uib-accordion-heading>
-                        List of subsets per views
-                        <i class="pull-right fa" ng-class="{'fa-chevron-down': options.seeViewsPerSubset, 'fa-chevron-right': !options.seeViewsPerSubset}"></i>
-                    </uib-accordion-heading>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="btn-toolbar pull-right">
-                                <div class="input-group">
-                                    <input type="text" ng-model="select.filterallViewsPerSubset" placeholder="Search" class="form-control ng-pristine ng-untouched ng-valid ng-empty"
-                                        style="display:inline; width: 200px;">
-                                    <span class="input-group-append">
-                                        <button ng-disabled="saving || !toDelete.length" class="btn btn-danger" title="Delete" ng-click="deleteObjects()" disabled="disabled">
-                                            <i class="fa fa-fw fa-trash"></i>
-                                        </button>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="col-md-12">
-                                <table class="table table-hover table-sm">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-center"> </th>
-                                            <th class="text-center"> Subset </th>
-                                            <th class="text-center"> Views </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr ng-repeat="item in lists.allViewsPerSubset | filter:select.filterallViewsPerSubset">
-                                            <td>
-                                                <input type="checkbox" ng-disabled="item.chores.length" ng-model="item.change" ng-change="toggleDelete(item)" class="ng-pristine ng-untouched ng-valid ng-empty"
-                                                    uib-popover="Delete subset" popover-append-to-body="true" popover-trigger="'mouseenter'"
-                                                    popover-class="popover-class-danger">
-                                            </td>
-                                            <td>
-                                                {{item.name}}
-                                            </td>
-                                            <td>
-                                                <button ng-repeat="view in item.views" type="button" style="padding-top:0px;padding-bottom:0px" class="btn btn-default active"
-                                                    ng-click="">
-                                                    <i class="fa fa-close text-danger" uib-popover="Remove subset: {{item.name}} from view: {{view}}" popover-append-to-body="true"
-                                                        popover-trigger="'mouseenter'" popover-class="popover-class-danger"></i>
-                                                    {{view}}
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </uib-accordion>
-        </div>
-    </div>
+</div>
 
 
 </div>

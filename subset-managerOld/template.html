@@ -53,9 +53,8 @@
                                     <tbody>
                                         <tr ng-repeat="item in lists.allSubsets | filter:select.filterallSubsets">
                                             <td>
-                                                <input type="checkbox" ng-disabled="item.chores.length" ng-model="item.change" ng-change="toggleSubsetsToDelete(item)" class="ng-pristine ng-untouched ng-valid ng-empty"
-                                                    popover-append-to-body="true" popover-trigger="'mouseenter'"
-                                                    popover-class="popover-class-danger">
+                                                <input type="checkbox" ng-disabled="item.chores.length" ng-model="item.change" 
+                                                    ng-change="toggleSubsetsToDelete(item)" class="ng-pristine ng-untouched ng-valid ng-empty">
                                             </td>
                                             <td>
                                                 {{item.shortName}}
