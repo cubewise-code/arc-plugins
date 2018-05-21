@@ -108,141 +108,102 @@
         }
     </style>
     <div class="row">
-        <div class="col-md-12">
-
-            <uib-accordion close-others="oneAtATime">
-                <div uib-accordion-group class="panel-default" is-open="options.tm1ObjectsOpen">
-                    <uib-accordion-heading>
-                        TM1 objects
-                        <i class="pull-right fa" ng-class="{'fa-chevron-down': options.tm1ObjectsOpen, 'fa-chevron-right': !options.tm1ObjectsOpen}"></i>
-                    </uib-accordion-heading>
-
-                    <div class="row">
-                        <!-- SHOW menus TABLE-->
-                        <div class="col-lg-3 col-md-6 outside_box" ng-repeat="item in tm1Objects">
-                            <div class="col-md-12">
-                                <a href="{{item. link}}{{instance}}" class="card-holder">
-                                    <div class="col-md-12 inner-card">
-                                        <h1 class="col-md-12 inner-card-heading">
-                                            <i class="fa {{item. icon}} fa-4x"> </i>
-                                            <br />
-                                            <br />
-                                        </h1>
-                                        <footer class="inner-card-footer">
-                                            <strong>{{item. key}}</strong>
-                                            <strong ng-if="item.value">({{item.value}})</strong>
-                                        </footer>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-md-12 ourcontent card">
-                                <!-- contenteditable=""  -->
-                                <div class="inner-card-text {{item.class}}" style="height:180px">
-                                    {{item. description}}
-                                    <br />
-                                    <br />
-                                    <button class="btn btn-primary card-btn">
-                                        <i class="fa fa-chevron-circle-down fa-2x white-icon"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
+        <br>
+    </div>
+    <!-- TM1 OBJECTS BUTTONS -->
+    <div class="row">
+        <div class="col-lg-3 col-md-6 outside_box" ng-repeat="item in tm1Objects">
+            <div class="col-md-12">
+                <div class="col-md-12 inner-card">
+                    <h1 class="col-md-12 inner-card-heading">
+                        <i class="fa {{item.icon}} fa-4x"> </i>
+                        <br/>
+                        <br/>
+                    </h1>
+                    <footer class="inner-card-footer">
+                        <strong>{{item.key}}</strong>
+                        <strong ng-if="item.value">({{item.value}})</strong>
+                    </footer>
                 </div>
-            </uib-accordion>
+            </div>
+            <div class="col-md-12 ourcontent card">
+                <div class="inner-card-text {{item.class}}" style="height:180px">
+                    {{item.description}}
+                    <br/>
+                    <br/>
+                    <button class="btn btn-primary card-btn">
+                        <a href="{{item.link}}{{instance}}" class="card-holder">
+                            <i class="fa fa-chevron-circle-down fa-2x white-icon"></i>
+                        </a>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
     <div class="row">
         <br>
     </div>
+            <!-- CONFIGURATION BUTTONS -->
     <div class="row">
-        <div class="col-md-12">
-            <uib-accordion close-others="oneAtATime">
-                <div uib-accordion-group class="panel-default" is-open="options.administrationOpen">
-                    <uib-accordion-heading>
-                        Administration
-                        <i class="pull-right fa" ng-class="{'fa-chevron-down': options.administrationOpen, 'fa-chevron-right': !options.administrationOpen}"></i>
-                    </uib-accordion-heading>
-                    <div class="row">
-                        <!-- SHOW menus TABLE-->
-                        <div class="col-lg-3 col-md-6 outside_box" ng-repeat="item in configurations">
-                            <div class="col-md-12">
-                                <a href="{{item. link}}{{instance}}" class="card-holder">
-                                    <div class="col-md-12 inner-card">
-                                        <h1 class="col-md-12 inner-card-heading">
-                                            <i class="fa {{item. icon}} fa-4x"> </i>
-                                            <br />
-                                            <br />
-                                        </h1>
-                                        <footer class="inner-card-footer">
-                                            <strong>{{item. key}}</strong>
-                                            <strong ng-if="item. value">({{item. value}})</strong>
-                                        </footer>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-md-12 ourcontent card">
-                                <!-- contenteditable=""  -->
-                                <div class="inner-card-text {{item.class}}" style="height:180px">
-                                    {{item. description}}
-                                    <br />
-                                    <br />
-                                    <button class="btn btn-primary card-btn">
-                                        <i class="fa fa-chevron-circle-down fa-2x white-icon"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <div class="col-lg-3 col-md-6 outside_box" ng-repeat="item in configurations">
+            <div class="col-md-12">
+                <div class="col-md-12 inner-card">
+                    <h1 class="col-md-12 inner-card-heading">
+                        <i class="fa {{item.icon}} fa-4x"> </i>
+                        <br/>
+                        <br/>
+                    </h1>
+                    <footer class="inner-card-footer">
+                        <strong>{{item.key}}</strong>
+                        <strong ng-if="item.value">({{item.value}})</strong>
+                    </footer>
                 </div>
-            </uib-accordion>
+            </div>
+            <div class="col-md-12 ourcontent card">
+                <div class="inner-card-text {{item.class}}" style="height:180px">
+                    {{item.description}}
+                    <br/>
+                    <br/>
+                    <button class="btn btn-primary card-btn">
+                        <a href="{{item.link}}{{instance}}" class="card-holder">
+                            <i class="fa fa-chevron-circle-down fa-2x white-icon"></i>
+                        </a>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
     <div class="row">
         <br>
     </div>
+    <!-- PLUGINS BUTTONS -->
     <div class="row">
-        <div class="col-md-12">
-            <uib-accordion close-others="oneAtATime">
-                <div uib-accordion-group class="panel-default" is-open="options.pluginsOpen">
-                    <uib-accordion-heading>
-                        Tools
-                        <i class="pull-right fa" ng-class="{'fa-chevron-down': options.pluginsOpen, 'fa-chevron-right': !options.pluginsOpen}"></i>
-                    </uib-accordion-heading>
-                    <div class="row">
-                        <!-- SHOW menus TABLE-->
-                        <div class="col-lg-3 col-md-6 outside_box" ng-repeat="item in plugins">
-                            <div class="col-md-12">
-                                <a href="{{item. link}}{{instance}}" class="card-holder">
-                                    <div class="col-md-12 inner-card">
-                                        <h1 class="col-md-12 inner-card-heading">
-                                            <i class="fa {{item. icon}} fa-4x"> </i>
-                                            <br />
-                                            <br />
-                                        </h1>
-                                        <footer class="inner-card-footer">
-                                            <strong>{{item. key}}</strong>
-                                            <strong ng-if="item. value">({{item. value}})</strong>
-                                        </footer>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-md-12 ourcontent card">
-                                <!-- contenteditable=""  -->
-                                <div class="inner-card-text {{item.class}}" style="height:180px">
-                                    {{item. description}}
-                                    <br />
-                                    <br />
-                                    <button class="btn btn-primary card-btn">
-                                        <i class="fa fa-chevron-circle-down fa-2x white-icon"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <div class="col-lg-3 col-md-6 outside_box" ng-repeat="item in plugins">
+            <div class="col-md-12">
+                <div class="col-md-12 inner-card">
+                    <h1 class="col-md-12 inner-card-heading">
+                        <i class="fa {{item.icon}} fa-4x"> </i>
+                        <br/>
+                        <br/>
+                    </h1>
+                    <footer class="inner-card-footer">
+                        <strong>{{item.key}}</strong>
+                        <strong ng-if="item.value">({{item.value}})</strong>
+                    </footer>
                 </div>
-            </uib-accordion>
+            </div>
+            <div class="col-md-12 ourcontent card">
+                <div class="inner-card-text {{item.class}}" style="height:180px">
+                    {{item.description}}
+                    <br/>
+                    <br/>
+                    <button class="btn btn-primary card-btn">
+                        <a href="{{item.link}}{{instance}}" class="card-holder">
+                            <i class="fa fa-chevron-circle-down fa-2x white-icon"></i>
+                        </a>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

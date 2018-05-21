@@ -70,16 +70,16 @@ arc.directive("cubewiseInstanceOverview", function () {
             $scope.getUsersCount();
             // GET CUBE COUNT
             $scope.getCubesCount = function () {
-                $http.get(encodeURIComponent($scope.instance) + "/Cubes/$count").then(function (value) {
-                    $scope.tm1Objects[0].value = value.data;
+                $http.get(encodeURIComponent($scope.instance) + "/ModelCubes()?$select=Name").then(function (cubesList) {
+                    $scope.tm1Objects[0].value = cubesList.data.value.length;
                 });
             };
             $scope.getCubesCount();
 
             // GET DIMENSIONS COUNT
             $scope.getDimensionsCount = function () {
-                $http.get(encodeURIComponent($scope.instance) + "/Dimensions/$count").then(function (value) {
-                    $scope.tm1Objects[1].value = value.data;
+                $http.get(encodeURIComponent($scope.instance) + "/ModelDimensions()?$select=Name").then(function (dimensionsList) {
+                    $scope.tm1Objects[1].value = dimensionsList.data.value.length;
                 });
             };
             $scope.getDimensionsCount();
