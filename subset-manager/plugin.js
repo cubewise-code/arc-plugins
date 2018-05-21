@@ -1,7 +1,7 @@
 
 arc.run(['$rootScope', function ($rootScope) {
 
-    $rootScope.plugin("cubewiseSubsetManager", "Subset Manager", "page", {
+    $rootScope.plugin("cubewiseSubsetManager", "Subset Cleaner", "page", {
         menu: "tools",
         icon: "subset",
         description: "This plugin can be used to search any TM1 objects",
@@ -33,8 +33,9 @@ arc.directive("cubewiseSubsetManager", function () {
             };
 
             $scope.options = {
-                seeAll: true,
-                searchByDimension: true,
+                seeSubsetsPerView: false,
+                seeViewsPerSubset: false,
+                seeAllSubsets: false,
                 searchBySubset: true
             }
 
@@ -44,102 +45,191 @@ arc.directive("cubewiseSubsetManager", function () {
                 subsets: [],
                 cubes: [],
                 viewsAndSubsetsUnstructured: [],
-                allSubsetsInViews: [],
-                allViewsPerSubset: []
+                viewsAndSubsetsStructured: [],
+                allSubsetsPerView: [],
+                allViewsPerSubset: [],
+                allSubsets: []
             }
 
-            // GET DIMENSION DATA
-            $scope.getDimensionsList = function () {
-                $http.get(encodeURIComponent($scope.instance) + "/Dimensions").then(function (dimensionsData) {
-                    $scope.lists.dimensions = dimensionsData.data.value;
-                });
-            };
-            $scope.getDimensionsList();
+            $scope.subsetsToDelete = [];
 
-            // GET HIERARCHY DATA
-            $scope.getHierarchies = function () {
-                $http.get(encodeURIComponent($scope.instance) + "/Dimensions('"+$scope.selections.dimension+"')/Hierarchies").then(function (hierarchiesData) {
-                    $scope.lists.hierarchies = hierarchiesData.data.value;
+            $scope.toggleSubsetsToDelete = function (item) {
+                if (_.includes($scope.subsetsToDelete, item)) {
+                    _.remove($scope.subsetsToDelete, function (i) {
+                        return i.name === item.name;
+                    });
+                } else {
+                    $scope.subsetsToDelete.push(item);
+                }
+            };
+
+            // GET DIMENSION DATA
+            $scope.getAllSubsets = function () {
+                $http.get(encodeURIComponent($scope.instance) + "/ModelDimensions()").then(function (dimensionsData) {
+                    $scope.lists.dimensions = dimensionsData.data.value;
+                    //LOOP THROUGH DIMENSIONS
+                    _.forEach($scope.lists.dimensions, function (value, key) {
+                        var dimension = value.Name;
+                        //console.log(dimension);
+                        $http.get(encodeURIComponent($scope.instance) + "/Dimensions('" + dimension + "')/Hierarchies").then(function (hierarchiesData) {
+                            $scope.lists.hierarchies = hierarchiesData.data.value;
+                            //LOOP THROUGH HIERARCHIES FOR A DIMENSION
+                            _.forEach($scope.lists.hierarchies, function (value, key) {
+                                var hierarchy = value.Name;
+                                //console.log(dimension, hierarchy);                                                                
+                                $http.get(encodeURIComponent($scope.instance) + "/Dimensions('" + dimension + "')/Hierarchies('" + hierarchy + "')/Subsets").then(function (subsetsData) {
+                                    $scope.lists.subsets = subsetsData;
+                                    //LOOP THROUGH SUBSET FOR A HIERARCHY FOR A DIMENSION
+                                    _.forEach($scope.lists.subsets, function (value, key) {
+                                        var subsets = value.value;
+                                        if (subsets) {
+                                            _.forEach(subsets, function (value, key) {
+                                                var subset = value.Name;
+                                                $scope.lists.allSubsets.push({
+                                                    name: subset,
+                                                    uniqueName: value.UniqueName,
+                                                    expression: value.Expression,
+                                                    attributes: value.Attributes,
+                                                    fqn: dimension + ':' + hierarchy + ':' + subset,
+                                                    hierarchy: hierarchy,
+                                                    dimension: dimension
+                                                });
+                                            });
+                                        }
+                                    });
+                                });
+                            });
+                        });
+                    });
+                    console.log($scope.lists.allSubsets);
                 });
             };
-            // GET SUBSET DATA
-            $scope.getSubsets = function () {
-                $http.get(encodeURIComponent($scope.instance) + "/Dimensions('"+$scope.selections.dimension+"')/Hierarchies('"+$scope.selections.subset+"')/Subsets").then(function (subsetsData) {
-                    $scope.lists.subsets = subsetsData.data.value;
-                });
-            };
+            //$scope.getAllSubsets();
             // GET ALL VIEWS AND SUBSETS
-            $scope.getallViewsPerSubsetAndViews = function () {
-                $http.get(encodeURIComponent($scope.instance) + "/Cubes?$select=Name&$expand=Views($select=Name;$expand=tm1.NativeView/Columns/Subset($select=Name;$expand=Hierarchy($select=Name;$expand=Dimension($select=Name))),tm1.NativeView/Rows/Subset($select=Name;$expand=Hierarchy($select=Name;$expand=Dimension($select=Name))))").then(function (viewsData) {
-                    console.log(viewsData);
+            $scope.getallViewsPerSubset = function () {
+                $http.get(encodeURIComponent($scope.instance) + "/Cubes?$select=Name&$expand=Views($select=Name;$expand=tm1.NativeView/Columns/Subset($select=Name;$expand=Hierarchy($select=Name;$expand=Dimension($select=Name))),tm1.NativeView/Rows/Subset($select=Name;$expand=Hierarchy($select=Name;$expand=Dimension($select=Name))),tm1.NativeView/Titles/Subset($select=Name;$expand=Hierarchy($select=Name;$expand=Dimension($select=Name))))").then(function (viewsData) {
+                    //console.log(viewsData);
                     $scope.lists.viewsAndSubsetsUnstructured = viewsData.data.value;
                     //Loop through cubes
                     cubes = viewsData.data.value;
-                    for (var cube in cubes){
+                    for (var cube in cubes) {
                         cubeName = cubes[cube].Name;
                         //Loop through views
-                        views = cubes[cube].Views;
-                        for (var view in views){
-                            viewName = views[view].Name;
+                        allViews = cubes[cube].Views;
+                        for (var view in allViews) {
+                            viewName = allViews[view].Name;
                             subsets = [];
                             //Loop through subsets on columns
-                            viewColumns = views[view].Columns;
-                            for (var viewColumn in viewColumns){
-                                subsetName = viewColumns[viewColumn].Subset.Name;
-                                if(subsetName){
-                                    hierarchyName = viewColumns[viewColumn].Subset.Hierarchy.Name;
-                                    dimensionName = viewColumns[viewColumn].Subset.Hierarchy.Dimension.Name;
+                            viewColumns = allViews[view].Columns;
+                            for (var currentView in viewColumns) {
+                                subsetName = viewColumns[currentView].Subset.Name;
+                                if (subsetName) {
+                                    hierarchyName = viewColumns[currentView].Subset.Hierarchy.Name;
+                                    dimensionName = viewColumns[currentView].Subset.Hierarchy.Dimension.Name;
                                     subsetInfo = {
                                         cube: cubeName,
                                         view: viewName,
                                         dimension: dimensionName,
                                         hierarchy: hierarchyName,
-                                        subset: subsetName
+                                        subset: subsetName,
+                                        subsetColumn: subsetName
                                     }
-                                    $scope.lists.allSubsetsInViews.push(subsetInfo);
+                                    $scope.lists.viewsAndSubsetsStructured.push(subsetInfo);
                                 }
                             }
                             //Loop through subsets on rows
-                            viewRows = views[view].Rows;
-                            for (var viewRow in viewRows){
-                                subsetName = viewRows[viewRow].Subset.Name;
+                            viewRows = allViews[view].Rows;
+                            for (var currentView in viewRows) {
+                                subsetName = viewRows[currentView].Subset.Name;
                                 //If there is a subset
-                                if(subsetName){
-                                    hierarchyName = viewRows[viewRow].Subset.Hierarchy.Name;
-                                    dimensionName = viewRows[viewRow].Subset.Hierarchy.Dimension.Name;
+                                if (subsetName) {
+                                    hierarchyName = viewRows[currentView].Subset.Hierarchy.Name;
+                                    dimensionName = viewRows[currentView].Subset.Hierarchy.Dimension.Name;
                                     subsetInfo = {
                                         cube: cubeName,
                                         view: viewName,
                                         dimension: dimensionName,
                                         hierarchy: hierarchyName,
-                                        subset: subsetName
+                                        subset: subsetName,
+                                        subsetRow: subsetName
                                     }
-                                    $scope.lists.allSubsetsInViews.push(subsetInfo);
+                                    $scope.lists.viewsAndSubsetsStructured.push(subsetInfo);
+                                }
+                            }
+                            //Loop through subsets on Titles
+                            viewsTitles = allViews[view].Titles;
+                            for (var currentView in viewsTitles) {
+                                subsetName = viewsTitles[currentView].Subset.Name;
+                                //If there is a subset
+                                if (subsetName) {
+                                    hierarchyName = viewsTitles[currentView].Subset.Hierarchy.Name;
+                                    dimensionName = viewsTitles[currentView].Subset.Hierarchy.Dimension.Name;
+                                    subsetInfo = {
+                                        cube: cubeName,
+                                        view: viewName,
+                                        dimension: dimensionName,
+                                        hierarchy: hierarchyName,
+                                        subset: subsetName,
+                                        subsetTitle: subsetName
+                                    }
+                                    $scope.lists.viewsAndSubsetsStructured.push(subsetInfo);
                                 }
                             }
                         }
                     }
+                    // LOOP THROUGH lists.viewsAndSubsetsStructured TO CREATE lists.allSubsetsPerView AND lists.allViewsPerSubset
                     var subsetKeys = {};
-                    for (var item in $scope.lists.allSubsetsInViews){
+                    var viewKeys = {};
+                    for (var item in $scope.lists.viewsAndSubsetsStructured) {
                         //Create subsetFullName
-                        dimensionName = $scope.lists.allSubsetsInViews[item].dimension;
-                        hierarchyName = $scope.lists.allSubsetsInViews[item].hierarchy;
-                        subsetName = $scope.lists.allSubsetsInViews[item].subset;
+                        dimensionName = $scope.lists.viewsAndSubsetsStructured[item].dimension;
+                        hierarchyName = $scope.lists.viewsAndSubsetsStructured[item].hierarchy;
+                        subsetName = $scope.lists.viewsAndSubsetsStructured[item].subset;
                         subsetFullName = dimensionName + ':' + hierarchyName + ':' + subsetName;
                         //Create view name
-                        cube = $scope.lists.allSubsetsInViews[item].cube;
-                        view = $scope.lists.allSubsetsInViews[item].view;
+                        cube = $scope.lists.viewsAndSubsetsStructured[item].cube;
+                        view = $scope.lists.viewsAndSubsetsStructured[item].view;
                         viewFullName = cube + ':' + view;
-                        //Check
-                        if(!subsetKeys[subsetFullName]){
+                        //Create subsetKeys array
+                        if (!subsetKeys[subsetFullName]) {
                             subsetKeys[subsetFullName] = {
                                 dimension: dimensionName,
-                                views:[]
+                                views: []
                             };
                         }
                         subsetKeys[subsetFullName].views.push(viewFullName);
+                        //Create viewKeys array
+                        if (!viewKeys[viewFullName]) {
+                            viewKeys[viewFullName] = {
+                                cube: cube,
+                                subsets: [],
+                                subsetsRow: [],
+                                subsetsColumn: [],
+                                subsetsTitle: [],
+                            };
+                        }
+                        viewKeys[viewFullName].subsets.push(subsetFullName);
+                        //Create subsetFullNameColumn
+                        subsetNameColumn = $scope.lists.viewsAndSubsetsStructured[item].subsetColumn;
+                        if (subsetNameColumn) {
+                            subsetFullNameColumn = dimensionName + ':' + hierarchyName + ':' + subsetNameColumn;
+                            viewKeys[viewFullName].subsetsColumn.push(subsetFullNameColumn);
+                        }
+                        //Create subsetFullNameRow
+                        subsetNameRow = $scope.lists.viewsAndSubsetsStructured[item].subsetRow;
+                        if (subsetNameRow) {
+                            subsetFullNameRow = dimensionName + ':' + hierarchyName + ':' + subsetNameRow;
+                            viewKeys[viewFullName].subsetsRow.push(subsetFullNameRow);
+                        }
+                        //Create subsetFullNameTitle
+                        subsetNameTitle = $scope.lists.viewsAndSubsetsStructured[item].subsetTitle;
+                        if (subsetNameTitle) {
+                            subsetFullNameTitle = dimensionName + ':' + hierarchyName + ':' + subsetNameTitle;
+                            viewKeys[viewFullName].subsetsTitle.push(subsetFullNameTitle);
+                        }
                     }
-                    _.forEach(subsetKeys, function(value,key){
+                    //Create lists.allViewsPerSubset array
+                    _.forEach(subsetKeys, function (value, key) {
                         $scope.lists.allViewsPerSubset.push({
                             name: key,
                             dimension: value.dimension,
@@ -147,9 +237,69 @@ arc.directive("cubewiseSubsetManager", function () {
                         });
                     });
                     console.log($scope.lists.allViewsPerSubset);
+                    //Create lists.allSubsetsPerView array
+                    _.forEach(viewKeys, function (value, key) {
+                        $scope.lists.allSubsetsPerView.push({
+                            name: key,
+                            cube: value.cube,
+                            subsets: value.subsets,
+                            subsetsRow: value.subsetsRow,
+                            subsetsColumn: value.subsetsColumn,
+                            subsetsTitle: value.subsetsTitle
+                        });
+                    });
+                    //console.log($scope.lists.allSubsetsPerView);
+                    //Add All Subsets
+                    $http.get(encodeURIComponent($scope.instance) + "/ModelDimensions()").then(function (dimensionsData) {
+                        $scope.lists.dimensions = dimensionsData.data.value;
+                        //LOOP THROUGH DIMENSIONS
+                        _.forEach($scope.lists.dimensions, function (value, key) {
+                            var dimension = value.Name;
+                            //console.log(dimension);
+                            $http.get(encodeURIComponent($scope.instance) + "/Dimensions('" + dimension + "')/Hierarchies").then(function (hierarchiesData) {
+                                $scope.lists.hierarchies = hierarchiesData.data.value;
+                                //LOOP THROUGH HIERARCHIES FOR A DIMENSION
+                                _.forEach($scope.lists.hierarchies, function (value, key) {
+                                    var hierarchy = value.Name;
+                                    //console.log(dimension, hierarchy);                                                                
+                                    $http.get(encodeURIComponent($scope.instance) + "/Dimensions('" + dimension + "')/Hierarchies('" + hierarchy + "')/Subsets").then(function (subsetsData) {
+                                        $scope.lists.subsets = subsetsData;
+                                        //LOOP THROUGH SUBSET FOR A HIERARCHY FOR A DIMENSION
+                                        _.forEach($scope.lists.subsets, function (value, key) {
+                                            var subsets = value.value;
+                                            if (subsets) {
+                                                _.forEach(subsets, function (value, key) {
+                                                    var subset = value.Name;
+                                                    var subsetFullName = dimension + ':' + hierarchy + ':' + subset;
+                                                    // Check if Subset has a view(subset exist in $scope.lists.allViewsPerSubset)
+                                                    if (_.includes($scope.lists.allViewsPerSubset, subset)) {
+                                                        view = true;
+                                                    } else {
+                                                        view = false;
+                                                    }
+                                                    //Push subsets
+                                                    $scope.lists.allSubsets.push({
+                                                        name: subsetFullName,
+                                                        uniqueName: value.UniqueName,
+                                                        expression: value.Expression,
+                                                        attributes: value.Attributes,
+                                                        shortName: subset,
+                                                        hierarchy: hierarchy,
+                                                        dimension: dimension,
+                                                        views: view
+                                                    });
+                                                });
+                                            }
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                        console.log($scope.lists.allSubsets);
+                    });
                 });
             };
-            $scope.getallViewsPerSubsetAndViews();
+            $scope.getallViewsPerSubset();
 
             $scope.$on("login-reload", function (event, args) {
 
