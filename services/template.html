@@ -1,0 +1,203 @@
+<div class="auto-height">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>List of all Arc services</h2>
+        </div>
+    </div>
+    <auto-height>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <h5 class="card-header">$tm1.choreExecute</h5>
+                    <div class="card-body">
+                        <div class="card-text">
+                            Run a chore:
+                        </div>
+                        <div>
+                            <div class="input-group">
+                                <input type="text" ng-model="selections.chore" placeholder="Chore Name" class="form-control ng-pristine ng-untouched ng-valid ng-empty"
+                                    style="display:inline">
+                                <div class="input-group-append">
+                                    <button ng-disabled="!selections.chore" class="btn btn-warning" title="Delete" ng-click="executeChore(selections.chore)"
+                                        disabled="disabled">
+                                        <i class="fa fa-fw fa-bolt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <h5 class="card-header">$tm1.processExecute</h5>
+                    <div class="card-body">
+                        <div class="card-text">
+                            Run a process:
+                        </div>
+                        <div class="col-md-12 btn-toolbar pull-right">
+                            <div class="col-md-12 input-group">
+                                <input type="text" ng-model="selections.process" placeholder="Process Name" class="form-control ng-pristine ng-untouched ng-valid ng-empty"
+                                    style="display:inline">
+                                <button ng-disabled="!selections.process" class="btn btn-warning" title="Delete" ng-click="executeProcess(selections.process)"
+                                    disabled="disabled">
+                                    <i class="fa fa-fw fa-bolt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="row" style="margin-top:10px">
+            <div class="col-md-6">
+                <div class="card">
+                    <h5 class="card-header">$tm1.instances</h5>
+                    <div class="card-body">
+                        <div class="card-text">
+                            List of all instances available:
+                        </div>
+                        <div class="col-md-12 btn-toolbar pull-right">
+                            <div class="col-md-12 input-group">
+                                <button class="btn btn-warning" title="Get Instances" ng-click="getInstances()" data-toggle="modal" data-target="#instancesModal">
+                                    <i class="fa fa-fw fa-bolt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <h5 class="card-header">$tm1.instance</h5>
+                    <div class="card-body">
+                        <div class="card-text">
+                            Get information of a specific instance:
+                        </div>
+                        <div class="col-md-12 btn-toolbar pull-right">
+                            <div class="col-md-12 input-group">
+                                <input type="text" ng-model="selections.instance" placeholder="Dimension Name" class="form-control ng-pristine ng-untouched ng-valid ng-empty"
+                                    style="display:inline">
+                                <button class="btn btn-warning" title="Get Instance" ng-click="getInstance(selections.instance)">
+                                    <i class="fa fa-fw fa-bolt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-12" ng-if="options.showInstanceInfo">
+                            <auto-height>
+                                <pre>{{lists.instanceData | json}}</pre>
+                            </auto-height>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-top:10px">
+            <div class="col-md-6">
+                <div class="card">
+                    <h5 class="card-header">$tm1.cubeDimensions </h5>
+                    <div class="card-body">
+                        <div class="card-text">
+                            Get dimensions for a specific cube:
+                        </div>
+                        <div class="col-md-12 btn-toolbar pull-right">
+                            <div class="col-md-12 input-group">
+                                <input type="text" ng-model="selections.cube" placeholder="Cube Name" class="form-control ng-pristine ng-untouched ng-valid ng-empty"
+                                    style="display:inline">
+                                <button ng-disabled="!selections.cube" class="btn btn-warning" title="Delete" ng-click="getCubeDimensions(selections.cube)"
+                                    disabled="disabled">
+                                    <i class="fa fa-fw fa-bolt"></i>
+                                </button>
+                                <div class="col-md-12">
+                                    <div ng-repeat="dimension in lists.dimensions">
+                                        <div class="col-md-12">
+                                            <p>{{dimension}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <h5 class="card-header">$tm1.cellUpdate </h5>
+                    <div class="card-body">
+                        <div class="card-text">
+                            Send a value to a cell:
+                        </div>
+                        <div class="col-md-12 btn-toolbar pull-right">
+                            <div class="col-md-12 input-group">
+                                <input type="text" ng-model="selections.valueToBeSent" placeholder="Value" class="col-md-4 form-control ng-pristine ng-untouched ng-valid ng-empty"
+                                    style="display:inline">
+                                <div class="col-md-4 text-center">
+                                    <button ng-disabled="!selections.valueToBeSent" class="btn btn-warning" title="Delete" ng-click="sendValueToCell(selections.valueToBeSent)"
+                                        disabled="disabled">
+                                        <i class="fa fa-fw fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                                <div class="col-md-4">
+                                    Value in TM1: {{values.CurrentDate}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-top:10px">
+            <div class="col-md-12">
+                <div class="card">
+                    <h5 class="card-header">$tm1.resultsetTransform & $tm1.cellsetDelete </h5>
+                    <div class="card-body">
+                        <div class="card-text">
+                            Get a data set from MDX:
+                        </div>
+                        <div class="col-md-12">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center"> Account </th>
+                                        <th class="text-center"> Column </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="item in results">
+                                        <td> {{item}} </td>
+                                        <td> </td>
+                                    </tr>
+                                </tbody>
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </auto-height>
+    <!-- DEFINE MODAL FOR $tm1.instances-->
+    <div class="modal fade" id="instancesModal" tabindex="-1" role="dialog" aria-labelledby="instancesModal" aria-hidden="true"
+        data-backdrop="false">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="instancesModal">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div ng-repeat="instance in lists.instances">
+                        <div class="col-md-12">{{instance.Name}}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
