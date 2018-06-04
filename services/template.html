@@ -35,10 +35,10 @@
                         <div class="card-text">
                             Run a process:
                         </div>
-                        <div class="col-md-12 btn-toolbar pull-right">
-                            <div class="col-md-12 input-group">
-                                <input type="text" ng-model="selections.process" placeholder="Process Name" class="form-control ng-pristine ng-untouched ng-valid ng-empty"
-                                    style="display:inline">
+                        <div class="input-group">
+                            <input type="text" ng-model="selections.process" placeholder="Process Name" class="form-control ng-pristine ng-untouched ng-valid ng-empty"
+                                style="display:inline">
+                            <div class="input-group-append">
                                 <button ng-disabled="!selections.process" class="btn btn-warning" title="Delete" ng-click="executeProcess(selections.process)"
                                     disabled="disabled">
                                     <i class="fa fa-fw fa-bolt"></i>
@@ -142,35 +142,6 @@
                                     Value in TM1: {{values.CurrentDate}}
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row" style="margin-top:10px">
-            <div class="col-md-12">
-                <div class="card">
-                    <h5 class="card-header">$tm1.resultsetTransform & $tm1.cellsetDelete </h5>
-                    <div class="card-body">
-                        <div class="card-text">
-                            Get a data set from MDX:
-                        </div>
-                        <div class="col-md-12">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center"> Account </th>
-                                        <th class="text-center"> Column </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr ng-repeat="item in results">
-                                        <td> {{item}} </td>
-                                        <td> </td>
-                                    </tr>
-                                </tbody>
-
-                            </table>
                         </div>
                     </div>
                 </div>

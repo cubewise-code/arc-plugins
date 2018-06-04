@@ -98,26 +98,6 @@ arc.directive("arcServices", function () {
                     $scope.getValueFromCell();
                 });
             };
-
-            $scope.getDataSet = function () {
-                var mdxQuery = "SELECT NON EMPTY {[Version].[Actual], [Version].[Budget]} ON COLUMNS, NON EMPTY {TM1SUBSETALL([Account])} ON ROWS FROM [General Ledger] WHERE ([Department].[Corporate], [Year].[2012])";
-                var mdxJSON = {MDX: mdxQuery};
-                $http.post(encodeURIComponent($scope.instance) + "/ExecuteMDX?$expand=Axes($expand=Hierarchies($select=Name;$expand=Dimension($select=Name)),Tuples($expand=Members($select=Name,UniqueName,Ordinal,Attributes;$expand=Parent($select=Name);$expand=Element($select=Name,Type,Level)))),Cells($select=Value,Updateable,Consolidated,RuleDerived,HasPicklist,FormatString,FormattedValue)", mdxJSON).then(function (values) {
-                    var options = {
-                        alias: {},
-                        suppressZeroRows: false,
-                        suppressZeroColumns: false,
-                        maxRows: 1000
-                     };
-                    $scope.results = $tm1.resultsetTransform($scope.instance, "General Ledger", values.data, options);
-                    console.log($scope.results);
-                    //Delete the cellSet
-                    $tm1.cellsetDelete($scope.instance,values.data.ID);
-                });  
-            };
-
-            $scope.getDataSet();
-
             
             $scope.$on("login-reload", function (event, args) {
 
