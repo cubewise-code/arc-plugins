@@ -13,14 +13,12 @@
         }
     </style>
     <!--SEARCH SUBSET BY DIMENSION-->
+
+
     <div class="row">
         <div class="col-md-12">
-            <uib-accordion close-others="oneAtATime">
-                <div uib-accordion-group class="panel-default" is-open="options.seeAllSubsets">
-                    <uib-accordion-heading>
-                        All subsets
-                        <i class="pull-right fa" ng-class="{'fa-chevron-down': options.seeAllSubsets, 'fa-chevron-right': !options.seeAllSubsets}"></i>
-                    </uib-accordion-heading>
+            <uib-tabset active="active">
+                <uib-tab index="0" heading="All Subsets">
                     <div class="row">
                         <div class="col-md-12">
                             <div class="btn-toolbar pull-right">
@@ -28,7 +26,8 @@
                                     <input type="text" ng-model="select.filterallSubsets" placeholder="Search" class="form-control ng-pristine ng-untouched ng-valid ng-empty"
                                         style="display:inline; width:200px;">
                                     <span class="input-group-append">
-                                        <button ng-disabled="saving || !subsetsToDelete.length" class="btn btn-danger" title="Delete" ng-click="deleteObjects()" disabled="disabled">
+                                        <button ng-disabled="saving || !subsetsToDelete.length" class="btn btn-danger" title="Delete" ng-click="deleteObjects()"
+                                            disabled="disabled">
                                             <i class="fa fa-fw fa-trash"></i>
                                         </button>
                                     </span>
@@ -38,7 +37,7 @@
                     </div>
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="col-md-12">
+                            <auto-height>
                                 <table class="table table-hover table-sm">
                                     <thead>
                                         <tr>
@@ -53,8 +52,7 @@
                                     <tbody>
                                         <tr ng-repeat="item in lists.allSubsets | filter:select.filterallSubsets">
                                             <td>
-                                                <input type="checkbox" ng-disabled="item.chores.length" ng-model="item.change" 
-                                                    ng-change="toggleSubsetsToDelete(item)" class="ng-pristine ng-untouched ng-valid ng-empty">
+                                                <input type="checkbox" ng-disabled="item.chores.length" ng-model="item.change" ng-change="toggleSubsetsToDelete(item)" class="ng-pristine ng-untouched ng-valid ng-empty">
                                             </td>
                                             <td>
                                                 {{item.shortName}}
@@ -73,22 +71,13 @@
                                             </td>
                                         </tr>
                                     </tbody>
+
                                 </table>
-                            </div>
+                            </auto-height>
                         </div>
                     </div>
-                </div>
-            </uib-accordion>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <uib-accordion close-others="oneAtATime">
-                <div uib-accordion-group class="panel-default" is-open="options.seeSubsetsPerView">
-                    <uib-accordion-heading>
-                        List of views per subsets
-                        <i class="pull-right fa" ng-class="{'fa-chevron-down': options.seeSubsetsPerView, 'fa-chevron-right': !options.seeSubsetsPerView}"></i>
-                    </uib-accordion-heading>
+                </uib-tab>
+                <uib-tab index="1" heading="Subsets per Views">
                     <div class="row">
                         <div class="col-md-12">
                             <div class="btn-toolbar pull-right">
@@ -104,10 +93,9 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="col-md-12">
+                            <auto-height>
                                 <table class="table table-hover table-sm">
                                     <thead>
                                         <tr>
@@ -155,21 +143,11 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                            </div>
+                            </auto-height>
                         </div>
                     </div>
-                </div>
-            </uib-accordion>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <uib-accordion close-others="oneAtATime">
-                <div uib-accordion-group class="panel-default" is-open="options.seeViewsPerSubset">
-                    <uib-accordion-heading>
-                        List of subsets per views
-                        <i class="pull-right fa" ng-class="{'fa-chevron-down': options.seeViewsPerSubset, 'fa-chevron-right': !options.seeViewsPerSubset}"></i>
-                    </uib-accordion-heading>
+                </uib-tab>
+                <uib-tab index="2" heading="Views per Subsets">
                     <div class="row">
                         <div class="col-md-12">
                             <div class="btn-toolbar pull-right">
@@ -185,10 +163,9 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="col-md-12">
+                            <auto-height>
                                 <table class="table table-hover table-sm">
                                     <thead>
                                         <tr>
@@ -218,11 +195,11 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                            </div>
+                            </auto-height>
                         </div>
                     </div>
-                </div>
-            </uib-accordion>
+                </uib-tab>
+            </uib-tabset>
         </div>
     </div>
 
