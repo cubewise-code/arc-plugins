@@ -1,0 +1,89 @@
+<div class="mdx">
+    <style>
+        .popover-class-danger {
+            color: #a94442;
+            background-color: #f2dede;
+            border-color: #ebccd1;
+        }
+
+        .popover-class-warning {
+            color: #8a6d3b;
+            background-color: #fcf8e3;
+            border-color: #faebcc;
+        }
+    </style>
+    <!--SEARCH SUBSET BY DIMENSION-->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <h5 class="card-header">Run a TM1 REST API query</h5>
+                <div class="card-body">
+                    <div class="input-group">
+                        <div class="input-group-append" uib-dropdown dropdown-append-to-body>
+                            <button id="split-button" class="btn btn-info">{{selections.type}}</button>
+                            <button class="btn btn-info" uib-dropdown-toggle>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="split-button">
+                                <li role="menuitem" ng-repeat="type in lists.types">
+                                    <div ng-click="selections.type = type" style="margin-left:10px;cursor:pointer">{{type}}</div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Enter Request</span>
+                        </div>
+                        <div class="input-group-append" uib-dropdown dropdown-append-to-body>
+                            <button class="btn btn-default" uib-dropdown-toggle>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="split-button">
+                                <li role="menuitem" ng-repeat="item in lists.gets" ng-if="selections.type == 'GET'">
+                                    <div ng-click="selections.restApiQuery = item.query" style="margin-left:10px;cursor:pointer">
+                                        <span class="badge {{item.badge}}">{{item.name}} </span> {{item.query}}</div>
+                                </li>
+                                <li role="menuitem" ng-repeat="item in lists.posts" ng-if="selections.type == 'POST'">
+                                    <div ng-click="selections.restApiQuery = item.query" style="margin-left:10px;cursor:pointer">
+                                        <span class="badge {{item.badge}}">{{item.name}} </span> {{item.query}}
+                                    </div>
+                                </li>
+                                <li role="menuitem" ng-repeat="item in lists.deletes" ng-if="selections.type == 'DELETE'">
+                                    <div ng-click="selections.restApiQuery = item.query" style="margin-left:10px;cursor:pointer">
+                                        <span class="badge {{item.badge}}">{{item.name}} </span> {{item.query}}
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <input type="text" ng-model="selections.restApiQuery" placeholder="REST API Query" class="form-control ng-pristine ng-untouched ng-valid ng-empty"
+                            style="display:inline">
+
+                        <div class="input-group-append">
+                            <button ng-disabled="!selections.restApiQuery" class="btn btn-warning" title="Execute" ng-click="executeQuery()" disabled="disabled">
+                                <i class="fa fa-fw fa-bolt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-top:10px" ng-if="selections.type == 'POST'">
+                        <div class="card-header"> Body</div>
+                        <div class="card-body">
+                            <pre ui-ace="{ onLoad : editorLoaded }" ng-model="selections.body" style="height: 200px;"></pre>
+                        </div>
+                    </div>
+                    <div class="card border border-success" style="margin-top:10px" ng-if="selections.queryStatus" ng-class="{'border border-danger':selections.queryStatus!='success'}">
+
+                        <div class="card-header">
+                                <h5 style="margin-bottom:0px"><i style="margin-top:2px" class="fa fa-check text-success pull-left" aria-hidden="true" ng-class="{'fa-exclamation-triangle text-danger':selections.queryStatus!='success'}"></i>
+                                    JSON response from TM1 - Run in {{responseTimeMs | number:0}} ms</h5>
+                        </div>
+                        <div class="card-body">
+                            <auto-height>
+                                <pre>{{lists.resultQuery | json}}</pre>
+                            </auto-height>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
