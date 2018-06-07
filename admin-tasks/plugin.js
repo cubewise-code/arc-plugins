@@ -53,11 +53,6 @@ arc.directive("adminTasks", function () {
                             dimension: 'Region',
                             hierarchy: 'Region',
                             subset: 'All Countries'
-                        },{
-                            name: 'Actions3',
-                            dimension: 'Region',
-                            hierarchy: 'Region',
-                            subset: 'All Countries'
                         }]
                     },
                     {
@@ -79,20 +74,6 @@ arc.directive("adminTasks", function () {
                     },
                     {
                         number: '3',
-                        title: 'Run TI and then check view',
-                        open: true,
-                        actions: [{
-                            name: 'Load from File',
-                            process: 'Cube.GeneralLedger.LoadFromFile'
-                        },
-                        {
-                            name: 'System Info',
-                            type: 'openView',
-                            cube: 'System Info',
-                            view: 'Default'
-                        }]
-                    },{
-                        number: '4',
                         title: 'Run TI and then check view',
                         open: true,
                         actions: [{
