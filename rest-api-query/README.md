@@ -1,4 +1,4 @@
-# Admin tasks simple plugin
+# Plugin to run TM1 REST API query
 This plugin can be used to run REST API query and see the JSON result
 
 <img src="https://s3-ap-southeast-2.amazonaws.com/downloads.cubewise.com/web_assets/arc-pulgins/rest-api.gif" />
