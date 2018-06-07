@@ -39,9 +39,8 @@ arc.directive("adminTasks", function () {
             };
 
             $scope.tabs = [
-                { number:0, title:'Monthly', stepPercentage:0, content:[
+                { title:'Monthly', stepPercentage:0, content:[
                     {
-                        number: '1',
                         title: 'Update System Info Parameters',
                         open: true,
                         actions: [{
@@ -53,10 +52,12 @@ arc.directive("adminTasks", function () {
                             dimension: 'Region',
                             hierarchy: 'Region',
                             subset: 'All Countries'
+                        },{
+                            name: 'Run Time subsets update',
+                            process: ' Dim.Date.LoadFromODBC'
                         }]
                     },
                     {
-                        number: '2',
                         title: 'Load General Ledger Data',
                         open: true,
                         actions: [{
@@ -73,7 +74,6 @@ arc.directive("adminTasks", function () {
                         }]
                     },
                     {
-                        number: '3',
                         title: 'Run TI and then check view',
                         open: true,
                         actions: [{
@@ -86,11 +86,37 @@ arc.directive("adminTasks", function () {
                             cube: 'System Info',
                             view: 'Default'
                         }]
+                    },
+                    {
+                        title: 'Check Reporting',
+                        open: true,
+                        actions: [{
+                            name: 'Load from File',
+                            process: 'Cube.GeneralLedger.LoadFromFile'
+                        },
+                        {
+                            name: 'System Info',
+                            type: 'openView',
+                            cube: 'System Info',
+                            view: 'Default'
+                        },
+                        {
+                            name: 'System Info',
+                            type: 'openView',
+                            cube: 'System Info',
+                            view: 'Default'
+                        },
+                        {
+                            name: 'System Info',
+                            type: 'openView',
+                            cube: 'System Info',
+                            view: 'Default'
+                        }]
                     }
                 ] },
-                { number:1, title:'Weekly', stepPercentage:0, content:[
+                { 
+                    title:'Weekly', stepPercentage:0, content:[
                     {
-                        number: '1',
                         title: 'Update System Info Parameters',
                         open: true,
                         actions: [{
