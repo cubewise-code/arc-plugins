@@ -67,8 +67,6 @@ $scope.tabs = [
 }
 ```
 
-
-
 ## About Plugins
 Before going any further we recommend you reading these two Help articles:
 * [How plugins work](https://code.cubewise.com/arc-docs/how-plugins-work)
