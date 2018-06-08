@@ -1,9 +1,9 @@
 
 arc.run(['$rootScope', function ($rootScope) {
 
-    $rootScope.plugin("overviewButton", "Overview Button", "page", {
+    $rootScope.plugin("overviewButton", "Home", "page", {
         menu: "tools",
-        icon: "fa-eye",
+        icon: "fa-home",
         description: "Instance Overview",
         author: "Cubewise",
         url: "https://github.com/cubewise-code/arc-plugins",
@@ -19,7 +19,7 @@ arc.directive("overviewButton", function () {
         scope: {
             instance: "=tm1Instance"
         },
-        templateUrl: "__/plugins/overview-button/template.html",
+        templateUrl: "__/plugins/homepage/template.html",
         link: function ($scope, element, attrs) {
 
         },
@@ -53,8 +53,7 @@ arc.directive("overviewButton", function () {
              ]
 
             $scope.plugins = [
-                { key: 'MDX Query', description: 'Query table with MDX',value: '', icon: 'fa-table', class: 'plugins',link:'#/cubewise-mdx/' },
-                { key: 'Search', description: 'Search Subset',value: '', icon: 'fa-search', class: 'plugins',link:'#/cubewise-arc-search/' }
+                { key: 'MDX Query', description: 'Test MDX Query',value: '', icon: 'fa-table', class: 'plugins',link:'#/cubewise-mdx/' }
             ]
 
             $scope.$on("login-reload", function (event, args) {

@@ -1,7 +1,7 @@
 
 arc.run(['$rootScope', function ($rootScope) {
 
-    $rootScope.plugin("cubewiseInstanceOverviewList", "Overview List", "page", {
+    $rootScope.plugin("cubewiseInstanceOverviewList", "Overview", "page", {
         menu: "tools",
         icon: "fa-eye",
         description: "Instance Overview",
@@ -19,7 +19,7 @@ arc.directive("cubewiseInstanceOverviewList", function () {
         scope: {
             instance: "=tm1Instance"
         },
-        templateUrl: "__/plugins/overview-list/template.html",
+        templateUrl: "__/plugins/overview/template.html",
         link: function ($scope, element, attrs) {
 
         },
@@ -36,6 +36,11 @@ arc.directive("cubewiseInstanceOverviewList", function () {
                 { key: 'ServerName', value: '', icon: 'fa-server', link:'' },
                 { key: 'AdminHost', value: '', icon: 'fa-server', link:'' },
                 { key: 'DataBaseDirectory', value: '', icon: 'fa-server', link:'' },
+                { key: 'PortNumber', value: '', icon: 'fa-server', link:'' },
+                { key: 'HTTPPortNumber', value: '', icon: 'fa-server', link:'' }
+            ]
+
+            $scope.tm1Objects = [
                 { key: 'Users', value: '', icon: 'fa-users', link:'' },
                 { key: 'Cubes', value: '', icon: 'cubes', link:'#/cube/' },
                 { key: 'Dimensions', value: '', icon: 'dimensions', link:'#/dimensions/' },
@@ -52,6 +57,8 @@ arc.directive("cubewiseInstanceOverviewList", function () {
                     $scope.configurations[0].value = config.data.ServerName;
                     $scope.configurations[1].value = config.data.AdminHost;
                     $scope.configurations[2].value = config.data.DataBaseDirectory;
+                    $scope.configurations[3].value = config.data.PortNumber;
+                    $scope.configurations[4].value = config.data.HTTPPortNumber;
                 });
             };
             $scope.getConfiguration();
@@ -59,14 +66,14 @@ arc.directive("cubewiseInstanceOverviewList", function () {
             // GET USERS COUNT
             $scope.getUsersCount = function () {
                 $http.get(encodeURIComponent($scope.instance) + "/Users/$count").then(function (value) {
-                    $scope.configurations[3].value = value.data;
+                    $scope.tm1Objects[0].value = value.data;
                 });
             };
             $scope.getUsersCount();
             // GET CUBE COUNT
             $scope.getCubesCount = function () {
                 $http.get(encodeURIComponent($scope.instance) + "/Cubes/$count").then(function (value) {
-                    $scope.configurations[4].value = value.data;
+                    $scope.tm1Objects[1].value = value.data;
                 });
             };
             $scope.getCubesCount();
@@ -74,7 +81,7 @@ arc.directive("cubewiseInstanceOverviewList", function () {
             // GET DIMENSIONS COUNT
             $scope.getDimensionsCount = function () {
                 $http.get(encodeURIComponent($scope.instance) + "/Dimensions/$count").then(function (value) {
-                    $scope.configurations[5].value = value.data;
+                    $scope.tm1Objects[2].value = value.data;
                 });
             };
             $scope.getDimensionsCount();
@@ -82,7 +89,7 @@ arc.directive("cubewiseInstanceOverviewList", function () {
             // GET PROCESSES COUNT
             $scope.getProcessesCount = function () {
                 $http.get(encodeURIComponent($scope.instance) + "/Processes/$count").then(function (value) {
-                    $scope.configurations[6].value = value.data;
+                    $scope.tm1Objects[3].value = value.data;
                 });
             };
             $scope.getProcessesCount();
@@ -90,7 +97,7 @@ arc.directive("cubewiseInstanceOverviewList", function () {
             // GET CHORES COUNT
             $scope.getChoresCount = function () {
                 $http.get(encodeURIComponent($scope.instance) + "/Chores/$count").then(function (value) {
-                    $scope.configurations[7].value = value.data;
+                    $scope.tm1Objects[4].value = value.data;
                 });
             };
             $scope.getChoresCount();
