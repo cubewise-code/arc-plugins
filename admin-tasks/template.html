@@ -1,4 +1,11 @@
 <div>
+    <style>
+        .tab-content {
+            background-position:center;
+            background-repeat:no-repeat;
+            background-image:url('https://s3-ap-southeast-2.amazonaws.com/downloads.cubewise.com/web_assets/arc-pulgins/bikers-background.jpg')
+        }
+    </style>
     <uib-tabset active="active">
         <uib-tab index="$index + 1" ng-repeat="tab in tabs" heading="{{tab.title}}" disable="tab.disabled">
             <div class="row">
