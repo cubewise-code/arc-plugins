@@ -49,6 +49,17 @@ arc.directive("cubewiseMdx", function () {
                 });
             };
 
+            $scope.lists = {
+                mdxQueries: [
+                    { badge: 'badge-primary', name: 'Cube', query: "SELECT \n"
+                                                                + "\tNON EMPTY {[Version].[Actual], [Version].[Budget]} ON COLUMNS, \n"
+                                                                + "\tNON EMPTY {TM1SUBSETALL([Account])} ON ROWS \n"
+                                                                + "FROM [General Ledger] \n"
+                                                                + "WHERE ([Department].[Corporate], [Year].[2012])" },
+                    { badge: 'badge-info', name: 'Dimension', query: '{TM1SUBSETALL( [Time] )}' }
+                ]
+            };
+
             // Add the initial tab
             $scope.addTab();
 
@@ -80,33 +91,65 @@ arc.directive("cubewiseMdx", function () {
 
             $scope.execute = function(){
                 var tab = $scope.tabs[$scope.selections.activeTab];
-                tab.result = null;
-                tab.executing = true;
-                $scope.message = null;
-                var args = "$expand=Axes($expand=Hierarchies($select=Name;$expand=Dimension($select=Name)),Tuples($expand=Members($select=Name,UniqueName,Ordinal,Attributes))),Cells($select=Ordinal,Status,Value,FormatString,FormattedValue,Updateable,RuleDerived,Annotated,Consolidated,Language,HasDrillthrough)"
-                $http.post(encodeURIComponent($scope.instance) +"/ExecuteMDX?" + args, {MDX: tab.mdx}).then(function(success){
-                    tab.executing = false;
-                    if(success.status == 401){
-                        return;
-                    } else if (success.status >= 400){
-                        // Error
-                        $scope.message = success.data;
-                        if(success.data.error && success.data.error.message){
-                            $scope.message = success.data.error.message;
+                //If dimension execute
+                
+                var mdx = tab.mdx;
+                console.log(mdx);
+                var n = mdx.indexOf("WHERE");
+                if(n==-1){
+                    var args = "$expand=Hierarchies($select=Name;$expand=Dimension($select=Name)),Tuples($expand=Members($select=Name,UniqueName,Ordinal,Attributes))";
+                    $http.post(encodeURIComponent($scope.instance) +"/ExecuteMDXSetExpression?" + args, {MDX: tab.mdx}).then(function(success){
+                        tab.executing = false;
+                        console.log(success);
+                        if(success.status == 401){
+                            return;
+                        } else if (success.status >= 400){
+                            // Error
+                            $scope.message = success.data;
+                            if(success.data.error && success.data.error.message){
+                                $scope.message = success.data.error.message;
+                            }
+                        } else {
+                            // Success
+                            tab.result = {
+                                mdx: 'dimension',
+                                json: success.data,
+                                table: success.data.Tuples
+                            }
+                            console.log(tab.result);
                         }
-                    } else {
-                        $tm1.cellsetDelete($scope.instance, success.data.ID);
-                        // Success
-                        var regex = /FROM\s\[(.*)\]/g;
-                        var match = regex.exec(tab.mdx);
-                        var cube = match[1];
-                        tab.result = {
-                            json: success.data,
-                            table: $tm1.resultsetTransform($scope.instance, cube, success.data)
+                    });
+                }else{
+                    // IF CUBE MDX
+                    tab.result = null;
+                    tab.executing = true;
+                    $scope.message = null;
+                    var args = "$expand=Axes($expand=Hierarchies($select=Name;$expand=Dimension($select=Name)),Tuples($expand=Members($select=Name,UniqueName,Ordinal,Attributes))),Cells($select=Ordinal,Status,Value,FormatString,FormattedValue,Updateable,RuleDerived,Annotated,Consolidated,Language,HasDrillthrough)"
+                    $http.post(encodeURIComponent($scope.instance) +"/ExecuteMDX?" + args, {MDX: tab.mdx}).then(function(success){
+                        tab.executing = false;
+                        if(success.status == 401){
+                            return;
+                        } else if (success.status >= 400){
+                            // Error
+                            $scope.message = success.data;
+                            if(success.data.error && success.data.error.message){
+                                $scope.message = success.data.error.message;
+                            }
+                        } else {
+                            $tm1.cellsetDelete($scope.instance, success.data.ID);
+                            // Success
+                            var regex = /FROM\s\[(.*)\]/g;
+                            var match = regex.exec(tab.mdx);
+                            var cube = match[1];
+                            tab.result = {
+                                mdx: 'cube',
+                                json: success.data,
+                                table: $tm1.resultsetTransform($scope.instance, cube, success.data)
+                            }
+                            
                         }
-                        
-                    }
-                });
+                    });
+                }
             };
 
             $scope.$on("login-reload", function(event, args) {
