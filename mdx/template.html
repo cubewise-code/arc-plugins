@@ -50,7 +50,7 @@
                 <span class="input-group-text" translate="NAME"></span>
               </div>
               <div class="input-group-append" uib-dropdown dropdown-append-to-body>
-                  <button class="btn btn-default" uib-dropdown-toggle>
+                  <button class="btn btn-info" uib-dropdown-toggle>
                       <span class="caret"></span>
                   </button>
                   <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="split-button">
@@ -74,6 +74,7 @@
           <div class="card-header" style="padding: 5px 10px;">
             <i class="fa fa-table"></i>
             <span translate="RESULT"></span>
+            - Run in {{responseTimeMs | number:0}} ms
             <div class="pull-right">
               <a href class="click" ng-click="tab.showJSON = !tab.showJSON">
                 <i class="fa fa-toggle-on" ng-if="tab.showJSON"></i>

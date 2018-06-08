@@ -1,5 +1,5 @@
 
-arc.run(['$rootScope', function($rootScope) {
+arc.run(['$rootScope', function ($rootScope) {
 
     $rootScope.plugin("cubewiseMdx", "MDX", "page", {
         menu: "tools",
@@ -17,23 +17,23 @@ arc.directive("cubewiseMdx", function () {
         restrict: "EA",
         replace: true,
         scope: {
-            instance: "=tm1Instance"  
+            instance: "=tm1Instance"
         },
         templateUrl: "__/plugins/mdx/template.html",
         link: function ($scope, element, attrs) {
 
         },
-        controller: ["$scope", "$rootScope", "$http", "$tm1", "$translate", "$timeout", function ($scope, $rootScope, $http, $tm1, $translate, $timeout) {        
+        controller: ["$scope", "$rootScope", "$http", "$tm1", "$translate", "$timeout", function ($scope, $rootScope, $http, $tm1, $translate, $timeout) {
 
             // Create the tabs
             $scope.tabs = [];
             // Store the active tab index
             $scope.selections = {
-               activeTab: 0,
-               queryCounter: 0
+                activeTab: 0,
+                queryCounter: 0
             };
 
-            $scope.addTab = function(){
+            $scope.addTab = function () {
                 // Add a tab
                 $scope.selections.queryCounter++;
                 $scope.tabs.push({
@@ -44,42 +44,47 @@ arc.directive("cubewiseMdx", function () {
                         + "FROM [General Ledger] \n"
                         + "WHERE ([Department].[Corporate], [Year].[2012])"
                 });
-                $timeout(function(){
-                  $scope.selections.activeTab = $scope.tabs.length - 1;
+                $timeout(function () {
+                    $scope.selections.activeTab = $scope.tabs.length - 1;
                 });
             };
 
             $scope.lists = {
                 mdxQueries: [
-                    { badge: 'badge-primary', name: 'Cube', query: "SELECT \n"
-                                                                + "\tNON EMPTY {[Version].[Actual], [Version].[Budget]} ON COLUMNS, \n"
-                                                                + "\tNON EMPTY {TM1SUBSETALL([Account])} ON ROWS \n"
-                                                                + "FROM [General Ledger] \n"
-                                                                + "WHERE ([Department].[Corporate], [Year].[2012])" },
-                    { badge: 'badge-info', name: 'Dimension', query: '{TM1SUBSETALL( [Time] )}' }
+                    {
+                        badge: 'badge-primary', name: 'Cube', query: "SELECT \n"
+                            + "\tNON EMPTY {[Version].[Actual], [Version].[Budget]} ON COLUMNS, \n"
+                            + "\tNON EMPTY {TM1SUBSETALL([Account])} ON ROWS \n"
+                            + "FROM [General Ledger] \n"
+                            + "WHERE ([Department].[Corporate], [Year].[2012])"
+                    },
+                    { badge: 'badge-info', name: 'Dimension', query: '{TM1SUBSETALL( [Time] )}' },
+                    { badge: 'badge-info', name: 'Dimension Filter by Level', query: "{\n"+"\tTM1FILTERBYLEVEL(\n"+"\t{TM1SUBSETALL( [Employee] )}\n"+"\t, 0\n"+")}" },
+                    { badge: 'badge-info', name: 'Dimension Filter by Attribute', query: "{\n"+"\tFILTER(\n"+"\t {TM1SUBSETALL( [Employee] )}\n"+"\t, \n"+"\t[Employee].[Region] = 'England'\n"+")}" },
+                    { badge: 'badge-info', name: 'Dimension Filter by Windcard', query: "{\n"+"\tTM1FILTERBYPATTERN(\n"+"\t {\n"+"\tTM1SUBSETALL( [Employee] )}\n"+"\t, \n"+"\t'*Da*'\n)}" }
                 ]
             };
 
             // Add the initial tab
             $scope.addTab();
 
-            $scope.closeTab = function(index){
+            $scope.closeTab = function (index) {
                 // Remove a tab
                 $scope.tabs.splice(index, 1);
             };
 
-            $scope.tabSelected = function(){
+            $scope.tabSelected = function () {
                 // This is required to resize the MDX panel after clicking on a tab
                 //$scope.$broadcast("auto-height-resize");
             };
 
-            $scope.toggleQuery = function(tab){
+            $scope.toggleQuery = function (tab) {
                 // Show and hide the query tab
                 tab.hideQuery = !tab.hideQuery;
                 $scope.$broadcast("auto-height-resize");
             };
 
-            $scope.editorLoaded = function(_editor){
+            $scope.editorLoaded = function (_editor) {
                 // Initialise the editor settings
                 _editor.setTheme($rootScope.uiPrefs.editorTheme);
                 _editor.getSession().setMode("ace/mode/mdx");
@@ -89,24 +94,25 @@ arc.directive("cubewiseMdx", function () {
                 _editor.setShowPrintMargin(false);
             };
 
-            $scope.execute = function(){
+            $scope.execute = function () {
+                var sendDate = (new Date()).getTime();
                 var tab = $scope.tabs[$scope.selections.activeTab];
                 //If dimension execute
-                
+
                 var mdx = tab.mdx;
                 console.log(mdx);
                 var n = mdx.indexOf("WHERE");
-                if(n==-1){
+                if (n == -1) {
                     var args = "$expand=Hierarchies($select=Name;$expand=Dimension($select=Name)),Tuples($expand=Members($select=Name,UniqueName,Ordinal,Attributes))";
-                    $http.post(encodeURIComponent($scope.instance) +"/ExecuteMDXSetExpression?" + args, {MDX: tab.mdx}).then(function(success){
+                    $http.post(encodeURIComponent($scope.instance) + "/ExecuteMDXSetExpression?" + args, { MDX: tab.mdx }).then(function (success) {
                         tab.executing = false;
                         console.log(success);
-                        if(success.status == 401){
+                        if (success.status == 401) {
                             return;
-                        } else if (success.status >= 400){
+                        } else if (success.status >= 400) {
                             // Error
                             $scope.message = success.data;
-                            if(success.data.error && success.data.error.message){
+                            if (success.data.error && success.data.error.message) {
                                 $scope.message = success.data.error.message;
                             }
                         } else {
@@ -117,22 +123,24 @@ arc.directive("cubewiseMdx", function () {
                                 table: success.data.Tuples
                             }
                             console.log(tab.result);
+                            var receiveDate = (new Date()).getTime();
+                            $scope.responseTimeMs = receiveDate - sendDate;
                         }
                     });
-                }else{
+                } else {
                     // IF CUBE MDX
                     tab.result = null;
                     tab.executing = true;
                     $scope.message = null;
                     var args = "$expand=Axes($expand=Hierarchies($select=Name;$expand=Dimension($select=Name)),Tuples($expand=Members($select=Name,UniqueName,Ordinal,Attributes))),Cells($select=Ordinal,Status,Value,FormatString,FormattedValue,Updateable,RuleDerived,Annotated,Consolidated,Language,HasDrillthrough)"
-                    $http.post(encodeURIComponent($scope.instance) +"/ExecuteMDX?" + args, {MDX: tab.mdx}).then(function(success){
+                    $http.post(encodeURIComponent($scope.instance) + "/ExecuteMDX?" + args, { MDX: tab.mdx }).then(function (success) {
                         tab.executing = false;
-                        if(success.status == 401){
+                        if (success.status == 401) {
                             return;
-                        } else if (success.status >= 400){
+                        } else if (success.status >= 400) {
                             // Error
                             $scope.message = success.data;
-                            if(success.data.error && success.data.error.message){
+                            if (success.data.error && success.data.error.message) {
                                 $scope.message = success.data.error.message;
                             }
                         } else {
@@ -146,28 +154,29 @@ arc.directive("cubewiseMdx", function () {
                                 json: success.data,
                                 table: $tm1.resultsetTransform($scope.instance, cube, success.data)
                             }
-                            
+                            var receiveDate = (new Date()).getTime();
+                            $scope.responseTimeMs = receiveDate - sendDate;
                         }
                     });
                 }
             };
 
-            $scope.$on("login-reload", function(event, args) {
-                
+            $scope.$on("login-reload", function (event, args) {
+
             });
-                
-            $scope.$on("close-tab", function(event, args) {
+
+            $scope.$on("close-tab", function (event, args) {
                 // Event to capture when a user has clicked close on the tab
-                if(args.page == "cubewiseMdx" && args.instance == $scope.instance && args.name == null){
+                if (args.page == "cubewiseMdx" && args.instance == $scope.instance && args.name == null) {
                     // The page matches this one so close it
-                    $rootScope.close(args.page, {instance: $scope.instance});
+                    $rootScope.close(args.page, { instance: $scope.instance });
                 }
             });
 
-            $scope.$on("$destroy", function(event){
-   
+            $scope.$on("$destroy", function (event) {
+
             });
-        
+
 
         }]
     };
