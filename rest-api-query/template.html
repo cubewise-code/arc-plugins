@@ -20,7 +20,7 @@
                 <div class="card-body">
                     <div class="input-group">
                         <div class="input-group-append" uib-dropdown dropdown-append-to-body>
-                            <button id="split-button" class="btn btn-info">{{selections.type}}</button>
+                            <button id="split-button" class="btn btn-default">{{selections.type}}</button>
                             <button class="btn btn-info" uib-dropdown-toggle>
                                 <span class="caret"></span>
                             </button>
@@ -34,7 +34,7 @@
                             <span class="input-group-text">Enter Request</span>
                         </div>
                         <div class="input-group-append" uib-dropdown dropdown-append-to-body>
-                            <button class="btn btn-default" uib-dropdown-toggle>
+                            <button class="btn btn-info" uib-dropdown-toggle>
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="split-button">
@@ -72,12 +72,13 @@
                     <div class="card border border-success" style="margin-top:10px" ng-if="selections.queryStatus" ng-class="{'border border-danger':selections.queryStatus!='success'}">
 
                         <div class="card-header">
-                                <h5 style="margin-bottom:0px"><i style="margin-top:2px" class="fa fa-check text-success pull-left" aria-hidden="true" ng-class="{'fa-exclamation-triangle text-danger':selections.queryStatus!='success'}"></i>
-                                    JSON response from TM1 - Run in {{responseTimeMs | number:0}} ms</h5>
+                            <h5 style="margin-bottom:0px">
+                                <i style="margin-top:2px" class="fa fa-check text-success pull-left" aria-hidden="true" ng-class="{'fa-exclamation-triangle text-danger':selections.queryStatus!='success'}"></i>
+                                JSON response from TM1 - Run in {{responseTimeMs | number:0}} ms</h5>
                         </div>
                         <div class="card-body">
                             <auto-height>
-                                <pre>{{lists.resultQuery | json}}</pre>
+                                <json-formatter json="lists.resultQuery" open="1"></json-formatter>
                             </auto-height>
                         </div>
                     </div>

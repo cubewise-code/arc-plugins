@@ -70,7 +70,7 @@ arc.directive("tm1RestApiQuery", function () {
                     console.log(result);
                     if (result.status == 200) {
                         $scope.selections.queryStatus = 'success';
-                        $scope.lists.resultQuery = result.data;
+                        $scope.lists.resultQuery = result;
                     } else {
                         $scope.selections.queryStatus = 'failed';
                         $scope.lists.resultQuery = result.data.error;
@@ -86,7 +86,7 @@ arc.directive("tm1RestApiQuery", function () {
                     console.log(result);
                     if (result.status == 204) {
                         $scope.selections.queryStatus = 'success';
-                        $scope.lists.resultQuery = result.data;
+                        $scope.lists.resultQuery = result;
                     } else {
                         $scope.selections.queryStatus = 'failed';
                         $scope.lists.resultQuery = result.data.error;
@@ -102,7 +102,7 @@ arc.directive("tm1RestApiQuery", function () {
                     console.log(result);
                     if (result.status == 201) {
                         $scope.selections.queryStatus = 'success';
-                        $scope.lists.resultQuery = result.data;
+                        $scope.lists.resultQuery = result;
                     } else {
                         $scope.selections.queryStatus = 'failed';
                         $scope.lists.resultQuery = result.data.error;
