@@ -46,19 +46,19 @@
           </div>
           <div class="card-body" style="padding: 5px;" ng-if="!tab.hideQuery">
             <div class="input-group mb-1">
-              <div class="input-group-prepend">
-                <span class="input-group-text" translate="NAME"></span>
+              <div class="input-group-prepend" uib-dropdown dropdown-append-to-body>
+                <button class="btn btn-info" uib-dropdown-toggle>
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="split-button">
+                  <li role="menuitem" ng-repeat="item in lists.mdxQueries">
+                    <div ng-click="tab.mdx = item.query" style="margin-left:10px;cursor:pointer">
+                      <span class="badge {{item.badge}}">{{item.name}} </span> {{item.query}}</div>
+                  </li>
+                </ul>
               </div>
-              <div class="input-group-append" uib-dropdown dropdown-append-to-body>
-                  <button class="btn btn-info" uib-dropdown-toggle>
-                      <span class="caret"></span>
-                  </button>
-                  <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="split-button">
-                      <li role="menuitem" ng-repeat="item in lists.mdxQueries">
-                          <div ng-click="tab.mdx = item.query" style="margin-left:10px;cursor:pointer">
-                              <span class="badge {{item.badge}}">{{item.name}} </span> {{item.query}}</div>
-                      </li>
-                  </ul>
+              <div class="input-group-append">
+                <span class="input-group-text" translate="NAME"></span>
               </div>
               <input type="text" class="form-control" ng-model="tab.name">
             </div>
@@ -123,13 +123,13 @@
                   <tbody>
                     <tr ng-repeat="item in tab.result.table">
                       <td>
-                          {{item.Members[0].Name}}
+                        {{item.Members[0].Name}}
                       </td>
                       <td>
-                          {{item.Members[0].UniqueName}}
+                        {{item.Members[0].UniqueName}}
                       </td>
                       <td>
-                          {{item.Members[0].Attributes}}
+                        {{item.Members[0].Attributes}}
                       </td>
                     </tr>
                   </tbody>
