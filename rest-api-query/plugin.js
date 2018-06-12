@@ -24,15 +24,15 @@ arc.directive("tm1RestApiQuery", function () {
         },
         controller: ["$scope", "$rootScope", "$http", "$tm1", "$translate", "$timeout", function ($scope, $rootScope, $http, $tm1, $translate, $timeout) {
 
+            // Create the tabs
+            $scope.tabs = [];
+
             $scope.selections = {
+                activeTab: 0,
+                queryCounter: 0,
                 type: 'GET',
                 restApiQuery: 'Cubes',
-                queryStatus: '',
-                body: '{"MDX":"SELECT \n'
-                    + '\tNON EMPTY {[Version].[Actual], [Version].[Budget]} ON COLUMNS, \n'
-                    + '\tNON EMPTY {TM1SUBSETALL([Account])} ON ROWS \n'
-                    + 'FROM [General Ledger] \n'
-                    + 'WHERE ([Department].[Corporate], [Year].[2012])"}'
+                queryStatus: ''
             };
 
             $scope.lists = {
@@ -63,33 +63,65 @@ arc.directive("tm1RestApiQuery", function () {
                 ]
             }
 
+            $scope.addTab = function () {
+                // Add a tab
+                $scope.selections.queryCounter++;
+                $scope.tabs.push({
+                    name: $translate.instant("QUERY") + " " + $scope.selections.queryCounter,
+                    type: "GET",
+                    restApiQuery: "Cubes",
+                    body: '{"MDX":"SELECT \n'
+                    + '\tNON EMPTY {[Version].[Actual], [Version].[Budget]} ON COLUMNS, \n'
+                    + '\tNON EMPTY {TM1SUBSETALL([Account])} ON ROWS \n'
+                    + 'FROM [General Ledger] \n'
+                    + 'WHERE ([Department].[Corporate], [Year].[2012])"}'
+                });
+                $timeout(function () {
+                    $scope.selections.activeTab = $scope.tabs.length - 1;
+                });
+            };
+            // Add the initial tab
+            $scope.addTab();
+
+            $scope.closeTab = function (index) {
+                // Remove a tab
+                $scope.tabs.splice(index, 1);
+            };
+
+            $scope.tabSelected = function () {
+                // This is required to resize the MDX panel after clicking on a tab
+                //$scope.$broadcast("auto-height-resize");
+            };
+
             // GET Query
             $scope.getQuery = function () {
                 var sendDate = (new Date()).getTime();
-                $http.get(encodeURIComponent($scope.instance) + "/" + $scope.selections.restApiQuery).then(function (result) {
+                var tab = $scope.tabs[$scope.selections.activeTab];
+                $http.get(encodeURIComponent($scope.instance) + "/" + tab.restApiQuery).then(function (result) {
                     console.log(result);
                     if (result.status == 200) {
-                        $scope.selections.queryStatus = 'success';
-                        $scope.lists.resultQuery = result;
+                        tab.queryStatus = 'success';
+                        tab.resultQuery = result;
                     } else {
-                        $scope.selections.queryStatus = 'failed';
-                        $scope.lists.resultQuery = result.data.error;
+                        tab.queryStatus = 'failed';
+                        tab.resultQuery = result.data.error;
                     }
                     var receiveDate = (new Date()).getTime();
-                    $scope.responseTimeMs = receiveDate - sendDate;
+                    tab.responseTimeMs = receiveDate - sendDate;
                 });
             };
 
             // DELETE Query
             $scope.deleteQuery = function () {
-                $http.delete(encodeURIComponent($scope.instance) + "/" + $scope.selections.restApiQuery).then(function (result) {
+                var tab = $scope.tabs[$scope.selections.activeTab];
+                $http.delete(encodeURIComponent($scope.instance) + "/" + tab.restApiQuery).then(function (result) {
                     console.log(result);
                     if (result.status == 204) {
-                        $scope.selections.queryStatus = 'success';
-                        $scope.lists.resultQuery = result;
+                        tab.queryStatus = 'success';
+                        tab.resultQuery = result;
                     } else {
-                        $scope.selections.queryStatus = 'failed';
-                        $scope.lists.resultQuery = result.data.error;
+                        tab.queryStatus = 'failed';
+                        tab.resultQuery = result.data.error;
                     }
                 });
             };
@@ -97,28 +129,30 @@ arc.directive("tm1RestApiQuery", function () {
             // POST Query
             $scope.postQuery = function () {
                 var sendDate = (new Date()).getTime();
-                var mdxJSON = { MDX: $scope.selections.body };
-                $http.post(encodeURIComponent($scope.instance) + "/" + $scope.selections.restApiQuery, $scope.selections.body).then(function (result) {
+                var tab = $scope.tabs[$scope.selections.activeTab];
+                var mdxJSON = { MDX: tab.body };
+                $http.post(encodeURIComponent($scope.instance) + "/" + tab.restApiQuery, tab.body).then(function (result) {
                     console.log(result);
                     if (result.status == 201) {
-                        $scope.selections.queryStatus = 'success';
-                        $scope.lists.resultQuery = result;
+                        tab.queryStatus = 'success';
+                        tab.resultQuery = result;
                     } else {
-                        $scope.selections.queryStatus = 'failed';
-                        $scope.lists.resultQuery = result.data.error;
+                        tab.queryStatus = 'failed';
+                        tab.resultQuery = result.data.error;
                     }
                     var receiveDate = (new Date()).getTime();
-                    $scope.responseTimeMs = receiveDate - sendDate;
+                    tab.responseTimeMs = receiveDate - sendDate;
                 });
             };
 
             //Execute Query
             $scope.executeQuery = function () {
-                if ($scope.selections.type == 'GET') {
+                var tab = $scope.tabs[$scope.selections.activeTab];
+                if (tab.type == 'GET') {
                     $scope.getQuery();
-                } else if ($scope.selections.type == 'POST') {
+                } else if (tab.type == 'POST') {
                     $scope.postQuery();
-                } else if ($scope.selections.type == 'DELETE') {
+                } else if (tab.type == 'DELETE') {
                     $scope.deleteQuery();
                 } else {
                     console.log("NOT READY");
