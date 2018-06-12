@@ -16,7 +16,9 @@
     <div class="row">
         <div class="col-md-12">
             <div class="card">
-                <h5 class="card-header">Run a TM1 REST API query</h5>
+                <div class="card-header" style="padding: 5px 10px;">
+                    <span>Run a TM1 REST API query</span>
+                </div>
                 <div class="card-body">
                     <div class="input-group">
                         <div class="input-group-prepend" uib-dropdown dropdown-append-to-body>
@@ -80,7 +82,7 @@
                         <div class="card-header" style="padding: 5px 10px;">
                             <span style="margin-bottom:0px">
                                 <i style="margin-top:2px" class="fa fa-check text-success pull-left" aria-hidden="true" ng-class="{'fa-exclamation-triangle text-danger':selections.queryStatus!='success'}"></i>
-                                JSON response from TM1 - Run in {{responseTimeMs | number:0}} ms</span>
+                                Result - Run in {{responseTimeMs | number:0}} ms</span>
                         </div>
                         <div class="card-body">
                             <auto-height>
