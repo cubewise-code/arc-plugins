@@ -1,7 +1,7 @@
-# Plugin to run TM1 REST API queries
-This plugin can be used to run REST API queries and see the JSON result.
+# Plugin to run MDX queries
+This plugin can be used to run MDX queries on cubes and dimensions.
 
-<img src="https://s3-ap-southeast-2.amazonaws.com/downloads.cubewise.com/web_assets/arc-pulgins/rest-api.gif" />
+<img src="https://s3-ap-southeast-2.amazonaws.com/downloads.cubewise.com/web_assets/arc-pulgins/plugins-mdx-hierarchies.gif" />
 
 ## Add this plugin to your environment
 1. Download the folder
