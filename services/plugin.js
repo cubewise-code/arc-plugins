@@ -23,7 +23,7 @@ arc.directive("arcServices", function () {
         link: function ($scope, element, attrs) {
 
         },
-        controller: ["$scope", "$rootScope", "$http", "$tm1", "$translate", "$timeout", function ($scope, $rootScope, $http, $tm1, $translate, $timeout) {
+        controller: ["$scope", "$rootScope", "$http", "$tm1", "$translate", "$timeout", "ngDialog", function ($scope, $rootScope, $http, $tm1, $translate, $timeout, ngDialog) {
 
             $scope.defaults = {
                 systemCube: 'System info',
@@ -98,6 +98,24 @@ arc.directive("arcServices", function () {
                     $scope.getValueFromCell();
                 });
             };
+
+            $scope.openModal = function (){
+                var dialog = ngDialog.open({
+                    template: "__/plugins/services/modal.html",
+                    name: "title",
+                    controller: ['$rootScope', '$scope', function ($rootScope, $scope) {
+                       
+                       $scope.title =  $scope.ngDialogData.title;
+                       $scope.message =  $scope.ngDialogData.message;
+        
+                    }], 
+                    data: {
+                       title: "title",
+                       message: "message"
+                    }
+                });
+            };      
+    
             
             $scope.$on("login-reload", function (event, args) {
 
