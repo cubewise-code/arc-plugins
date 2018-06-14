@@ -3,7 +3,7 @@ arc.run(['$rootScope', function ($rootScope) {
 
     $rootScope.plugin("adminTasksHorizontal", "Admin Tasks Horizontal", "page", {
         menu: "tools",
-        icon: "fa-universal-access",
+        icon: "fa-arrow-circle-o-right",
         description: "This plugin can be used to search any TM1 objects",
         author: "Cubewise",
         url: "https://github.com/cubewise-code/arc-plugins",
@@ -41,7 +41,7 @@ arc.directive("adminTasksHorizontal", function () {
             $scope.tabs = [
                 { title:'Monthly', stepPercentage:0, content:[
                     {
-                        title: 'Update System Info Parameters',
+                        title: '1 - Update System Info Parameters',
                         open: true,
                         actions: [{
                             category: 'bg-info',
@@ -61,7 +61,7 @@ arc.directive("adminTasksHorizontal", function () {
                         }]
                     },
                     {
-                        title: 'Load General Ledger Data',
+                        title: '2 - Load General Ledger Data',
                         open: true,
                         actions: [{
                             category: 'bg-warning',
@@ -80,7 +80,7 @@ arc.directive("adminTasksHorizontal", function () {
                         }]
                     },
                     {
-                        title: 'Run TI and then check view',
+                        title: '3 - Run TI and then check view',
                         open: true,
                         actions: [{
                             category: 'bg-warning',
@@ -96,7 +96,7 @@ arc.directive("adminTasksHorizontal", function () {
                         }]
                     },
                     {
-                        title: 'Check Reporting',
+                        title: '4 - Check Reporting',
                         open: true,
                         actions: [{
                             category: 'bg-warning',

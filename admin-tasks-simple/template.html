@@ -7,9 +7,8 @@
             <table class="table table-hover table-sm">
                 <thead>
                     <tr>
-                        <th class="text-center"> Number </th>
-                        <th class="text-center"> Object </th>
-                        <th class="text-center"> Steps </th>
+                        <th class="text-center"> Step </th>
+                        <th class="text-center"> Description </th>
                         <th class="text-center"> Action </th>
                     </tr>
                 </thead>
@@ -18,13 +17,10 @@
                         <td class="text-center">
                             Step 1
                         </td>
-                        <td class="text-center">
-                            <i class="fa fa-fw cubes"></i>
+                        <td>
+                            <i class="fa fa-fw cubes"></i> Update System Settings
                         </td>
                         <td>
-                            Update System Settings
-                        </td>
-                        <td class="text-center">
                             <a href="#/cube/view/Canvas%20Sample/System%20Info/Default">
                                 System Info
                             </a>
@@ -34,13 +30,10 @@
                         <td class="text-center">
                             Step 2
                         </td>
-                        <td class="text-center">
-                            <i class="fa fa-fw processes"></i>
+                        <td>
+                            <i class="fa fa-fw processes"></i> Load General Ledger data
                         </td>
                         <td>
-                            Load General Ledger data
-                        </td>
-                        <td class="text-center">
                             <button class="btn btn-warning" title="Cube.GeneralLedger.LoadFromFile" ng-click="executeProcess('Cube.GeneralLedger.LoadFromFile')">
                                 <i class="fa fa-fw fa-bolt"></i>
                             </button>
@@ -50,13 +43,10 @@
                         <td class="text-center">
                             Step 3
                         </td>
-                        <td class="text-center">
-                            <i class="fa fa-fw cubes"></i>
+                        <td>
+                            <i class="fa fa-fw cubes"></i> Check data in General Ledger
                         </td>
                         <td>
-                            Check data in General Ledger
-                        </td>
-                        <td class="text-center">
                             <a href="#/cube/view/Canvas%20Sample/General%20Ledger/Default" ng-click="user_clicks_branch(row.branch)" ng-class="[row.branch.item_class]">
                                 Default view
                             </a>
@@ -66,13 +56,10 @@
                         <td class="text-center">
                             Step 4
                         </td>
-                        <td class="text-center">
-                            <i class="fa fa-fw subset"></i>
+                        <td>
+                            <i class="fa fa-fw subset"></i> Check Expense subset of the Account dimension
                         </td>
                         <td>
-                            Check Expense subset of the Account dimension
-                        </td>
-                        <td class="text-center">
                             <a href="#/dimension/subset/Canvas%20Sample/Account/Account/Expense" ng-click="user_clicks_branch(row.branch)" ng-class="[row.branch.item_class]">
                                 Category List subset
                             </a>
@@ -82,13 +69,10 @@
                         <td class="text-center">
                             Step 5
                         </td>
-                        <td class="text-center">
-                            <i class="fa fa-fw chores"></i>
+                        <td>
+                            <i class="fa fa-fw chores"></i> Run Save Data
                         </td>
                         <td>
-                            Run Save Data
-                        </td>
-                        <td class="text-center">
                             <button class="btn btn-warning" title="CXTM1SaveDataAll" ng-click="executeChore('CXTM1SaveDataAll')">
                                 <i class="fa fa-fw fa-bolt"></i>
                             </button>
