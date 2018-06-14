@@ -120,9 +120,9 @@ arc.directive("cubewiseMdx", function () {
                             $scope.message = success.data.error.message;
                         }
                     } else {
-                        $tm1.cellsetDelete($scope.instance, success.data.ID);
                         // Success
                         if (tab.queryType == "ExecuteMDX") {
+                            $tm1.cellsetDelete($scope.instance, success.data.ID);
                             var regex = /FROM\s\[(.*)\]/g;
                             var match = regex.exec(tab.mdx);
                             var cube = match[1];
@@ -135,8 +135,10 @@ arc.directive("cubewiseMdx", function () {
                             tab.result = {
                                 mdx: 'dimension',
                                 json: success.data,
-                                table: success.data.Tuples
+                                table: success.data.Tuples,
+                                attributes: success.data.Tuples[0].Members[0].Attributes
                             }
+                            console.log(tab.result.attributes);
                         }
                         var receiveDate = (new Date()).getTime();
                         $scope.responseTimeMs = receiveDate - sendDate;
