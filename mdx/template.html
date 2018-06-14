@@ -34,9 +34,14 @@
       </uib-tab-heading>
       <div>
         <div class="card" style="margin-bottom: 5px;">
-          <div class="card-header" style="padding: 5px 10px;" ng-click="toggleQuery(tab)">
+          <div class="card-header" style="padding: 5px 10px;">
             <span>{ }</span>
-            <span translate="QUERY"></span>
+            <a href>
+                <i class="fa fa-toggle-on" ng-if="tab.queryType=='ExecuteMDXSetExpression'" ng-click="tab.queryType='ExecuteMDX'"></i>
+                <i class="fa fa-toggle-off" ng-if="tab.queryType=='ExecuteMDX'" ng-click="tab.queryType='ExecuteMDXSetExpression'"></i>
+            </a>
+            <span ng-if="tab.queryType=='ExecuteMDX'">Execute MDX queries</span>
+            <span ng-if="tab.queryType=='ExecuteMDXSetExpression'">Execute MDX Set Expressions</span>
             <div class="pull-right">
               <a href ng-click="tab.hideQuery = !tab.hideQuery">
                 <i class="fa fa-toggle-on" ng-if="!tab.hideQuery"></i>
@@ -47,11 +52,11 @@
           <div class="card-body" style="padding: 5px;" ng-if="!tab.hideQuery">
             <div class="input-group mb-1">
               <div class="input-group-prepend" uib-dropdown dropdown-append-to-body>
-                <button class="btn btn-info" uib-dropdown-toggle>
+                <button class="btn btn-primary" ng-class="{'btn-info':tab.queryType!='ExecuteMDX'}" uib-dropdown-toggle>
                   <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="split-button">
-                  <li role="menuitem" ng-repeat="item in lists.mdxQueries">
+                  <li role="menuitem" ng-repeat="item in lists[tab.queryType]">
                     <div ng-click="tab.mdx = item.query" style="margin-left:10px;cursor:pointer">
                       <span class="badge {{item.badge}}">{{item.name}} </span> {{item.query}}</div>
                   </li>
