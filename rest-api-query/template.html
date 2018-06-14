@@ -87,9 +87,14 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="card" style="margin-top:10px" ng-if="tab.type == 'POST'">
-                                <div class="card-header" style="padding: 5px 10px;"> Body</div>
-                                <pre ui-ace="{ onLoad : editorLoaded }" ng-model="tab.body" style="height: 200px;"></pre>
+                            <div class="card" style="margin-top:10px" ng-if="tab.type != 'GET'">
+                                <div class="card-header" style="padding: 5px 10px;">
+                                    <a href ng-click="tab.hideBody = !tab.hideBody">
+                                        <i class="fa fa-toggle-on" ng-if="!tab.hideBody"></i>
+                                        <i class="fa fa-toggle-off" ng-if="tab.hideBody"></i>
+                                    </a>
+                                    Body</div>
+                                <pre ng-if="!tab.hideBody" ui-ace="{ onLoad : editorLoaded }" ng-model="tab.body" style="height: 200px;"></pre>
                             </div>
                         </div>
                     </div>

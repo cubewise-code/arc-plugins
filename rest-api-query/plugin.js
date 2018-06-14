@@ -74,7 +74,8 @@ arc.directive("tm1RestApiQuery", function () {
                     + '\tNON EMPTY {[Version].[Actual], [Version].[Budget]} ON COLUMNS, \n'
                     + '\tNON EMPTY {TM1SUBSETALL([Account])} ON ROWS \n'
                     + 'FROM [General Ledger] \n'
-                    + 'WHERE ([Department].[Corporate], [Year].[2012])"}'
+                    + 'WHERE ([Department].[Corporate], [Year].[2012])"}',
+                    hideBody: false
                 });
                 $timeout(function () {
                     $scope.selections.activeTab = $scope.tabs.length - 1;
