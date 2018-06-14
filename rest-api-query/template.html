@@ -40,7 +40,7 @@
                         <div class="card-body" style="padding: 5px;" ng-if="!tab.hideQuery">
                             <div class="input-group">
                                 <div class="input-group-prepend" uib-dropdown dropdown-append-to-body>
-                                    <button class="btn btn-info" uib-dropdown-toggle>
+                                    <button class="btn btn-secondary" uib-dropdown-toggle>
                                         <span class="caret"></span>
                                     </button>
                                     <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="split-button">
@@ -55,23 +55,13 @@
                                 </div>
 
                                 <div class="input-group-append" uib-dropdown dropdown-append-to-body>
-                                    <button class="btn btn-info" uib-dropdown-toggle>
+                                    <button uib-dropdown-toggle class="btn" ng-class="{'btn-info':tab.type=='GET','btn-primary':tab.type=='POST','btn-warning':tab.type=='PATCH','btn-danger':tab.type=='DELETE'}">
                                         <span class="caret"></span>
                                     </button>
                                     <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="split-button">
-                                        <li role="menuitem" ng-repeat="item in lists.GET" ng-if="tab.type == 'GET'">
+                                        <li role="menuitem" ng-repeat="item in lists[tab.type]">
                                             <div ng-click="tab.restApiQuery = item.query" style="margin-left:10px;cursor:pointer">
-                                                <span class="badge {{item.badge}}">{{item.name}} </span> {{item.query}}</div>
-                                        </li>
-                                        <li role="menuitem" ng-repeat="item in lists.POST" ng-if="tab.type == 'POST'">
-                                            <div ng-click="tab.restApiQuery = item.query" style="margin-left:10px;cursor:pointer">
-                                                <span class="badge {{item.badge}}">{{item.name}} </span> {{item.query}}
-                                            </div>
-                                        </li>
-                                        <li role="menuitem" ng-repeat="item in lists.DELETE" ng-if="tab.type == 'DELETE'">
-                                            <div ng-click="tab.restApiQuery = item.query" style="margin-left:10px;cursor:pointer">
-                                                <span class="badge {{item.badge}}">{{item.name}} </span> {{item.query}}
-                                            </div>
+                                                <i class="fa {{item.icon}}"> </i> {{item.query}}</div>
                                         </li>
                                     </ul>
                                 </div>

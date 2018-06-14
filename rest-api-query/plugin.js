@@ -36,30 +36,30 @@ arc.directive("tm1RestApiQuery", function () {
             };
 
             $scope.lists = {
-                types: ['GET', 'POST', 'DELETE', 'PATCH'],
+                types: ['GET', 'POST', 'PATCH', 'DELETE'],
                 resultQuery: [],
                 GET: [
-                    { badge: 'badge-primary', name: 'Get list', query: 'Cubes' },
-                    { badge: 'badge-primary', name: 'Get list only names', query: 'Cubes?$select=Name' },
-                    { badge: 'badge-primary', name: 'Count All', query: 'Cubes/$count' },
-                    { badge: 'badge-primary', name: 'Get Dimensions', query: "Cubes('cubeName')/Dimensions" },
-                    { badge: 'badge-primary', name: 'Get only model cubes', query: 'ModelCubes()' },
-                    { badge: 'badge-info', name: 'Get list', query: 'Dimensions' },
-                    { badge: 'badge-info', name: 'Get one dimension', query: "Dimensions('dimensionName')" },
-                    { badge: 'badge-info', name: 'Get hierarchies', query: "Dimensions('dimensionName')/Hierarchies" },
-                    { badge: 'badge-secondary', name: 'Get list', query: 'Processes' },
-                    { badge: 'badge-secondary', name: 'Get only Model TI', query: "Processes?$filter=substringof('}',Name) eq false&$select=Name" },
-                    { badge: 'badge-secondary', name: 'Get hierarchies', query: "Processes('processName')" },
-                    { badge: 'badge-dark', name: 'Get Configuration', query: "Configuration" },
-                    { badge: 'badge-dark', name: 'Get Sessions', query: "Threads?$expand=Session" }
+                    { icon: 'cubes', name: 'Get list', query: 'Cubes' },
+                    { icon: 'cubes', name: 'Get list only names', query: 'Cubes?$select=Name' },
+                    { icon: 'cubes', name: 'Count All', query: 'Cubes/$count' },
+                    { icon: 'cubes', name: 'Get Dimensions', query: "Cubes('cubeName')/Dimensions" },
+                    { icon: 'cubes', name: 'Get only model cubes', query: 'ModelCubes()' },
+                    { icon: 'dimensions', name: 'Get list', query: 'Dimensions' },
+                    { icon: 'dimensions', name: 'Get one dimension', query: "Dimensions('dimensionName')" },
+                    { icon: 'dimensions', name: 'Get hierarchies', query: "Dimensions('dimensionName')/Hierarchies" },
+                    { icon: 'processes', name: 'Get list', query: 'Processes' },
+                    { icon: 'processes', name: 'Get only Model TI', query: "Processes?$filter=substringof('}',Name) eq false&$select=Name" },
+                    { icon: 'processes', name: 'Get hierarchies', query: "Processes('processName')" },
+                    { icon: 'fa-server', name: 'Get Configuration', query: "Configuration" },
+                    { icon: 'fa-server', name: 'Get Sessions', query: "Threads?$expand=Session" }
                 ],
                 POST: [
-                    { badge: 'badge-primary', name: 'Execute MDX', query: 'ExecuteMDX?' },
-                    { badge: 'badge-primary', name: 'Execute MDX with Cells', query: 'ExecuteMDX?$expand=Cells' }
+                    { icon: 'cubes', name: 'Execute MDX', query: 'ExecuteMDX?' },
+                    { icon: 'cubes', name: 'Execute MDX with Cells', query: 'ExecuteMDX?$expand=Cells' }
                 ],
                 DELETE: [
-                    { badge: 'badge-primary', name: 'Delete a view', query: "Cubes('cubeName')/Views('viewName')" },
-                    { badge: 'badge-info', name: 'Delete a dimension', query: "Dimensions('dimensionName')" }
+                    { icon: 'cubes', name: 'Delete a view', query: "Cubes('cubeName')/Views('viewName')" },
+                    { icon: 'dimensions', name: 'Delete a dimension', query: "Dimensions('dimensionName')" }
                 ]
             }
 
