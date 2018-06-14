@@ -36,9 +36,9 @@ arc.directive("tm1RestApiQuery", function () {
             };
 
             $scope.lists = {
-                types: ['GET', 'POST', 'DELETE'],
+                types: ['GET', 'POST', 'DELETE', 'PATCH'],
                 resultQuery: [],
-                gets: [
+                GET: [
                     { badge: 'badge-primary', name: 'Get list', query: 'Cubes' },
                     { badge: 'badge-primary', name: 'Get list only names', query: 'Cubes?$select=Name' },
                     { badge: 'badge-primary', name: 'Count All', query: 'Cubes/$count' },
@@ -53,11 +53,11 @@ arc.directive("tm1RestApiQuery", function () {
                     { badge: 'badge-dark', name: 'Get Configuration', query: "Configuration" },
                     { badge: 'badge-dark', name: 'Get Sessions', query: "Threads?$expand=Session" }
                 ],
-                posts: [
+                POST: [
                     { badge: 'badge-primary', name: 'Execute MDX', query: 'ExecuteMDX?' },
                     { badge: 'badge-primary', name: 'Execute MDX with Cells', query: 'ExecuteMDX?$expand=Cells' }
                 ],
-                deletes: [
+                DELETE: [
                     { badge: 'badge-primary', name: 'Delete a view', query: "Cubes('cubeName')/Views('viewName')" },
                     { badge: 'badge-info', name: 'Delete a dimension', query: "Dimensions('dimensionName')" }
                 ]
@@ -93,70 +93,26 @@ arc.directive("tm1RestApiQuery", function () {
                 //$scope.$broadcast("auto-height-resize");
             };
 
-            // GET Query
-            $scope.getQuery = function () {
-                var sendDate = (new Date()).getTime();
-                var tab = $scope.tabs[$scope.selections.activeTab];
-                $http.get(encodeURIComponent($scope.instance) + "/" + tab.restApiQuery).then(function (result) {
-                    console.log(result);
-                    if (result.status == 200) {
-                        tab.queryStatus = 'success';
-                        tab.resultQuery = result;
-                    } else {
-                        tab.queryStatus = 'failed';
-                        tab.resultQuery = result.data.error;
-                    }
-                    var receiveDate = (new Date()).getTime();
-                    tab.responseTimeMs = receiveDate - sendDate;
-                });
-            };
-
-            // DELETE Query
-            $scope.deleteQuery = function () {
-                var tab = $scope.tabs[$scope.selections.activeTab];
-                $http.delete(encodeURIComponent($scope.instance) + "/" + tab.restApiQuery).then(function (result) {
-                    console.log(result);
-                    if (result.status == 204) {
-                        tab.queryStatus = 'success';
-                        tab.resultQuery = result;
-                    } else {
-                        tab.queryStatus = 'failed';
-                        tab.resultQuery = result.data.error;
-                    }
-                });
-            };
-
-            // POST Query
-            $scope.postQuery = function () {
-                var sendDate = (new Date()).getTime();
-                var tab = $scope.tabs[$scope.selections.activeTab];
-                var mdxJSON = { MDX: tab.body };
-                $http.post(encodeURIComponent($scope.instance) + "/" + tab.restApiQuery, tab.body).then(function (result) {
-                    console.log(result);
-                    if (result.status == 201) {
-                        tab.queryStatus = 'success';
-                        tab.resultQuery = result;
-                    } else {
-                        tab.queryStatus = 'failed';
-                        tab.resultQuery = result.data.error;
-                    }
-                    var receiveDate = (new Date()).getTime();
-                    tab.responseTimeMs = receiveDate - sendDate;
-                });
-            };
-
             //Execute Query
             $scope.executeQuery = function () {
                 var tab = $scope.tabs[$scope.selections.activeTab];
-                if (tab.type == 'GET') {
-                    $scope.getQuery();
-                } else if (tab.type == 'POST') {
-                    $scope.postQuery();
-                } else if (tab.type == 'DELETE') {
-                    $scope.deleteQuery();
-                } else {
-                    console.log("NOT READY");
-                }
+                var sendDate = (new Date()).getTime();
+                mdxClean = tab.body.replace(/(\n|\t)/gm,"");
+                var config = {method: tab.type, 
+                                url: encodeURIComponent($scope.instance) + "/" + tab.restApiQuery, 
+                                data:mdxClean};
+                $http(config).then(function (result) {
+                    console.log(result);
+                    if (result.status == 200 || result.status == 201 || result.status == 204) {
+                        tab.queryStatus = 'success';
+                        tab.resultQuery = result.data;
+                    } else {
+                        tab.queryStatus = 'failed';
+                        tab.resultQuery = result.data.error;
+                    }
+                    var receiveDate = (new Date()).getTime();
+                    tab.responseTimeMs = receiveDate - sendDate;
+                });
             }
 
             $scope.$on("login-reload", function (event, args) {

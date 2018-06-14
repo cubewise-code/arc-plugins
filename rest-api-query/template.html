@@ -59,16 +59,16 @@
                                         <span class="caret"></span>
                                     </button>
                                     <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="split-button">
-                                        <li role="menuitem" ng-repeat="item in lists.gets" ng-if="tab.type == 'GET'">
+                                        <li role="menuitem" ng-repeat="item in lists.GET" ng-if="tab.type == 'GET'">
                                             <div ng-click="tab.restApiQuery = item.query" style="margin-left:10px;cursor:pointer">
                                                 <span class="badge {{item.badge}}">{{item.name}} </span> {{item.query}}</div>
                                         </li>
-                                        <li role="menuitem" ng-repeat="item in lists.posts" ng-if="tab.type == 'POST'">
+                                        <li role="menuitem" ng-repeat="item in lists.POST" ng-if="tab.type == 'POST'">
                                             <div ng-click="tab.restApiQuery = item.query" style="margin-left:10px;cursor:pointer">
                                                 <span class="badge {{item.badge}}">{{item.name}} </span> {{item.query}}
                                             </div>
                                         </li>
-                                        <li role="menuitem" ng-repeat="item in lists.deletes" ng-if="tab.type == 'DELETE'">
+                                        <li role="menuitem" ng-repeat="item in lists.DELETE" ng-if="tab.type == 'DELETE'">
                                             <div ng-click="tab.restApiQuery = item.query" style="margin-left:10px;cursor:pointer">
                                                 <span class="badge {{item.badge}}">{{item.name}} </span> {{item.query}}
                                             </div>
