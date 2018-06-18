@@ -136,7 +136,7 @@
                     
                   </thead>
                   <tbody>
-                    <tr ng-repeat="item in tab.result.table">
+                    <tr ng-repeat="item in tab.result.table | limitTo : 1000">
                       <td>
                         {{item.Members[0].Name}}
                       </td>
