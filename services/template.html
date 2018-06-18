@@ -5,15 +5,11 @@
         </div>
     </div>
     <auto-height>
-
-            <button  ng-click="openModal()">
-            Open modal text
-        </button>
-
         <div class="row">
             <div class="col-md-6">
                 <div class="card">
-                    <h5 class="card-header">$tm1.choreExecute</h5>
+                    <div class="card-header" style="padding: 5px 10px;">
+                        <i class="fa fa-fw chores"></i> $tm1.choreExecute</div>
                     <div class="card-body">
                         <div class="card-text">
                             Run a chore:
@@ -35,7 +31,8 @@
             </div>
             <div class="col-md-6">
                 <div class="card">
-                    <h5 class="card-header">$tm1.processExecute</h5>
+                    <div class="card-header" style="padding: 5px 10px;">
+                        <i class="fa fa-fw processes"></i> $tm1.processExecute</div>
                     <div class="card-body">
                         <div class="card-text">
                             Run a process:
@@ -58,14 +55,15 @@
         <div class="row" style="margin-top:10px">
             <div class="col-md-6">
                 <div class="card">
-                    <h5 class="card-header">$tm1.instances</h5>
+                    <div class="card-header" style="padding: 5px 10px;">
+                        <i class="fa fa-fw cubes"></i>$tm1.instances</div>
                     <div class="card-body">
-                        <div class="card-text">
-                            List of all instances available:
-                        </div>
-                        <div class="col-md-12 btn-toolbar pull-right">
-                            <div class="col-md-12 input-group">
-                                <button class="btn btn-warning" title="Get Instances" ng-click="getInstances()" data-toggle="modal" data-target="#instancesModal">
+                        <div class="input-group">
+                            <div class="col-md-10">
+                                <span>Click to get the list of all instances available:</span>
+                            </div>
+                            <div class="col-md-2 text-right" style="padding-right:0px">
+                                <button class="btn btn-warning" title="Get Instances" ng-click="getInstances()">
                                     <i class="fa fa-fw fa-bolt"></i>
                                 </button>
                             </div>
@@ -75,24 +73,20 @@
             </div>
             <div class="col-md-6">
                 <div class="card">
-                    <h5 class="card-header">$tm1.instance</h5>
+                    <div class="card-header" style="padding: 5px 10px;">
+                        <i class="fa fa-fw cubes"></i>$tm1.instance</div>
                     <div class="card-body">
                         <div class="card-text">
                             Get information of a specific instance:
                         </div>
-                        <div class="col-md-12 btn-toolbar pull-right">
-                            <div class="col-md-12 input-group">
-                                <input type="text" ng-model="selections.instance" placeholder="Dimension Name" class="form-control ng-pristine ng-untouched ng-valid ng-empty"
-                                    style="display:inline">
-                                <button class="btn btn-warning" title="Get Instance" ng-click="getInstance(selections.instance)">
+                        <div class="btn-toolbar input-group pull-right">
+                            <input type="text" ng-model="selections.instance" placeholder="Dimension Name" class="form-control ng-pristine ng-untouched ng-valid ng-empty"
+                                style="display:inline">
+                            <div class="input-group-append">
+                                <button class="btn btn-warning input-group-append" title="Get Instance" ng-click="getInstance(selections.instance)">
                                     <i class="fa fa-fw fa-bolt"></i>
                                 </button>
                             </div>
-                        </div>
-                        <div class="col-md-12" ng-if="options.showInstanceInfo">
-                            <auto-height>
-                                <pre>{{lists.instanceData | json}}</pre>
-                            </auto-height>
                         </div>
                     </div>
                 </div>
@@ -101,26 +95,20 @@
         <div class="row" style="margin-top:10px">
             <div class="col-md-6">
                 <div class="card">
-                    <h5 class="card-header">$tm1.cubeDimensions </h5>
+                    <div class="card-header" style="padding: 5px 10px;">
+                        <i class="fa fa-fw dimensions"></i> $tm1.cubeDimensions </div>
                     <div class="card-body">
                         <div class="card-text">
                             Get dimensions for a specific cube:
                         </div>
-                        <div class="col-md-12 btn-toolbar pull-right">
-                            <div class="col-md-12 input-group">
-                                <input type="text" ng-model="selections.cube" placeholder="Cube Name" class="form-control ng-pristine ng-untouched ng-valid ng-empty"
-                                    style="display:inline">
+                        <div class="input-group">
+                            <input type="text" ng-model="selections.cube" placeholder="Cube Name" class="form-control ng-pristine ng-untouched ng-valid ng-empty"
+                                style="display:inline">
+                            <div class="input-group-append">
                                 <button ng-disabled="!selections.cube" class="btn btn-warning" title="Delete" ng-click="getCubeDimensions(selections.cube)"
                                     disabled="disabled">
                                     <i class="fa fa-fw fa-bolt"></i>
                                 </button>
-                                <div class="col-md-12">
-                                    <div ng-repeat="dimension in lists.dimensions">
-                                        <div class="col-md-12">
-                                            <p>{{dimension}}</p>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -128,13 +116,14 @@
             </div>
             <div class="col-md-6">
                 <div class="card">
-                    <h5 class="card-header">$tm1.cellUpdate </h5>
+                    <div class="card-header" style="padding: 5px 10px;">
+                        <i class="fa fa-fw fa-pencil-square"></i> $tm1.cellUpdate </div>
                     <div class="card-body">
                         <div class="card-text">
                             Send a value to a cell:
                         </div>
-                        <div class="col-md-12 btn-toolbar pull-right">
-                            <div class="col-md-12 input-group">
+                        <div class="btn-toolbar pull-right">
+                            <div class="input-group">
                                 <input type="text" ng-model="selections.valueToBeSent" placeholder="Value" class="col-md-4 form-control ng-pristine ng-untouched ng-valid ng-empty"
                                     style="display:inline">
                                 <div class="col-md-4 text-center">
@@ -153,27 +142,4 @@
             </div>
         </div>
     </auto-height>
-    <!-- DEFINE MODAL FOR $tm1.instances-->
-    <div class="modal fade" id="instancesModal" tabindex="-1" role="dialog" aria-labelledby="instancesModal" aria-hidden="true"
-        data-backdrop="false">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="instancesModal">Modal title</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div ng-repeat="instance in lists.instances">
-                        <div class="col-md-12">{{instance.Name}}
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>

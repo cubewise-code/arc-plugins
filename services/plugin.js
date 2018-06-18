@@ -65,6 +65,8 @@ arc.directive("arcServices", function () {
             $scope.getInstances = function () {
                 $tm1.instances().then(function (data) {
                     $scope.lists.instances = data;
+                    //Open Modal
+                    $scope.openModalInstances("List of instances",$scope.lists.instances);
                 });
             };
 
@@ -72,12 +74,14 @@ arc.directive("arcServices", function () {
                 $scope.options.showInstanceInfo = !$scope.options.showInstanceInfo;
                 $tm1.instance(name).then(function (data) {
                     $scope.lists.instanceData = data;
+                    $scope.openModalInstances($scope.selections.instance, $scope.lists.instanceData);
                 });
             };
 
             $scope.getCubeDimensions = function (cube) {
                 $tm1.cubeDimensions($scope.instance, cube).then(function (data) {
                     $scope.lists.dimensions = data;
+                    $scope.openModalInstances($scope.selections.cube, $scope.lists.dimensions);
                 });
             };
 
@@ -86,7 +90,7 @@ arc.directive("arcServices", function () {
                 var mdxJSON = {MDX: mdxQuery};
                 $http.post(encodeURIComponent($scope.instance) + "/ExecuteMDX?$expand=Cells", mdxJSON).then(function (values) {
                     //console.log(values.data.Cells[0].Value);
-                    $scope.values.CurrentDate = values.data.Cells[0].Value;
+                   // $scope.values.CurrentDate = values.data.Cells[0].Value;
                 });
             };
 
@@ -99,10 +103,11 @@ arc.directive("arcServices", function () {
                 });
             };
 
-            $scope.openModal = function (){
+            $scope.openModalInstances = function (title, message){
                 var dialog = ngDialog.open({
+                    className: "ngdialog-theme-default large",
                     template: "__/plugins/services/modal.html",
-                    name: "title",
+                    name: "Instances",
                     controller: ['$rootScope', '$scope', function ($rootScope, $scope) {
                        
                        $scope.title =  $scope.ngDialogData.title;
@@ -110,8 +115,8 @@ arc.directive("arcServices", function () {
         
                     }], 
                     data: {
-                       title: "title",
-                       message: "message"
+                       title: title,
+                       message: message
                     }
                 });
             };      
