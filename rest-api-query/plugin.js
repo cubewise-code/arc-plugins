@@ -50,12 +50,16 @@ arc.directive("tm1RestApiQuery", function () {
                     { icon: 'processes', name: 'Get list', query: 'Processes' },
                     { icon: 'processes', name: 'Get only Model TI', query: "Processes?$filter=substringof('}',Name) eq false&$select=Name" },
                     { icon: 'processes', name: 'Get hierarchies', query: "Processes('processName')" },
+                    { icon: 'fa-server', name: 'Metadata', query: "$metadata" },
                     { icon: 'fa-server', name: 'Get Configuration', query: "Configuration" },
                     { icon: 'fa-server', name: 'Get Sessions', query: "Threads?$expand=Session" }
                 ],
                 POST: [
                     { icon: 'cubes', name: 'Execute MDX', query: 'ExecuteMDX?' },
                     { icon: 'cubes', name: 'Execute MDX with Cells', query: 'ExecuteMDX?$expand=Cells' }
+                ],
+                PATCH: [
+                    { icon: 'chores', name: 'Update Chore', query: "Chores('choreName')" }
                 ],
                 DELETE: [
                     { icon: 'cubes', name: 'Delete a view', query: "Cubes('cubeName')/Views('viewName')" },
