@@ -3,7 +3,7 @@ arc.run(['$rootScope', function ($rootScope) {
 
     $rootScope.plugin("cubewiseSubsetFinder", "Subset Finder", "page", {
         menu: "tools",
-        icon: "subset",
+        icon: "fa-bullseye",
         description: "This plugin can be used to search any TM1 objects",
         author: "Cubewise",
         url: "https://github.com/cubewise-code/arc-plugins",
@@ -78,10 +78,24 @@ arc.directive("cubewiseSubsetFinder", function () {
                     $scope.lists.subsets = subsetsData.data.value;
                 });
             };
-            // GET SUBSET DATA
-            $scope.getSubsetName = function () {
+            // Filtered the views
+            $scope.findViewsFromSubset = function () {
+                //Initialize
+                $scope.lists.viewsFiltered = [];
+                $scope.subsetFound = false;
+                var subsetFullName = $scope.selections.dimension + ":" + $scope.selections.hierarchy + ":" + $scope.selections.subset;
                 $scope.selections.subsetName = "";
-                $scope.selections.subsetName = $scope.selections.dimension + ":" + $scope.selections.hierarchy + ":" + $scope.selections.subset;
+                $scope.selections.subsetName = subsetFullName;
+                // Filter $scope.lists.allViewsPerSubset for this subset
+                _.forEach($scope.lists.allViewsPerSubset, function (value, key) {  
+                    if(value.name == subsetFullName){
+                        $scope.lists.viewsFiltered = value.views;
+                        $scope.subsetFound = true;
+                        
+                    };
+                });
+                console.log($scope.lists.allViewsPerSubset);
+                console.log($scope.lists.viewsFiltered);        
             };
 
             $scope.viewsToDelete = [];
@@ -250,6 +264,7 @@ arc.directive("cubewiseSubsetFinder", function () {
                         }
                     }
                     //Create lists.allViewsPerSubset array
+                    $scope.lists.allViewsPerSubset = [];
                     _.forEach(subsetKeys, function (value, key) {
                         $scope.lists.allViewsPerSubset.push({
                             name: key,
@@ -257,11 +272,11 @@ arc.directive("cubewiseSubsetFinder", function () {
                             views: value.views
                         });
                     });
-                    console.log($scope.lists.allViewsPerSubset);
-                    //console.log($scope.lists.allSubsetsPerView);
-                    //Add All Subsets
+                    //console.log($scope.lists.allViewsPerSubset);
                 });
             };
+
+            $scope.getallViewsPerSubset();
 
             $scope.$on("login-reload", function (event, args) {
 
