@@ -1,0 +1,85 @@
+<div class="mdx">
+    <style>
+        .popover-class-danger {
+            color: #a94442;
+            background-color: #f2dede;
+            border-color: #ebccd1;
+        }
+
+        .popover-class-warning {
+            color: #8a6d3b;
+            background-color: #fcf8e3;
+            border-color: #faebcc;
+        }
+    </style>
+    <!--SEARCH SUBSET BY DIMENSION-->
+
+
+    <div class="row">
+        <div class="col-md-12">
+            <uib-tabset active="active">
+                <uib-tab index="0" heading="All Subsets">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="btn-toolbar pull-right">
+                                <div class="input-group">
+                                    <input type="text" ng-model="select.filterallSubsets" placeholder="Search" class="form-control ng-pristine ng-untouched ng-valid ng-empty"
+                                        style="display:inline; width:200px;">
+                                    <span class="input-group-append">
+                                        <button ng-disabled="saving || !subsetsToDelete.length" class="btn btn-danger" title="Delete" ng-click="deleteObjects()"
+                                            disabled="disabled">
+                                            <i class="fa fa-fw fa-trash"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <auto-height>
+                                <table class="table table-hover table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center"> </th>
+                                            <th class="text-center"> Subset</th>
+                                            <th class="text-center"> Dimension</th>
+                                            <th class="text-center"> Hierarchy</th>
+                                            <th class="text-center"> Expression</th>
+                                            <th class="text-center"> Attribute</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="item in lists.allSubsets | filter:select.filterallSubsets">
+                                            <td>
+                                                <input type="checkbox" ng-disabled="item.chores.length" ng-model="item.change" ng-change="toggleSubsetsToDelete(item)" class="ng-pristine ng-untouched ng-valid ng-empty">
+                                            </td>
+                                            <td>
+                                                {{item.shortName}}
+                                            </td>
+                                            <td>
+                                                {{item.dimension}}
+                                            </td>
+                                            <td>
+                                                {{item.hierarchy}}
+                                            </td>
+                                            <td>
+                                                {{item.expression}}
+                                            </td>
+                                            <td>
+                                                {{item.attributes}}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+
+                                </table>
+                            </auto-height>
+                        </div>
+                    </div>
+                </uib-tab>
+            </uib-tabset>
+        </div>
+    </div>
+
+
+</div>
