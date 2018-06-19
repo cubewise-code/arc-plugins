@@ -42,11 +42,11 @@
                                     <thead>
                                         <tr>
                                             <th class="text-center"> </th>
-                                            <th class="text-center"> Subset </th>
+                                            <th class="text-center"> Subset</th>
                                             <th class="text-center"> Dimension</th>
                                             <th class="text-center"> Hierarchy</th>
                                             <th class="text-center"> Expression</th>
-                                            <th class="text-center"> Attributes</th>
+                                            <th class="text-center"> Attribute</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -101,9 +101,9 @@
                                         <tr>
                                             <th class="text-center"> </th>
                                             <th class="text-center"> View </th>
-                                            <th class="text-center"> Subsets on Rows</th>
-                                            <th class="text-center"> Subsets on Columns</th>
-                                            <th class="text-center"> Subsets on Titles </th>
+                                            <th class="text-center"> Subset on Row</th>
+                                            <th class="text-center"> Subset on Column</th>
+                                            <th class="text-center"> Subset on Title </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -117,7 +117,7 @@
                                                 {{item.name}}
                                             </td>
                                             <td>
-                                                <button ng-repeat="subset in item.subsetsRow" type="button" style="padding-top:0px;padding-bottom:0px" class="btn btn-default active"
+                                                <button ng-repeat="subset in item.subsetsRow" type="button" class="badge ml-1" ng-style="generateHSLColour(subset)"
                                                     ng-click="">
                                                     <i class="fa fa-close text-danger" uib-popover="Remove subset {{subset}} from view: {{item.name}}" popover-append-to-body="true"
                                                         popover-trigger="'mouseenter'" popover-class="popover-class-danger"></i>
@@ -125,7 +125,7 @@
                                                 </button>
                                             </td>
                                             <td>
-                                                <button ng-repeat="subset in item.subsetsColumn" type="button" style="padding-top:0px;padding-bottom:0px" class="btn btn-default active"
+                                                <button ng-repeat="subset in item.subsetsColumn" type="button" class="badge ml-1" ng-style="generateHSLColour(subset)"
                                                     ng-click="">
                                                     <i class="fa fa-close text-danger" uib-popover="Remove subset {{subset}} from view: {{item.name}}" popover-append-to-body="true"
                                                         popover-trigger="'mouseenter'" popover-class="popover-class-danger"></i>
@@ -133,12 +133,12 @@
                                                 </button>
                                             </td>
                                             <td>
-                                                <button ng-repeat="subset in item.subsetsTitle" type="button" style="padding-top:0px;padding-bottom:0px" class="btn btn-default active"
+                                                <button ng-repeat="subset in item.subsetsTitle" type="button" class="badge ml-1" ng-style="generateHSLColour(subset)"
                                                     ng-click="">
-                                                    <i class="fa fa-close text-danger" uib-popover="Remove subset {{subset}} from view: {{item.name}}" popover-append-to-body="true"
+                                                    <i class="fa fa-close" uib-popover="Remove subset {{subset}} from view: {{item.name}}" popover-append-to-body="true"
                                                         popover-trigger="'mouseenter'" popover-class="popover-class-danger"></i>
                                                     {{subset}}
-                                                </button>
+                                                </button>   
                                             </td>
                                         </tr>
                                     </tbody>
@@ -171,7 +171,7 @@
                                         <tr>
                                             <th class="text-center"> </th>
                                             <th class="text-center"> Subset </th>
-                                            <th class="text-center"> Views </th>
+                                            <th class="text-center"> View </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -185,9 +185,9 @@
                                                 {{item.name}}
                                             </td>
                                             <td>
-                                                <button ng-repeat="view in item.views" type="button" style="padding-top:0px;padding-bottom:0px" class="btn btn-default active"
+                                                <button ng-repeat="view in item.views" type="button" class="badge ml-1" ng-style="generateHSLColour(view)" style="cursor:default;"
                                                     ng-click="">
-                                                    <i class="fa fa-close text-danger" uib-popover="Remove subset: {{item.name}} from view: {{view}}" popover-append-to-body="true"
+                                                    <i class="fa fa-close" uib-popover="Remove subset: {{item.name}} from view: {{view}}" popover-append-to-body="true"
                                                         popover-trigger="'mouseenter'" popover-class="popover-class-danger"></i>
                                                     {{view}}
                                                 </button>

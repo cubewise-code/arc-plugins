@@ -301,6 +301,29 @@ arc.directive("cubewiseSubsetManagerOld", function () {
             };
             $scope.getallViewsPerSubset();
 
+            //Manage color:
+            $scope.generateHSLColour = function (string) {
+                //HSL refers to hue, saturation, lightness
+                var styleObject = {
+                    "background-color": "",
+                    "color": "white"
+                };
+                //for ngStyle format
+                var hash = 0;
+                var saturation = "50";
+                var lightness = "50";
+
+                for (var i = 0; i < string.length; i++) {
+                    hash = string.charCodeAt(i) + ((hash << 5) - hash);
+                }
+
+                var h = hash % 360;
+                styleObject["background-color"] = 'hsl(' + h + ', ' + saturation + '%, ' + lightness + '%)';
+
+                return styleObject;
+            };
+
+
             $scope.$on("login-reload", function (event, args) {
 
             });
