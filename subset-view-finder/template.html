@@ -21,15 +21,22 @@
                 <uib-tab index="0" heading="Subsets per Views">
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="btn-toolbar pull-right">
+                            <div class="pull-right">
                                 <div class="input-group">
-                                    <input type="text" ng-model="select.filterallSubsetsPerView" placeholder="Search" class="form-control ng-pristine ng-untouched ng-valid ng-empty"
-                                        style="display:inline; width: 200px;">
-                                    <span class="input-group-append">
-                                        <button ng-disabled="saving || !toDelete.length" class="btn btn-danger" title="Delete" ng-click="deleteObjects()" disabled="disabled">
+                                    <div class="input-group-prepend">
+                                        <input type="text" ng-model="select.filterallSubsetsPerView" placeholder="Search" class="form-control ng-pristine ng-untouched ng-valid ng-empty"
+                                            style="display:inline; width:200px;">
+                                    </div>
+                                    <div class="input-group-append input-group-prepend">
+                                        <button class="btn btn-primary" title="Refresh" ng-click="getallViewsPerSubset()">
+                                            <i class="fa fa-fw fa-refresh"></i>
+                                        </button>
+                                    </div>
+                                    <div class="input-group-append">
+                                        <button ng-disabled="saving || !viewsToDelete.length" class="btn btn-danger" title="Delete" ng-click="deleteViews()" disabled="disabled">
                                             <i class="fa fa-fw fa-trash"></i>
                                         </button>
-                                    </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -50,7 +57,7 @@
                                     <tbody>
                                         <tr ng-repeat="item in lists.allSubsetsPerView | filter:select.filterallSubsetsPerView">
                                             <td>
-                                                <input type="checkbox" ng-disabled="item.chores.length" ng-model="item.change" ng-change="toggleDelete(item)" class="ng-pristine ng-untouched ng-valid ng-empty"
+                                                <input type="checkbox" ng-disabled="item.chores.length" ng-model="item.change" ng-change="toggleDeleteView(item)" class="ng-pristine ng-untouched ng-valid ng-empty"
                                                     uib-popover="Delete item" popover-append-to-body="true" popover-trigger="'mouseenter'"
                                                     popover-class="popover-class-danger">
                                             </td>
@@ -58,28 +65,25 @@
                                                 {{item.name}}
                                             </td>
                                             <td>
-                                                <button ng-repeat="subset in item.subsetsRow" type="button" class="badge ml-1" ng-style="generateHSLColour(subset)"
-                                                    ng-click="">
-                                                    <i class="fa fa-close" uib-popover="Remove subset {{subset}} from view: {{item.name}}" popover-append-to-body="true"
-                                                        popover-trigger="'mouseenter'" popover-class="popover-class-danger"></i>
+                                                <button ng-repeat="subset in item.subsetsRow" type="button" class="badge ml-1" ng-style="generateHSLColour(subset)" ng-click="">
+                                                    <i class="fa fa-close" uib-popover="Remove subset {{subset}} from view: {{item.name}}" popover-append-to-body="true" popover-trigger="'mouseenter'"
+                                                        popover-class="popover-class-danger"></i>
                                                     {{subset}}
                                                 </button>
                                             </td>
                                             <td>
-                                                <button ng-repeat="subset in item.subsetsColumn" type="button" class="badge ml-1" ng-style="generateHSLColour(subset)"
-                                                    ng-click="">
-                                                    <i class="fa fa-close" uib-popover="Remove subset {{subset}} from view: {{item.name}}" popover-append-to-body="true"
-                                                        popover-trigger="'mouseenter'" popover-class="popover-class-danger"></i>
+                                                <button ng-repeat="subset in item.subsetsColumn" type="button" class="badge ml-1" ng-style="generateHSLColour(subset)" ng-click="">
+                                                    <i class="fa fa-close" uib-popover="Remove subset {{subset}} from view: {{item.name}}" popover-append-to-body="true" popover-trigger="'mouseenter'"
+                                                        popover-class="popover-class-danger"></i>
                                                     {{subset}}
                                                 </button>
                                             </td>
                                             <td>
-                                                <button ng-repeat="subset in item.subsetsTitle" type="button" class="badge ml-1" ng-style="generateHSLColour(subset)"
-                                                    ng-click="">
-                                                    <i class="fa fa-close" uib-popover="Remove subset {{subset}} from view: {{item.name}}" popover-append-to-body="true"
-                                                        popover-trigger="'mouseenter'" popover-class="popover-class-danger"></i>
+                                                <button ng-repeat="subset in item.subsetsTitle" type="button" class="badge ml-1" ng-style="generateHSLColour(subset)" ng-click="">
+                                                    <i class="fa fa-close" uib-popover="Remove subset {{subset}} from view: {{item.name}}" popover-append-to-body="true" popover-trigger="'mouseenter'"
+                                                        popover-class="popover-class-danger"></i>
                                                     {{subset}}
-                                                </button>   
+                                                </button>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -91,15 +95,23 @@
                 <uib-tab index="1" heading="Views per Subsets">
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="btn-toolbar pull-right">
+                            <div class="pull-right">
                                 <div class="input-group">
-                                    <input type="text" ng-model="select.filterallViewsPerSubset" placeholder="Search" class="form-control ng-pristine ng-untouched ng-valid ng-empty"
-                                        style="display:inline; width: 200px;">
-                                    <span class="input-group-append">
-                                        <button ng-disabled="saving || !toDelete.length" class="btn btn-danger" title="Delete" ng-click="deleteObjects()" disabled="disabled">
+                                    <div class="input-group-prepend">
+                                        <input type="text" ng-model="select.filterallViewsPerSubset" placeholder="Search" class="form-control ng-pristine ng-untouched ng-valid ng-empty"
+                                            style="display:inline; width: 200px;">
+                                    </div>
+                                    <div class="input-group-append input-group-prepend">
+                                        <button class="btn btn-primary" title="Refresh" ng-click="getallViewsPerSubset()">
+                                            <i class="fa fa-fw fa-refresh"></i>
+                                        </button>
+                                    </div>
+                                    <div class="input-group-append">
+                                        <button ng-disabled="saving || !subsetsToDelete.length" class="btn btn-danger" title="Delete" ng-click="deleteSubsets()"
+                                            disabled="disabled">
                                             <i class="fa fa-fw fa-trash"></i>
                                         </button>
-                                    </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -118,7 +130,7 @@
                                     <tbody>
                                         <tr ng-repeat="item in lists.allViewsPerSubset | filter:select.filterallViewsPerSubset">
                                             <td>
-                                                <input type="checkbox" ng-disabled="item.chores.length" ng-model="item.change" ng-change="toggleDelete(item)" class="ng-pristine ng-untouched ng-valid ng-empty"
+                                                <input type="checkbox" ng-disabled="item.chores.length" ng-model="item.change" ng-change="toggleDeleteSubset(item)" class="ng-pristine ng-untouched ng-valid ng-empty"
                                                     uib-popover="Delete subset" popover-append-to-body="true" popover-trigger="'mouseenter'"
                                                     popover-class="popover-class-danger">
                                             </td>
@@ -128,8 +140,8 @@
                                             <td>
                                                 <button ng-repeat="view in item.views" type="button" class="badge ml-1" ng-style="generateHSLColour(view)" style="cursor:default;"
                                                     ng-click="">
-                                                    <i class="fa fa-close" uib-popover="Remove subset: {{item.name}} from view: {{view}}" popover-append-to-body="true"
-                                                        popover-trigger="'mouseenter'" popover-class="popover-class-danger"></i>
+                                                    <i class="fa fa-close" uib-popover="Remove subset: {{item.name}} from view: {{view}}" popover-append-to-body="true" popover-trigger="'mouseenter'"
+                                                        popover-class="popover-class-danger"></i>
                                                     {{view}}
                                                 </button>
                                             </td>

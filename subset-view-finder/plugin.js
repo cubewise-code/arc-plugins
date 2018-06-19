@@ -51,62 +51,81 @@ arc.directive("cubewiseSubsetManagerOld", function () {
                 allSubsets: []
             }
 
+            // TOGGLE DELETE SUBSETS
             $scope.subsetsToDelete = [];
-
-            $scope.toggleSubsetsToDelete = function (item) {
+            $scope.toggleDeleteSubset = function (item) {
                 if (_.includes($scope.subsetsToDelete, item)) {
                     _.remove($scope.subsetsToDelete, function (i) {
                         return i.name === item.name;
                     });
                 } else {
                     $scope.subsetsToDelete.push(item);
+                    console.log(item);
                 }
             };
-
-            // GET DIMENSION DATA
-            $scope.getAllSubsets = function () {
-                $http.get(encodeURIComponent($scope.instance) + "/ModelDimensions()").then(function (dimensionsData) {
-                    $scope.lists.dimensions = dimensionsData.data.value;
-                    //LOOP THROUGH DIMENSIONS
-                    _.forEach($scope.lists.dimensions, function (value, key) {
-                        var dimension = value.Name;
-                        //console.log(dimension);
-                        $http.get(encodeURIComponent($scope.instance) + "/Dimensions('" + dimension + "')/Hierarchies").then(function (hierarchiesData) {
-                            $scope.lists.hierarchies = hierarchiesData.data.value;
-                            //LOOP THROUGH HIERARCHIES FOR A DIMENSION
-                            _.forEach($scope.lists.hierarchies, function (value, key) {
-                                var hierarchy = value.Name;
-                                //console.log(dimension, hierarchy);                                                                
-                                $http.get(encodeURIComponent($scope.instance) + "/Dimensions('" + dimension + "')/Hierarchies('" + hierarchy + "')/Subsets").then(function (subsetsData) {
-                                    $scope.lists.subsets = subsetsData;
-                                    //LOOP THROUGH SUBSET FOR A HIERARCHY FOR A DIMENSION
-                                    _.forEach($scope.lists.subsets, function (value, key) {
-                                        var subsets = value.value;
-                                        if (subsets) {
-                                            _.forEach(subsets, function (value, key) {
-                                                var subset = value.Name;
-                                                $scope.lists.allSubsets.push({
-                                                    name: subset,
-                                                    uniqueName: value.UniqueName,
-                                                    expression: value.Expression,
-                                                    attributes: value.Attributes,
-                                                    fqn: dimension + ':' + hierarchy + ':' + subset,
-                                                    hierarchy: hierarchy,
-                                                    dimension: dimension
-                                                });
-                                            });
-                                        }
-                                    });
-                                });
-                            });
-                        });
-                    });
-                    console.log($scope.lists.allSubsets);
+            // DELETE A SUBSET
+            $scope.deleteSubset = function (dimension, hierarchy, subset) {
+                $http.delete(encodeURIComponent($scope.instance) + "/Dimensions('" + dimension + "')/Hierarchies('" + hierarchy + "')/Subsets('" + subset + "')").then(function (result) {
+                    if (result.status == 204) {
+                        console.log(dimension + ":" + ":" + hierarchy + ":" + subset + " has been deleted")
+                        $scope.selections.queryStatus = 'success';
+                    } else {
+                        $scope.selections.queryStatus = 'failed';
+                    }
                 });
             };
-            //$scope.getAllSubsets();
+            //DELETE ALL SUBSETS
+            $scope.deleteSubsets = function () {
+                for (var subset in $scope.subsetsToDelete) {
+                    var subsetFullName = $scope.subsetsToDelete[subset].name;
+                    var semiColumn = subsetFullName.indexOf(":");
+                    var dimension = subsetFullName.substr(0, semiColumn);
+                    var hierarchyAndSubset = subsetFullName.substr(semiColumn + 1, subsetFullName.length - semiColumn + 1);
+                    var semiColumn2 = hierarchyAndSubset.indexOf(":");
+                    var hierarchy = hierarchyAndSubset.substr(0, semiColumn2);
+                    var subset = hierarchyAndSubset.substr(semiColumn2 + 1, hierarchyAndSubset.length - semiColumn2 + 1);
+                    console.log(dimension,hierarchy,subset);
+                    $scope.deleteSubset(dimension, hierarchy, subset);
+                }
+                $scope.getallViewsPerSubset();
+            };
+            // TOGGLE DELETE VIEWS
+            $scope.viewsToDelete = [];
+            $scope.toggleDeleteView = function (item) {
+                //console.log(item);
+                if (_.includes($scope.viewsToDelete, item)) {
+                    _.remove($scope.viewsToDelete, function (i) {
+                        return i.name === item.name;
+                    });
+                } else {
+                    $scope.viewsToDelete.push(item);
+                }
+            };
+            // DELETE A VIEW
+            $scope.deleteView = function (cube, view) {
+                $http.delete(encodeURIComponent($scope.instance) + "/Cubes('" + cube + "')/Views('" + view + "')").then(function (result) {
+                    if (result.status == 204) {
+                        console.log(cube + ":" + view + " has been deleted")
+                        $scope.selections.queryStatus = 'success';
+                    } else {
+                        $scope.selections.queryStatus = 'failed';
+                    }
+                });
+            };
+            //DELETE ALL VIEWS
+            $scope.deleteViews = function () {
+                for (var view in $scope.viewsToDelete) {
+                    viewFullName = $scope.viewsToDelete[view].name;
+                    var semiColumn = viewFullName.indexOf(":");
+                    var cubeName = viewFullName.substr(0, semiColumn);
+                    var viewName = viewFullName.substr(semiColumn + 1, viewFullName.length - semiColumn + 1);
+                    $scope.deleteView(cubeName, viewName);
+                }
+                $scope.getallViewsPerSubset();
+            };
             // GET ALL VIEWS AND SUBSETS
             $scope.getallViewsPerSubset = function () {
+                $scope.lists.viewsAndSubsetsStructured = [];
                 $http.get(encodeURIComponent($scope.instance) + "/Cubes?$select=Name&$expand=Views($select=Name;$expand=tm1.NativeView/Columns/Subset($select=Name;$expand=Hierarchy($select=Name;$expand=Dimension($select=Name))),tm1.NativeView/Rows/Subset($select=Name;$expand=Hierarchy($select=Name;$expand=Dimension($select=Name))),tm1.NativeView/Titles/Subset($select=Name;$expand=Hierarchy($select=Name;$expand=Dimension($select=Name))))").then(function (viewsData) {
                     //console.log(viewsData);
                     $scope.lists.viewsAndSubsetsUnstructured = viewsData.data.value;
@@ -229,6 +248,7 @@ arc.directive("cubewiseSubsetManagerOld", function () {
                         }
                     }
                     //Create lists.allViewsPerSubset array
+                    $scope.lists.allViewsPerSubset = [];
                     _.forEach(subsetKeys, function (value, key) {
                         $scope.lists.allViewsPerSubset.push({
                             name: key,
@@ -238,6 +258,7 @@ arc.directive("cubewiseSubsetManagerOld", function () {
                     });
                     console.log($scope.lists.allViewsPerSubset);
                     //Create lists.allSubsetsPerView array
+                    $scope.lists.allSubsetsPerView = [];
                     _.forEach(viewKeys, function (value, key) {
                         $scope.lists.allSubsetsPerView.push({
                             name: key,
@@ -249,54 +270,6 @@ arc.directive("cubewiseSubsetManagerOld", function () {
                         });
                     });
                     //console.log($scope.lists.allSubsetsPerView);
-                    //Add All Subsets
-                    $http.get(encodeURIComponent($scope.instance) + "/ModelDimensions()").then(function (dimensionsData) {
-                        $scope.lists.dimensions = dimensionsData.data.value;
-                        //LOOP THROUGH DIMENSIONS
-                        _.forEach($scope.lists.dimensions, function (value, key) {
-                            var dimension = value.Name;
-                            //console.log(dimension);
-                            $http.get(encodeURIComponent($scope.instance) + "/Dimensions('" + dimension + "')/Hierarchies").then(function (hierarchiesData) {
-                                $scope.lists.hierarchies = hierarchiesData.data.value;
-                                //LOOP THROUGH HIERARCHIES FOR A DIMENSION
-                                _.forEach($scope.lists.hierarchies, function (value, key) {
-                                    var hierarchy = value.Name;
-                                    //console.log(dimension, hierarchy);                                                                
-                                    $http.get(encodeURIComponent($scope.instance) + "/Dimensions('" + dimension + "')/Hierarchies('" + hierarchy + "')/Subsets").then(function (subsetsData) {
-                                        $scope.lists.subsets = subsetsData;
-                                        //LOOP THROUGH SUBSET FOR A HIERARCHY FOR A DIMENSION
-                                        _.forEach($scope.lists.subsets, function (value, key) {
-                                            var subsets = value.value;
-                                            if (subsets) {
-                                                _.forEach(subsets, function (value, key) {
-                                                    var subset = value.Name;
-                                                    var subsetFullName = dimension + ':' + hierarchy + ':' + subset;
-                                                    // Check if Subset has a view(subset exist in $scope.lists.allViewsPerSubset)
-                                                    if (_.includes($scope.lists.allViewsPerSubset, subset)) {
-                                                        view = true;
-                                                    } else {
-                                                        view = false;
-                                                    }
-                                                    //Push subsets
-                                                    $scope.lists.allSubsets.push({
-                                                        name: subsetFullName,
-                                                        uniqueName: value.UniqueName,
-                                                        expression: value.Expression,
-                                                        attributes: value.Attributes,
-                                                        shortName: subset,
-                                                        hierarchy: hierarchy,
-                                                        dimension: dimension,
-                                                        views: view
-                                                    });
-                                                });
-                                            }
-                                        });
-                                    });
-                                });
-                            });
-                        });
-                        console.log($scope.lists.allSubsets);
-                    });
                 });
             };
             $scope.getallViewsPerSubset();
@@ -312,14 +285,11 @@ arc.directive("cubewiseSubsetManagerOld", function () {
                 var hash = 0;
                 var saturation = "50";
                 var lightness = "50";
-
                 for (var i = 0; i < string.length; i++) {
                     hash = string.charCodeAt(i) + ((hash << 5) - hash);
                 }
-
                 var h = hash % 360;
                 styleObject["background-color"] = 'hsl(' + h + ', ' + saturation + '%, ' + lightness + '%)';
-
                 return styleObject;
             };
 
