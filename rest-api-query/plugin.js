@@ -63,7 +63,8 @@ arc.directive("tm1RestApiQuery", function () {
                 ],
                 DELETE: [
                     { icon: 'cubes', name: 'Delete a view', query: "Cubes('cubeName')/Views('viewName')" },
-                    { icon: 'dimensions', name: 'Delete a dimension', query: "Dimensions('dimensionName')" }
+                    { icon: 'dimensions', name: 'Delete a dimension', query: "Dimensions('dimensionName')" },
+                    { icon: 'subset', name: 'Delete a subset', query: "Dimensions('dimensionName')/Hierarchies('hierarchyName')/Subsets('subsetName')"}
                 ]
             }
 
