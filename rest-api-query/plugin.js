@@ -1,7 +1,7 @@
 
 arc.run(['$rootScope', function ($rootScope) {
 
-    $rootScope.plugin("tm1RestApiQuery", "REST API", "page", {
+    $rootScope.plugin("tm1RestApiQuery", "REST API Query", "page", {
         menu: "tools",
         icon: "fa-exchange",
         description: "This plugin can be used to search any TM1 objects",
