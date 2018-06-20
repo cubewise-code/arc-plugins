@@ -34,7 +34,10 @@ arc.directive("arcRestApiNavigation", function () {
             // GET CUBE COUNT
             $scope.getMetadata = function () {
                 $http.get(encodeURIComponent($scope.instance) + "/$metadata").then(function (result) {
-                    metadataXmlContent = result.data;
+                    metadata = result.data;
+                    parser = new DOMParser();
+                    xmlDoc = parser.parseFromString(metadata,"application/xml");
+                    metadataXmlContent = xmlDoc;
                     //var entityType = result.data.getElementsByTagName("EntityType");
                     console.log(metadataXmlContent);
                 });
