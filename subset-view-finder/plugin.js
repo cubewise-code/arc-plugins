@@ -23,7 +23,7 @@ arc.directive("cubewiseSubsetManagerOld", function () {
         link: function ($scope, element, attrs) {
 
         },
-        controller: ["$scope", "$rootScope", "$http", "$tm1", "$translate", "$timeout", function ($scope, $rootScope, $http, $tm1, $translate, $timeout) {
+        controller: ["$scope", "$rootScope", "$http", "$tm1", "$translate", "$timeout", "ngDialog", function ($scope, $rootScope, $http, $tm1, $translate, $timeout, ngDialog) {
 
             // Store the active tab index
             $scope.selections = {
@@ -89,6 +89,20 @@ arc.directive("cubewiseSubsetManagerOld", function () {
                 }
                 $scope.getallViewsPerSubset();
             };
+            //OPEN MODAL WITH VIEWS TO BE DELETED
+            $scope.openModalSubset = function (){
+                var dialog = ngDialog.open({
+                    className: "ngdialog-theme-default medium",
+                    template: "__/plugins/subset-view-finder/delete-subset.html",
+                    name: "Instances",
+                    controller: ['$rootScope', '$scope', function ($rootScope, $scope) {
+                       $scope.message =  $scope.ngDialogData.message;
+                    }], 
+                    data: {
+                       message: $scope.subsetsToDelete
+                    }
+                });
+            };  
             // TOGGLE DELETE VIEWS
             $scope.viewsToDelete = [];
             $scope.toggleDeleteView = function (item) {
@@ -123,6 +137,20 @@ arc.directive("cubewiseSubsetManagerOld", function () {
                 }
                 $scope.getallViewsPerSubset();
             };
+            //OPEN MODAL WITH VIEWS TO BE DELETED
+            $scope.openModalView = function (){
+                var dialog = ngDialog.open({
+                    className: "ngdialog-theme-default medium",
+                    template: "__/plugins/subset-view-finder/delete-view.html",
+                    name: "Instances",
+                    controller: ['$rootScope', '$scope', function ($rootScope, $scope) {
+                       $scope.message =  $scope.ngDialogData.message;
+                    }], 
+                    data: {
+                       message: $scope.viewsToDelete
+                    }
+                });
+            };  
             // GET ALL VIEWS AND SUBSETS
             $scope.getallViewsPerSubset = function () {
                 $scope.lists.viewsAndSubsetsStructured = [];
