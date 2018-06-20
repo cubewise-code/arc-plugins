@@ -52,11 +52,13 @@ arc.directive("tm1RestApiQuery", function () {
                     { icon: 'processes', name: 'Get hierarchies', query: "Processes('processName')" },
                     { icon: 'fa-server', name: 'Metadata', query: "$metadata" },
                     { icon: 'fa-server', name: 'Get Configuration', query: "Configuration" },
+                    { icon: 'fa-server', name: 'Get TM1 Version', query: "Configuration/ProductVersion/$value" },
                     { icon: 'fa-server', name: 'Get Sessions', query: "Threads?$expand=Session" }
                 ],
                 POST: [
                     { icon: 'cubes', name: 'Execute MDX', query: 'ExecuteMDX?' },
-                    { icon: 'cubes', name: 'Execute MDX with Cells', query: 'ExecuteMDX?$expand=Cells' }
+                    { icon: 'cubes', name: 'Execute MDX with Cells', query: 'ExecuteMDX?$expand=Cells' },
+                    { icon: 'cubes', name: 'Execute MDX with Axes', query: 'ExecuteMDX?$expand=Axes($expand=Hierarchies($select=Name;$expand=Dimension($select=Name)))' }
                 ],
                 PATCH: [
                     { icon: 'chores', name: 'Update Chore', query: "Chores('choreName')" }
@@ -103,10 +105,12 @@ arc.directive("tm1RestApiQuery", function () {
             $scope.executeQuery = function () {
                 var tab = $scope.tabs[$scope.selections.activeTab];
                 var sendDate = (new Date()).getTime();
-                mdxClean = tab.body.replace(/(\n|\t)/gm,"");
+                var mdxClean = tab.body.replace(/(\n|\t)/gm,"");
                 var config = {method: tab.type, 
                                 url: encodeURIComponent($scope.instance) + "/" + tab.restApiQuery, 
-                                data:mdxClean};
+                                data:mdxClean
+                                //,headers: {Accept:'application/json;odata.metadata=none'}
+                                };
                 $http(config).then(function (result) {
                     console.log(result);
                     if (result.status == 200 || result.status == 201 || result.status == 204) {
