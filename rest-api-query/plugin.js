@@ -47,6 +47,7 @@ arc.directive("tm1RestApiQuery", function () {
                     { icon: 'dimensions', name: 'Get list', query: 'Dimensions' },
                     { icon: 'dimensions', name: 'Get one dimension', query: "Dimensions('dimensionName')" },
                     { icon: 'dimensions', name: 'Get hierarchies', query: "Dimensions('dimensionName')/Hierarchies" },
+                    { icon: 'dimensions', name: 'Get list of attributes', query: "Dimensions('dimensionName')/Hierarchies('dimensionName')/ElementAttributes" },
                     { icon: 'processes', name: 'Get list', query: 'Processes' },
                     { icon: 'processes', name: 'Get only Model TI', query: "Processes?$filter=substringof('}',Name) eq false&$select=Name" },
                     { icon: 'processes', name: 'Get hierarchies', query: "Processes('processName')" },
