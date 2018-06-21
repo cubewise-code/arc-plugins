@@ -1,7 +1,7 @@
 
 arc.run(['$rootScope', function ($rootScope) {
 
-    $rootScope.plugin("cubewiseSubsetManagerOld", "Subsets and Views Finder", "page", {
+    $rootScope.plugin("cubewiseSubsetAndView", "Subsets and Views", "page", {
         menu: "tools",
         icon: "fa-bullseye",
         description: "This plugin can be used to search any TM1 objects",
@@ -12,14 +12,14 @@ arc.run(['$rootScope', function ($rootScope) {
 
 }]);
 
-arc.directive("cubewiseSubsetManagerOld", function () {
+arc.directive("cubewiseSubsetAndView", function () {
     return {
         restrict: "EA",
         replace: true,
         scope: {
             instance: "=tm1Instance"
         },
-        templateUrl: "__/plugins/subset-view-finder/template.html",
+        templateUrl: "__/plugins/subset-view/template.html",
         link: function ($scope, element, attrs) {
 
         },
@@ -53,14 +53,29 @@ arc.directive("cubewiseSubsetManagerOld", function () {
 
             // TOGGLE DELETE SUBSETS
             $scope.subsetsToDelete = [];
+            $scope.subsetsViewsToDelete = [];
             $scope.toggleDeleteSubset = function (item) {
                 if (_.includes($scope.subsetsToDelete, item)) {
+                    //REMOVE SUBSET
                     _.remove($scope.subsetsToDelete, function (i) {
                         return i.name === item.name;
                     });
+                    //REMOVE VIEWS
+                    for (var view in item.views) {
+                        _.remove($scope.subsetsViewsToDelete, function (i) {
+                            return i === item.views[view];
+                            console.log(item.views[view], i);
+                        });
+                    }
                 } else {
                     $scope.subsetsToDelete.push(item);
-                    console.log(item);
+                    //ADD ALL THE VIEWS TO BE DELETED
+                    for (var view in item.views) {
+                        console.log(item.views.indexOf(item.views[view]));
+                        if (item.views.indexOf(item.views[view]) !== -1) {
+                            $scope.subsetsViewsToDelete.push(item.views[view]);
+                        }
+                    }
                 }
             };
             // DELETE A SUBSET
@@ -84,25 +99,25 @@ arc.directive("cubewiseSubsetManagerOld", function () {
                     var semiColumn2 = hierarchyAndSubset.indexOf(":");
                     var hierarchy = hierarchyAndSubset.substr(0, semiColumn2);
                     var subset = hierarchyAndSubset.substr(semiColumn2 + 1, hierarchyAndSubset.length - semiColumn2 + 1);
-                    console.log(dimension,hierarchy,subset);
+                    console.log(dimension, hierarchy, subset);
                     $scope.deleteSubset(dimension, hierarchy, subset);
                 }
                 $scope.getallViewsPerSubset();
             };
             //OPEN MODAL WITH VIEWS TO BE DELETED
-            $scope.openModalSubset = function (){
+            $scope.openModalSubset = function () {
                 var dialog = ngDialog.open({
                     className: "ngdialog-theme-default medium",
-                    template: "__/plugins/subset-view-finder/delete-subset.html",
+                    template: "__/plugins/subset-view/delete-subset.html",
                     name: "Instances",
                     controller: ['$rootScope', '$scope', function ($rootScope, $scope) {
-                       $scope.message =  $scope.ngDialogData.message;
-                    }], 
+                        $scope.message = $scope.ngDialogData.message;
+                    }],
                     data: {
-                       message: $scope.subsetsToDelete
+                        message: $scope.subsetsToDelete
                     }
                 });
-            };  
+            };
             // TOGGLE DELETE VIEWS
             $scope.viewsToDelete = [];
             $scope.toggleDeleteView = function (item) {
@@ -138,19 +153,19 @@ arc.directive("cubewiseSubsetManagerOld", function () {
                 $scope.getallViewsPerSubset();
             };
             //OPEN MODAL WITH VIEWS TO BE DELETED
-            $scope.openModalView = function (){
+            $scope.openModalView = function () {
                 var dialog = ngDialog.open({
                     className: "ngdialog-theme-default medium",
-                    template: "__/plugins/subset-view-finder/delete-view.html",
+                    template: "__/plugins/subset-view/delete-view.html",
                     name: "Instances",
                     controller: ['$rootScope', '$scope', function ($rootScope, $scope) {
-                       $scope.message =  $scope.ngDialogData.message;
-                    }], 
+                        $scope.message = $scope.ngDialogData.message;
+                    }],
                     data: {
-                       message: $scope.viewsToDelete
+                        message: $scope.viewsToDelete
                     }
                 });
-            };  
+            };
             // GET ALL VIEWS AND SUBSETS
             $scope.getallViewsPerSubset = function () {
                 $scope.lists.viewsAndSubsetsStructured = [];
@@ -328,7 +343,7 @@ arc.directive("cubewiseSubsetManagerOld", function () {
 
             $scope.$on("close-tab", function (event, args) {
                 // Event to capture when a user has clicked close on the tab
-                if (args.page == "cubewiseSubsetManagerOld" && args.instance == $scope.instance && args.name == null) {
+                if (args.page == "cubewiseSubsetAndView" && args.instance == $scope.instance && args.name == null) {
                     // The page matches this one so close it
                     $rootScope.close(args.page, { instance: $scope.instance });
                 }

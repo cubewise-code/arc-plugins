@@ -66,22 +66,16 @@
                                             </td>
                                             <td>
                                                 <div ng-repeat="subset in item.subsetsRow" class="badge ml-1" ng-style="generateHSLColour(subset)" ng-click="">
-                                                    <i class="fa fa-close" uib-popover="Remove subset {{subset}} from view: {{item.name}}" popover-append-to-body="true" popover-trigger="'mouseenter'"
-                                                        popover-class="popover-class-danger"></i>
                                                     {{subset}}
                                                 </div>
                                             </td>
                                             <td>
                                                 <div ng-repeat="subset in item.subsetsColumn" class="badge ml-1" ng-style="generateHSLColour(subset)" ng-click="">
-                                                    <i class="fa fa-close" uib-popover="Remove subset {{subset}} from view: {{item.name}}" popover-append-to-body="true" popover-trigger="'mouseenter'"
-                                                        popover-class="popover-class-danger"></i>
                                                     {{subset}}
                                                 </div>
                                             </td>
                                             <td>
                                                 <div ng-repeat="subset in item.subsetsTitle" class="badge ml-1" ng-style="generateHSLColour(subset)" ng-click="">
-                                                    <i class="fa fa-close" uib-popover="Remove subset {{subset}} from view: {{item.name}}" popover-append-to-body="true" popover-trigger="'mouseenter'"
-                                                        popover-class="popover-class-danger"></i>
                                                     {{subset}}
                                                 </div>
                                             </td>
@@ -118,6 +112,8 @@
                     </div>
                     <div class="row">
                         <div class="col-md-12">
+                            SUBSETS:{{subsetsToDelete}}
+                            VIEWS:{{subsetsViewsToDelete}}
                             <auto-height>
                                 <table class="table table-hover table-sm">
                                     <thead>
@@ -139,8 +135,6 @@
                                             </td>
                                             <td>
                                                 <div ng-repeat="view in item.views" class="badge ml-1" ng-style="generateHSLColour(view)" style="cursor:default;" ng-click="">
-                                                    <i class="fa fa-close" uib-popover="Remove subset: {{item.name}} from view: {{view}}" popover-append-to-body="true" popover-trigger="'mouseenter'"
-                                                        popover-class="popover-class-danger"></i>
                                                     {{view}}
                                                 </div>
                                             </td>
