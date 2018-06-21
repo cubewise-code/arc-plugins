@@ -61,19 +61,29 @@ arc.directive("cubewiseSubsetAndView", function () {
                         return i.name === item.name;
                     });
                     //REMOVE VIEWS
-                    for (var view in item.views) {
-                        _.remove($scope.subsetsViewsToDelete, function (i) {
-                            return i === item.views[view];
-                            console.log(item.views[view], i);
-                        });
+                    for (var v in item.views) {
+                        viewObject = {
+                            subset: item.name,
+                            view: item.views[v]
+                        }
+                        if (_.some($scope.subsetsViewsToDelete, viewObject)) {
+                            console.log("Remove view",viewObject);
+                            _.remove($scope.subsetsViewsToDelete, function (i) {
+                                return i.subset === viewObject.subset && i.view === viewObject.view;
+                            });
+                        }
                     }
                 } else {
                     $scope.subsetsToDelete.push(item);
                     //ADD ALL THE VIEWS TO BE DELETED
-                    for (var view in item.views) {
-                        console.log(item.views.indexOf(item.views[view]));
-                        if (item.views.indexOf(item.views[view]) !== -1) {
-                            $scope.subsetsViewsToDelete.push(item.views[view]);
+                    for (var v in item.views) {
+                        viewObject = {
+                            subset: item.name,
+                            view: item.views[v]
+                        }
+                        if (!_.some($scope.subsetsViewsToDelete, viewObject)) {
+                            console.log("Add view",viewObject,"some"+_.some($scope.subsetsViewsToDelete, viewObject));
+                            $scope.subsetsViewsToDelete.push(viewObject);
                         }
                     }
                 }
@@ -107,7 +117,7 @@ arc.directive("cubewiseSubsetAndView", function () {
             //OPEN MODAL WITH VIEWS TO BE DELETED
             $scope.openModalSubset = function () {
                 var dialog = ngDialog.open({
-                    className: "ngdialog-theme-default medium",
+                    className: "ngdialog-theme-default large",
                     template: "__/plugins/subset-view/delete-subset.html",
                     name: "Instances",
                     controller: ['$rootScope', '$scope', function ($rootScope, $scope) {

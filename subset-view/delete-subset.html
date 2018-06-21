@@ -8,10 +8,10 @@
     </div>
     <div class="modal-body">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="card">
                     <div class="card-header" style="padding: 5px 10px;">
-                        <i class="fa fa-w subset"></i> Subsets
+                        <i class="fa fa-w subset"></i> Subsets ({{subsets.length}})
                     </div>
                     <div class="card-body">
                         <div ng-repeat="subset in subsets">
@@ -20,14 +20,14 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-8">
                 <div class="card">
                     <div class="card-header" style="padding: 5px 10px;">
-                        <i class="fa fa-w view"></i> Views
+                        <i class="fa fa-w view"></i> Views ({{views.length}})
                     </div>
                     <div class="card-body">
-                        <div ng-repeat="view in views track by $index">
-                            {{view}}
+                        <div ng-repeat="item in views track by $index">
+                            {{item.view}} ({{item.subset}})
                         </div>
                     </div>
                 </div>
