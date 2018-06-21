@@ -118,7 +118,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr ng-repeat="row in tab.result.table.rows">
+                    <tr ng-repeat="row in tab.result.table.rows | limitTo : tab.maxRows">
                       <td ng-repeat="el in row.elements" class="text-left" style="margin-right:5px;">
                         </i>
                         {{el.name}}
