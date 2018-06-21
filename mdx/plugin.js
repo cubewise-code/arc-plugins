@@ -43,7 +43,8 @@ arc.directive("cubewiseMdx", function () {
                         + "\tNON EMPTY {TM1SUBSETALL([Account])} ON ROWS \n"
                         + "FROM [General Ledger] \n"
                         + "WHERE ([Department].[Corporate], [Year].[2012])",
-                    queryType: "ExecuteMDX"
+                    queryType: "ExecuteMDX",
+                    maxRows: 1000
                 });
                 $timeout(function () {
                     $scope.selections.activeTab = $scope.tabs.length - 1;

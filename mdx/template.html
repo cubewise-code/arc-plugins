@@ -36,8 +36,8 @@
         <div class="card" style="margin-bottom: 5px;">
           <div class="card-header" style="padding: 5px 10px;">
             <a href>
-                <i class="fa fa-toggle-on" ng-if="tab.queryType=='ExecuteMDXSetExpression'" ng-click="tab.queryType='ExecuteMDX'"></i>
-                <i class="fa fa-toggle-off" ng-if="tab.queryType=='ExecuteMDX'" ng-click="tab.queryType='ExecuteMDXSetExpression'"></i>
+              <i class="fa fa-toggle-on" ng-if="tab.queryType=='ExecuteMDXSetExpression'" ng-click="tab.queryType='ExecuteMDX'"></i>
+              <i class="fa fa-toggle-off" ng-if="tab.queryType=='ExecuteMDX'" ng-click="tab.queryType='ExecuteMDXSetExpression'"></i>
             </a>
             <span ng-if="tab.queryType=='ExecuteMDX'">Execute MDX queries</span>
             <span ng-if="tab.queryType=='ExecuteMDXSetExpression'">Execute MDX Set Expressions</span>
@@ -61,10 +61,15 @@
                   </li>
                 </ul>
               </div>
-              <div class="input-group-append">
+              <div class="input-group-prepend">
                 <span class="input-group-text" translate="NAME"></span>
               </div>
-              <input type="text" class="form-control" ng-model="tab.name">
+              <input type="text" class="form-control" ng-model="tab.name" style="width:70%">
+              <span class="input-group-prepend">
+                  <span class="input-group-text ng-scope" translate="MAXROWS">Max. Rows</span>
+                </span>
+                <input type="number" class="form-control ng-pristine ng-untouched ng-valid ng-not-empty input-group-append" ng-model="tab.maxRows" placeholder="Max. Rows"
+                  style="width: 70px; padding-left: 4px; padding-right: 2px;">
             </div>
             <pre ui-ace="{ onLoad : editorLoaded }" ng-model="tab.mdx" style="height: 200px;"></pre>
           </div>
@@ -87,13 +92,13 @@
               </a>
             </div>
             <div ng-if="tab.queryType=='ExecuteMDXSetExpression'" class="pull-right">
-                <a href class="click" ng-click="tab.showAttributes = !tab.showAttributes">
-                  <i class="fa fa-toggle-on" ng-if="tab.showAttributes"></i>
-                  <i class="fa fa-toggle-off" ng-if="!tab.showAttributes"></i>
-                  <span translate="Attributes"> </span>
-                </a>
-                <span style="padding-right:5px;padding-left:5px"> | </span>
-              </div>
+              <a href class="click" ng-click="tab.showAttributes = !tab.showAttributes">
+                <i class="fa fa-toggle-on" ng-if="tab.showAttributes"></i>
+                <i class="fa fa-toggle-off" ng-if="!tab.showAttributes"></i>
+                <span translate="Attributes"> </span>
+              </a>
+              <span style="padding-right:5px;padding-left:5px"> | </span>
+            </div>
           </div>
           <div class="card-body" style="padding: 5px 0px 0px 5px;">
             <auto-height>
@@ -133,10 +138,10 @@
                     <th> ID </th>
                     <th> Unique Name </th>
                     <th ng-if="tab.showAttributes" ng-repeat="(key,value) in tab.result.attributes"> {{key}} </th>
-                    
+
                   </thead>
                   <tbody>
-                    <tr ng-repeat="item in tab.result.table | limitTo : 1000">
+                    <tr ng-repeat="item in tab.result.table | limitTo : tab.maxRows">
                       <td>
                         {{item.Members[0].Name}}
                       </td>
