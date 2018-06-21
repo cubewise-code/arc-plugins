@@ -111,10 +111,12 @@ arc.directive("cubewiseSubsetAndView", function () {
                     template: "__/plugins/subset-view/delete-subset.html",
                     name: "Instances",
                     controller: ['$rootScope', '$scope', function ($rootScope, $scope) {
-                        $scope.message = $scope.ngDialogData.message;
+                        $scope.subsets = $scope.ngDialogData.subsets;
+                        $scope.views = $scope.ngDialogData.views;
                     }],
                     data: {
-                        message: $scope.subsetsToDelete
+                        subsets: $scope.subsetsToDelete,
+                        views: $scope.subsetsViewsToDelete
                     }
                 });
             };

@@ -1,16 +1,35 @@
 <div>
     <div class="modal-header text-white bg-danger">
-        <span><i class="fa fa-trash"></i> 
+        <span>
+            <i class="fa fa-trash"></i>
             <span>Delete the following subsets and views
             </span>
         </span>
     </div>
     <div class="modal-body">
-        <div class="col-md-12">
-            <div ng-repeat="subset in message">
-                <i class="fa fa-w subset"></i> {{subset.name}}
-                <div ng-repeat="view in subset.views">
-                    <i class="fa fa-w view"></i> {{view}}
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header" style="padding: 5px 10px;">
+                        <i class="fa fa-w subset"></i> Subsets
+                    </div>
+                    <div class="card-body">
+                        <div ng-repeat="subset in subsets">
+                            {{subset.name}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header" style="padding: 5px 10px;">
+                        <i class="fa fa-w view"></i> Views
+                    </div>
+                    <div class="card-body">
+                        <div ng-repeat="view in views track by $index">
+                            {{view}}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
