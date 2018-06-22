@@ -55,24 +55,24 @@
                                             {{action.name}}
                                             <!-- OPEN A CUBEVIEW -->
                                             <button ng-if="action.view" class="btn btn-light btn-sm pull-right" title="Open view {{action.view}}">
-                                                <i class="fa fa-fw fa-link"></i>
                                                 <a href="#/cube/view/{{instance}}/{{action.cube}}/{{action.view}}?name={{action.view}}" 
                                                     ng-click="user_clicks_branch(row.branch)"
                                                     ng-class="[row.branch.item_class]">
+                                                    <i class="fa fa-fw fa-link" style="color:black"></i>
                                                 </a>
                                             </button>
                                             <!-- OPEN A SUBSET -->
                                             <button ng-if="action.subset" class="btn btn-light btn-sm pull-right" title="Open subset {{action.subset}}">
-                                                <i class="fa fa-fw fa-link"></i>
-                                                <a href="#/cube/view/{{instance}}/{{action.dimension}}/{{action.hierarchy}}/{{action.subset}}?name={{action.subset}}" ng-click="user_clicks_branch(row.branch)"
+                                                <a href="#/dimension/subset/{{instance}}/{{action.dimension}}/{{action.hierarchy}}/{{action.subset}}?name={{action.subset}}" ng-click="user_clicks_branch(row.branch)"
                                                     ng-class="[row.branch.item_class]">
-                                                </a>
+                                                    <i class="fa fa-fw fa-link" style="color:black"></i>
+                                                </a>                                                
                                             </button>
                                             <!-- RUN PROCESS -->
                                             <div class="btn-group pull-right" role="group" ng-if="action.process">
                                                 <button class="btn btn-light btn-sm" title="Open process {{action.process}}">
-                                                    <i class="fa fa-fw fa-link"></i>
                                                     <a href="#/process/{{instance}}/{{action.process}}?tab=parameters" ng-click="user_clicks_branch(row.branch)" ng-class="[row.branch.item_class]">
+                                                        <i class="fa fa-fw fa-link" style="color:black"></i>
                                                     </a>
                                                 </button>
                                                 <button class="btn btn-dark btn-sm" title="Execute {{action.process}}" ng-click="executeProcess(action.process)">
@@ -82,8 +82,8 @@
                                             <!-- RUN CHORE -->
                                             <div class="btn-group pull-right" role="group" ng-if="action.chore">
                                                 <button class="btn btn-light btn-sm" title="Open chore {{action.chore}}">
-                                                    <i class="fa fa-fw fa-link"></i>
                                                     <a href="#/chore/{{instance}}/{{action.chore}}" ng-click="user_clicks_branch(row.branch)" ng-class="[row.branch.item_class]">
+                                                        <i class="fa fa-fw fa-link" style="color:black"></i>
                                                     </a>
                                                 </button>
                                                 <button class="btn btn-dark btn-sm" title="Execute {{action.chore}}" ng-click="executeChore(action.chore)">

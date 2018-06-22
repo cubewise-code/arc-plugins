@@ -57,7 +57,7 @@ arc.directive("adminTasksHorizontal", function () {
                         },{
                             category: 'bg-warning',
                             name: 'Run Time subsets update',
-                            process: ' Dim.Date.LoadFromODBC'
+                            process: 'Dim.Date.LoadFromODBC'
                         }]
                     },
                     {
@@ -84,8 +84,8 @@ arc.directive("adminTasksHorizontal", function () {
                         open: true,
                         actions: [{
                             category: 'bg-warning',
-                            name: 'Load from File',
-                            process: 'Cube.GeneralLedger.LoadFromFile'
+                            name: 'Bedrock Server Wait',
+                            process: 'Bedrock.Server.Wait'
                         },
                         {
                             category: 'bg-success',
