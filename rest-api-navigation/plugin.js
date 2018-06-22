@@ -32,14 +32,12 @@ arc.directive("arcRestApiNavigation", function () {
             $scope.values = {};
 
             // GET CUBE COUNT
+            var request = new XMLHttpRequest();
             $scope.getMetadata = function () {
-                $http.get(encodeURIComponent($scope.instance) + "/$metadata").then(function (result) {
-                    metadata = result.data;
-                    parser = new DOMParser();
-                    xmlDoc = parser.parseFromString(metadata,"application/xml");
-                    metadataXmlContent = xmlDoc;
-                    //var entityType = result.data.getElementsByTagName("EntityType");
-                    console.log(metadataXmlContent);
+                $http.get(encodeURIComponent($scope.instance) + "/$metadata").then(function (request) {
+                    //metadata = result.data;
+                    var xml = request.data.responseXML;
+                    console.log(xml);
                 });
             };
             $scope.getMetadata(); 
