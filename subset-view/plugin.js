@@ -51,6 +51,14 @@ arc.directive("cubewiseSubsetAndView", function () {
             allSubsets: []
          }
 
+         $scope.refresh = function (){
+            $scope.subsetsToDelete = [];
+            $scope.subsetsViewsToDelete = [];
+            $scope.subsetsToDelete = [];
+            $scope.viewsToDelete = [];
+            $scope.viewsDeleted = [];
+            $scope.getallViewsPerSubset();
+         }
          // TOGGLE DELETE SUBSETS
          $scope.subsetsToDelete = [];
          $scope.subsetsViewsToDelete = [];
@@ -103,6 +111,7 @@ arc.directive("cubewiseSubsetAndView", function () {
                      //Delete views
                      $scope.viewsDeleted = [];
                      console.log("Start deleting views", $scope.subsetsViewsToDelete);
+                     var completedRequests = 0;
                      for (var v in $scope.subsetsViewsToDelete) {
                         viewFullName = $scope.subsetsViewsToDelete[v].view;
                         console.log(viewFullName);
@@ -110,15 +119,26 @@ arc.directive("cubewiseSubsetAndView", function () {
                         var cubeName = viewFullName.substr(0, semiColumn);
                         var viewName = viewFullName.substr(semiColumn + 1, viewFullName.length - semiColumn + 1);
                         $http.delete(encodeURIComponent($scope.instance) + "/Cubes('" + cubeName + "')/Views('" + viewName + "')").then(function (result) {
+                           completedRequests++;
                            if (result.status == 204) {
                               console.log(cubeName + ":" + viewName + " has been deleted")
                               $scope.selections.queryStatus = 'success';
+                              // Add view to viewsDeleted list
                               $scope.viewsDeleted.push(viewFullName);
+                              //Remove view from view list
+                              _.remove($scope.subsetsViewsToDelete, function (i) {
+                                 return i.view === viewFullName;
+                              });
                            } else {
                               $scope.selections.queryStatus = 'failed';
                            }
+                           if(completedRequests == $scope.subsetsViewsToDelete.length){
+                              $scope.deleteSubsets();
+                           }
                         });
                      }
+                  };
+                  $scope.deleteSubsets = function (){
                      // Delete subsets
                      $scope.subsetsDeleted = [];
                      console.log("Start deleting subsets",$scope.subsetsToDelete);
@@ -134,17 +154,24 @@ arc.directive("cubewiseSubsetAndView", function () {
                            if (result.status == 204) {
                               console.log(dimension + ":" + ":" + hierarchy + ":" + subset + " has been deleted")
                               $scope.selections.queryStatus = 'success';
+                              // Add subsets to subsetsDeleted list
                               $scope.subsetsDeleted.push(subsetFullName);
+                              //Remove subset from subset to delete list
+                              _.remove($scope.subsetsToDelete, function (i) {
+                                 return i.name === subsetFullName;
+                              });
                            } else {
                               $scope.selections.queryStatus = 'failed';
                            }
                         });
                      }
-                  };
+                  }
                }],
                data: {
                   subsets: $scope.subsetsToDelete,
-                  views: $scope.subsetsViewsToDelete
+                  subsetsDeleted: $scope.subsetsDeleted,
+                  views: $scope.subsetsViewsToDelete,
+                  viewsDeleted: $scope.viewsDeleted
                }
             });
          };
