@@ -98,32 +98,48 @@ arc.directive("cubewiseSubsetAndView", function () {
                controller: ['$rootScope', '$scope', function ($rootScope, $scope) {
                   $scope.subsets = $scope.ngDialogData.subsets;
                   $scope.views = $scope.ngDialogData.views;
-                  $scope.subsetsToDelete = $scope.ngDialogData.subsetsToDelete;
-                  // DELETE A SUBSET
-                  $scope.deleteSubset = function (dimension, hierarchy, subset) {
-                     $http.delete(encodeURIComponent($scope.instance) + "/Dimensions('" + dimension + "')/Hierarchies('" + hierarchy + "')/Subsets('" + subset + "')").then(function (result) {
-                        if (result.status == 204) {
-                           console.log(dimension + ":" + ":" + hierarchy + ":" + subset + " has been deleted")
-                           $scope.selections.queryStatus = 'success';
-                        } else {
-                           $scope.selections.queryStatus = 'failed';
-                        }
-                     });
-                  };
-                  //DELETE ALL SUBSETS
-                  $scope.deleteSubsets = function () {
-                     for (var subset in $scope.subsetsToDelete) {
-                        var subsetFullName = $scope.subsetsToDelete[subset].name;
+                  //DELETE VIEWS AND THEN SUBSETS
+                  $scope.deleteViewsAndSubsets = function () {
+                     //Delete views
+                     $scope.viewsDeleted = [];
+                     console.log("Start deleting views", $scope.subsetsViewsToDelete);
+                     for (var v in $scope.subsetsViewsToDelete) {
+                        viewFullName = $scope.subsetsViewsToDelete[v].view;
+                        console.log(viewFullName);
+                        var semiColumn = viewFullName.indexOf(":");
+                        var cubeName = viewFullName.substr(0, semiColumn);
+                        var viewName = viewFullName.substr(semiColumn + 1, viewFullName.length - semiColumn + 1);
+                        $http.delete(encodeURIComponent($scope.instance) + "/Cubes('" + cubeName + "')/Views('" + viewName + "')").then(function (result) {
+                           if (result.status == 204) {
+                              console.log(cubeName + ":" + viewName + " has been deleted")
+                              $scope.selections.queryStatus = 'success';
+                              $scope.viewsDeleted.push(viewFullName);
+                           } else {
+                              $scope.selections.queryStatus = 'failed';
+                           }
+                        });
+                     }
+                     // Delete subsets
+                     $scope.subsetsDeleted = [];
+                     console.log("Start deleting subsets",$scope.subsetsToDelete);
+                     for (var s in $scope.subsetsToDelete) {
+                        subsetFullName = $scope.subsetsToDelete[s].name;
                         var semiColumn = subsetFullName.indexOf(":");
                         var dimension = subsetFullName.substr(0, semiColumn);
                         var hierarchyAndSubset = subsetFullName.substr(semiColumn + 1, subsetFullName.length - semiColumn + 1);
                         var semiColumn2 = hierarchyAndSubset.indexOf(":");
                         var hierarchy = hierarchyAndSubset.substr(0, semiColumn2);
                         var subset = hierarchyAndSubset.substr(semiColumn2 + 1, hierarchyAndSubset.length - semiColumn2 + 1);
-                        console.log(dimension, hierarchy, subset);
-                        $scope.deleteSubset(dimension, hierarchy, subset);
+                        $http.delete(encodeURIComponent($scope.instance) + "/Dimensions('" + dimension + "')/Hierarchies('" + hierarchy + "')/Subsets('" + subset + "')").then(function (result) {
+                           if (result.status == 204) {
+                              console.log(dimension + ":" + ":" + hierarchy + ":" + subset + " has been deleted")
+                              $scope.selections.queryStatus = 'success';
+                              $scope.subsetsDeleted.push(subsetFullName);
+                           } else {
+                              $scope.selections.queryStatus = 'failed';
+                           }
+                        });
                      }
-                     $scope.getallViewsPerSubset();
                   };
                }],
                data: {
@@ -158,7 +174,7 @@ arc.directive("cubewiseSubsetAndView", function () {
                   $scope.deleteViews = function () {
                      console.log("Start Delete views", $scope.viewsToDelete);
                      for (var view in $scope.viewsToDelete) {
-                        viewFullName = $scope.viewsToDelete[view].name;
+                        var viewFullName = $scope.viewsToDelete[view].name;
                         var semiColumn = viewFullName.indexOf(":");
                         var cubeName = viewFullName.substr(0, semiColumn);
                         var viewName = viewFullName.substr(semiColumn + 1, viewFullName.length - semiColumn + 1);

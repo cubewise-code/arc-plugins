@@ -1,0 +1,18 @@
+There are 4 arguments to pass through to the plugin function:
+    name:   The name to use for the plugin, this must be unique or an error will occur.
+            Use your name or domain as a prefix to make it unique
+    label:  The label is what you will see in the menu 
+    type:   The type of plugin, options are: page, menu/dimension, menu/cube, menu/process, menu/chore
+    options: Extra (optional) options for the plugin as an object:
+        icon:           A font-awesome class for the icon you want to display
+        instanceName:   Restrict the plugin to a particular TM1 instance
+        objectName:     Restrict the plugin to a particular TM1 object
+        description:    A description of what the plugin does
+        menu:           A parent menu to add the plugin to: dimensions, cubes, processes, chores, administration, tools
+        version:        The version of the plugin
+        author:         Your name
+        url:            A URL that people can use to find out more details about the plugin
+
+After defining a plugin you must create either a service (for menu plugins) or directive (for pages)
+The service/directive name must match the plugin name used above
+Menu plugins MUST implement one interface execute(instance, name)
