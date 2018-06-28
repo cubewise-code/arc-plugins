@@ -1,7 +1,7 @@
 
 arc.run(['$rootScope', function ($rootScope) {
 
-   $rootScope.plugin("cubewiseSubsetAndView", "Subsets and Views", "page", {
+   $rootScope.plugin("cubewiseSubsetAndView", "Native Views and Subsets", "page", {
       menu: "tools",
       icon: "fa-bullseye",
       description: "This plugin can be used to search any TM1 objects",
@@ -37,7 +37,7 @@ arc.directive("cubewiseSubsetAndView", function () {
             seeViewsPerSubset: false,
             seeAllSubsets: false,
             searchBySubset: true
-         }
+            }
 
          $scope.lists = {
             dimensions: [],
@@ -51,7 +51,7 @@ arc.directive("cubewiseSubsetAndView", function () {
             allSubsets: []
          }
 
-         $scope.refresh = function (){
+         $scope.refresh = function () {
             $scope.subsetsToDelete = [];
             $scope.subsetsViewsToDelete = [];
             $scope.subsetsToDelete = [];
@@ -75,7 +75,6 @@ arc.directive("cubewiseSubsetAndView", function () {
                      view: item.views[v]
                   }
                   if (_.some($scope.subsetsViewsToDelete, viewObject)) {
-                     console.log("Remove view", viewObject);
                      _.remove($scope.subsetsViewsToDelete, function (i) {
                         return i.subset === viewObject.subset && i.view === viewObject.view;
                      });
@@ -90,7 +89,6 @@ arc.directive("cubewiseSubsetAndView", function () {
                      view: item.views[v]
                   }
                   if (!_.some($scope.subsetsViewsToDelete, viewObject)) {
-                     console.log("Add view", viewObject, "some" + _.some($scope.subsetsViewsToDelete, viewObject));
                      $scope.subsetsViewsToDelete.push(viewObject);
                   }
                }
@@ -100,7 +98,7 @@ arc.directive("cubewiseSubsetAndView", function () {
          $scope.openModalSubset = function () {
             var dialog = ngDialog.open({
                className: "ngdialog-theme-default large",
-               template: "__/plugins/subset-view/delete-subset.html",
+               template: "__/plugins/subset-view/m-delete-subset.html",
                name: "Instances",
                scope: $scope,
                controller: ['$rootScope', '$scope', function ($rootScope, $scope) {
@@ -113,15 +111,14 @@ arc.directive("cubewiseSubsetAndView", function () {
                      console.log("Start deleting views", $scope.subsetsViewsToDelete);
                      var completedRequests = 0;
                      for (var v in $scope.subsetsViewsToDelete) {
-                        viewFullName = $scope.subsetsViewsToDelete[v].view;
-                        console.log(viewFullName);
+                        var viewFullName = $scope.subsetsViewsToDelete[v].view;
+                        console.log(viewFullName + " view will be deleted");
                         var semiColumn = viewFullName.indexOf(":");
                         var cubeName = viewFullName.substr(0, semiColumn);
                         var viewName = viewFullName.substr(semiColumn + 1, viewFullName.length - semiColumn + 1);
                         $http.delete(encodeURIComponent($scope.instance) + "/Cubes('" + cubeName + "')/Views('" + viewName + "')").then(function (result) {
-                           completedRequests++;
                            if (result.status == 204) {
-                              console.log(cubeName + ":" + viewName + " has been deleted")
+                              console.log(cubeName + " " + viewName + " view has been deleted")
                               $scope.selections.queryStatus = 'success';
                               // Add view to viewsDeleted list
                               $scope.viewsDeleted.push(viewFullName);
@@ -132,18 +129,21 @@ arc.directive("cubewiseSubsetAndView", function () {
                            } else {
                               $scope.selections.queryStatus = 'failed';
                            }
-                           if(completedRequests == $scope.subsetsViewsToDelete.length){
+                           if (completedRequests == $scope.subsetsViewsToDelete.length) {
                               $scope.deleteSubsets();
                            }
+                           completedRequests++;
                         });
                      }
                   };
-                  $scope.deleteSubsets = function (){
+                  $scope.deleteSubsets = function () {
                      // Delete subsets
+                     //Debugger;
                      $scope.subsetsDeleted = [];
-                     console.log("Start deleting subsets",$scope.subsetsToDelete);
+                     console.log("Start deleting subsets", $scope.subsetsToDelete);
                      for (var s in $scope.subsetsToDelete) {
-                        subsetFullName = $scope.subsetsToDelete[s].name;
+                        var subsetFullName = $scope.subsetsToDelete[s].name;
+                        console.log(subsetFullName + " subset is going to be deleted");
                         var semiColumn = subsetFullName.indexOf(":");
                         var dimension = subsetFullName.substr(0, semiColumn);
                         var hierarchyAndSubset = subsetFullName.substr(semiColumn + 1, subsetFullName.length - semiColumn + 1);
@@ -152,7 +152,7 @@ arc.directive("cubewiseSubsetAndView", function () {
                         var subset = hierarchyAndSubset.substr(semiColumn2 + 1, hierarchyAndSubset.length - semiColumn2 + 1);
                         $http.delete(encodeURIComponent($scope.instance) + "/Dimensions('" + dimension + "')/Hierarchies('" + hierarchy + "')/Subsets('" + subset + "')").then(function (result) {
                            if (result.status == 204) {
-                              console.log(dimension + ":" + ":" + hierarchy + ":" + subset + " has been deleted")
+                              console.log(dimension + ":" + ":" + hierarchy + ":" + subset + " subset has been deleted")
                               $scope.selections.queryStatus = 'success';
                               // Add subsets to subsetsDeleted list
                               $scope.subsetsDeleted.push(subsetFullName);
@@ -191,7 +191,7 @@ arc.directive("cubewiseSubsetAndView", function () {
          $scope.openModalView = function () {
             var dialog = ngDialog.open({
                className: "ngdialog-theme-default medium",
-               template: "__/plugins/subset-view/delete-view.html",
+               template: "__/plugins/subset-view/m-delete-view.html",
                name: "Instances",
                scope: $scope,
                controller: ['$rootScope', '$scope', function ($rootScope, $scope) {
@@ -223,10 +223,35 @@ arc.directive("cubewiseSubsetAndView", function () {
                }
             });
          };
+         //OPEN MODAL REPLACE SUBSET
+         //OPEN MODAL WITH VIEWS TO BE DELETED
+         $scope.openModalReplaceSubset = function (subsetToBeReplaced) {
+            var dialog = ngDialog.open({
+               className: "ngdialog-theme-default medium",
+               template: "__/plugins/subset-view/m-replace-subset.html",
+               name: "Instances",
+               scope: $scope,
+               controller: ['$rootScope', '$scope', function ($rootScope, $scope) {
+                  //Scope
+               }],
+               data: {
+                  subsetToBeReplaced: $scope.subsetToBeReplaced
+               }
+            });
+         };
          // GET ALL VIEWS AND SUBSETS
+         console.log($rootScope.uiPrefs.controlObjects);
          $scope.getallViewsPerSubset = function () {
             $scope.lists.viewsAndSubsetsStructured = [];
-            $http.get(encodeURIComponent($scope.instance) + "/Cubes?$select=Name&$expand=Views($select=Name;$expand=tm1.NativeView/Columns/Subset($select=Name;$expand=Hierarchy($select=Name;$expand=Dimension($select=Name))),tm1.NativeView/Rows/Subset($select=Name;$expand=Hierarchy($select=Name;$expand=Dimension($select=Name))),tm1.NativeView/Titles/Subset($select=Name;$expand=Hierarchy($select=Name;$expand=Dimension($select=Name))))").then(function (viewsData) {
+            var query = "";
+            var queryAll = "/Cubes?$select=Name&$expand=Views($select=Name;$expand=tm1.NativeView/Columns/Subset($select=Name;$expand=Hierarchy($select=Name;$expand=Dimension($select=Name))),tm1.NativeView/Rows/Subset($select=Name;$expand=Hierarchy($select=Name;$expand=Dimension($select=Name))),tm1.NativeView/Titles/Subset($select=Name;$expand=Hierarchy($select=Name;$expand=Dimension($select=Name))))";
+            var queryWithoutControlObjects = "/Cubes?$filter=indexof(Name,'}') eq -1&$select=Name&$expand=Views($select=Name;$expand=tm1.NativeView/Columns/Subset($select=Name;$expand=Hierarchy($select=Name;$expand=Dimension($select=Name))),tm1.NativeView/Rows/Subset($select=Name;$expand=Hierarchy($select=Name;$expand=Dimension($select=Name))),tm1.NativeView/Titles/Subset($select=Name;$expand=Hierarchy($select=Name;$expand=Dimension($select=Name))))";
+            if($rootScope.uiPrefs.controlObjects){
+               query = queryAll;
+            }else{
+               query = queryWithoutControlObjects;
+            }
+           $http.get(encodeURIComponent($scope.instance) + query).then(function (viewsData) {
                //console.log(viewsData);
                $scope.lists.viewsAndSubsetsUnstructured = viewsData.data.value;
                //Loop through cubes
@@ -372,6 +397,8 @@ arc.directive("cubewiseSubsetAndView", function () {
                //console.log($scope.lists.allSubsetsPerView);
             });
          };
+
+
          $scope.getallViewsPerSubset();
 
          //Manage color:
