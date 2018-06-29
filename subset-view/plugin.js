@@ -225,7 +225,9 @@ arc.directive("cubewiseSubsetAndView", function () {
          };
          //OPEN MODAL REPLACE SUBSET
          //OPEN MODAL WITH VIEWS TO BE DELETED
-         $scope.openModalReplaceSubset = function (subsetToBeReplaced) {
+         $scope.openModalReplaceSubset = function (view, subset) {
+            console.log(view);
+            $scope.subsetToBeReplaced = subset;
             var dialog = ngDialog.open({
                className: "ngdialog-theme-default medium",
                template: "__/plugins/subset-view/m-replace-subset.html",
@@ -233,6 +235,7 @@ arc.directive("cubewiseSubsetAndView", function () {
                scope: $scope,
                controller: ['$rootScope', '$scope', function ($rootScope, $scope) {
                   //Scope
+                  console.log($scope.subsetToBeReplaced);
                }],
                data: {
                   subsetToBeReplaced: $scope.subsetToBeReplaced
@@ -240,7 +243,6 @@ arc.directive("cubewiseSubsetAndView", function () {
             });
          };
          // GET ALL VIEWS AND SUBSETS
-         console.log($rootScope.uiPrefs.controlObjects);
          $scope.getallViewsPerSubset = function () {
             $scope.lists.viewsAndSubsetsStructured = [];
             var query = "";
@@ -255,13 +257,13 @@ arc.directive("cubewiseSubsetAndView", function () {
                //console.log(viewsData);
                $scope.lists.viewsAndSubsetsUnstructured = viewsData.data.value;
                //Loop through cubes
-               cubes = viewsData.data.value;
+               var cubes = viewsData.data.value;
                for (var cube in cubes) {
-                  cubeName = cubes[cube].Name;
+                  var cubeName = cubes[cube].Name;
                   //Loop through views
                   allViews = cubes[cube].Views;
                   for (var view in allViews) {
-                     viewName = allViews[view].Name;
+                     var viewName = allViews[view].Name;
                      subsets = [];
                      //Loop through subsets on columns
                      viewColumns = allViews[view].Columns;
@@ -397,7 +399,6 @@ arc.directive("cubewiseSubsetAndView", function () {
                //console.log($scope.lists.allSubsetsPerView);
             });
          };
-
 
          $scope.getallViewsPerSubset();
 
