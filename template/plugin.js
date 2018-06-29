@@ -1,7 +1,7 @@
 
 arc.run(['$rootScope', function ($rootScope) {
 
-    $rootScope.plugin("arcTemplate", "Template", "page", {
+    $rootScope.plugin("arcTemplate", "Template Title", "page", {
         menu: "tools",
         icon: "fa-paw",
         description: "This plugin can be used to search any TM1 objects",
