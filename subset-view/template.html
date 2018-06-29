@@ -55,7 +55,7 @@
                                     <tbody>
                                         <tr ng-repeat="item in lists.allSubsetsPerView | filter:select.filterallSubsetsPerView">
                                             <td>
-                                                <input type="checkbox" ng-disabled="item.chores.length" ng-model="item.change" ng-change="toggleDeleteView(item)" class="ng-pristine ng-untouched ng-valid ng-empty"
+                                                <input style="margin-top:5px" type="checkbox" ng-disabled="item.chores.length" ng-model="item.change" ng-change="toggleDeleteView(item)" class="ng-pristine ng-untouched ng-valid ng-empty"
                                                     uib-popover="Delete item" popover-append-to-body="true" popover-trigger="'mouseenter'"
                                                     popover-class="popover-class-danger">
                                             </td>
@@ -69,12 +69,12 @@
                                             </td>
                                             <td>
                                                 <div ng-repeat="subset in item.subsetsColumn" class="badge ml-1" ng-style="generateHSLColour(subset)" ng-click="">
-                                                   <i class="fa fa-w fa-retweet" aria-hidden="true" style="cursor:pointer"></i> {{subset}}
+                                                   <i class="fa fa-w fa-retweet" aria-hidden="true" style="cursor:pointer" ng-click="openModalReplaceSubset(item,subset)"></i> {{subset}}
                                                 </div>
                                             </td>
                                             <td>
                                                 <div ng-repeat="subset in item.subsetsTitle" class="badge ml-1" ng-style="generateHSLColour(subset)" ng-click="">
-                                                   <i class="fa fa-w fa-retweet" aria-hidden="true" style="cursor:pointer"></i> {{subset}}
+                                                   <i class="fa fa-w fa-retweet" aria-hidden="true" style="cursor:pointer" ng-click="openModalReplaceSubset(item,subset)"></i> {{subset}}
                                                 </div>
                                             </td>
                                         </tr>
@@ -122,12 +122,13 @@
                                     <tbody>
                                         <tr ng-repeat="item in lists.allViewsPerSubset | filter:select.filterallViewsPerSubset">
                                             <td>
-                                                <input type="checkbox" ng-disabled="item.chores.length" ng-model="item.change" ng-change="toggleDeleteSubset(item)" class="ng-pristine ng-untouched ng-valid ng-empty"
+                                                <input style="margin-top:5px" type="checkbox" ng-disabled="item.chores.length" ng-model="item.change" ng-change="toggleDeleteSubset(item)" class="ng-pristine ng-untouched ng-valid ng-empty"
                                                     uib-popover="Delete subset" popover-append-to-body="true" popover-trigger="'mouseenter'"
                                                     popover-class="popover-class-danger">
                                             </td>
                                             <td>
-                                             <i class="fa fa-retweet fa-fw text-warning clickable" aria-hidden="true" style="cursor:pointer" ng-click=""></i> {{item.name}}
+                                             <i class="fa fa-retweet fa-fw text-warning clickable" aria-hidden="true" style="cursor:pointer" ng-click="openModalReplaceSubset(item.views,item.name)"></i>
+                                              {{item.name}}
                                             </td>
                                             <td>
                                                 <div ng-repeat="view in item.views" class="badge ml-1" ng-style="generateHSLColour(view)" style="cursor:default;" ng-click="">
