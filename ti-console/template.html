@@ -1,0 +1,34 @@
+<div>
+    <div class="row">
+        <div class="col-md-12">
+            <h5> Run TI code without creating a TI</h5>
+        </div>
+    </div>  
+    <div class="row">
+         <div class="col-md-12">
+             <uib-tabset active="active">
+                 <uib-tab index="0" heading="Prologue">
+                     <div class="row">
+                         <div class="col-md-12">
+                              <div class="card" style="margin-top:10px" ng-if="tab.type != 'GET'">
+                                    <div class="card-header" style="padding: 5px 10px;">
+                                        <a href ng-click="tab.hideBody = !tab.hideBody">
+                                            <i class="fa fa-toggle-on" ng-if="!tab.hideBody"></i>
+                                            <i class="fa fa-toggle-off" ng-if="tab.hideBody"></i>
+                                        </a>
+                                        Body</div>
+                                    <pre ui-ace="{ onLoad : editorLoaded }" ng-model="code.prologue" style="height: 200px;"></pre>
+                                </div>
+                         </div>
+                     </div>
+                 </uib-tab>
+                 <uib-tab index="1" heading="Epilogue">
+                     <div class="row">
+                         <div class="col-md-12">
+                           </div>
+                     </div>
+                 </uib-tab>
+             </uib-tabset>
+         </div>
+     </div> 
+</div>
