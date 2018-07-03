@@ -3,7 +3,7 @@ arc.run(['$rootScope', function ($rootScope) {
 
     $rootScope.plugin("cubewiseSubsetFinder", "Subset Finder", "page", {
         menu: "tools",
-        icon: "fa-bullseye",
+        icon: "fa-search",
         description: "This plugin can be used to search any TM1 objects",
         author: "Cubewise",
         url: "https://github.com/cubewise-code/arc-plugins",

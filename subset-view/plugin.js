@@ -3,7 +3,7 @@ arc.run(['$rootScope', function ($rootScope) {
 
    $rootScope.plugin("cubewiseSubsetAndView", "Native Views and Subsets", "page", {
       menu: "tools",
-      icon: "fa-bullseye",
+      icon: "fa-eraser",
       description: "This plugin can be used to search any TM1 objects",
       author: "Cubewise",
       url: "https://github.com/cubewise-code/arc-plugins",
@@ -281,7 +281,6 @@ arc.directive("cubewiseSubsetAndView", function () {
                   $scope.replaceSubset = function (cube,view) {
                      body = {
                         Process: {
-                           Name: "PhantomTI",
                            PrologProcedure: "ViewSubsetAssign('"+cube+"', '"+view+"', '"+$scope.selections.dimension+"', '"+$scope.selections.subset+"');"
                         }
                      };
