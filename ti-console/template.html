@@ -1,34 +1,55 @@
 <div>
-    <div class="row">
-        <div class="col-md-12">
-            <h5> Run TI code without creating a TI</h5>
-        </div>
-    </div>  
-    <div class="row">
-         <div class="col-md-12">
-             <uib-tabset active="active">
-                 <uib-tab index="0" heading="Prologue">
-                     <div class="row">
-                         <div class="col-md-12">
-                              <div class="card" style="margin-top:10px" ng-if="tab.type != 'GET'">
-                                    <div class="card-header" style="padding: 5px 10px;">
-                                        <a href ng-click="tab.hideBody = !tab.hideBody">
-                                            <i class="fa fa-toggle-on" ng-if="!tab.hideBody"></i>
-                                            <i class="fa fa-toggle-off" ng-if="tab.hideBody"></i>
-                                        </a>
-                                        Body</div>
-                                    <pre ui-ace="{ onLoad : editorLoaded }" ng-model="code.prologue" style="height: 200px;"></pre>
-                                </div>
-                         </div>
+   <div class="row">
+      <div class="col-md-12">
+         <h5> Run TI code without creating a TI</h5>
+      </div>
+   </div>
+   <div class="row">
+      <div class="col-md-12">
+         <uib-tabset active="active">
+            <uib-tab index="0" heading="Prolog">
+               <div class="row">
+                  <div class="col-md-12">
+                     <div class="card" style="margin-top:10px" ng-if="tab.type != 'GET'">
+                        <div class="card-header" style="padding: 5px 10px;">
+                           Body</div>
+                        <pre ui-ace="{ onLoad : editorLoaded }" ng-model="code.prolog" style="height: 200px;"></pre>
                      </div>
-                 </uib-tab>
-                 <uib-tab index="1" heading="Epilogue">
-                     <div class="row">
-                         <div class="col-md-12">
+                  </div>
+               </div>
+            </uib-tab>
+            <uib-tab index="1" heading="Epilog">
+               <div class="row">
+                  <div class="col-md-12">
+                     <div class="card" style="margin-top:10px" ng-if="tab.type != 'GET'">
+                        <div class="card-header" style="padding: 5px 10px;">
+                           Body</div>
+                        <pre ui-ace="{ onLoad : editorLoaded }" ng-model="code.epilog" style="height: 200px;"></pre>
+                     </div>
+                  </div>
+               </div>
+            </uib-tab>
+            <uib-tab index="3">
+               <uib-tab-heading>
+                  <button ng-disabled="code.prolog.length==0 && code.epilog.length==0" class="btn btn-warning btn-sm" title="{{'EXECUTE' | translate}}" ng-click="Execute()">
+                     <i class="fa fa-fw fa-bolt"></i>
+                  </button>
+               </uib-tab-heading>
+               <div class="row">
+                     <div class="col-md-12">
+                           <div ng-if="queryStatus=='success'" class="alert alert-success" role="alert">
+                                 <strong><i class="fa fa-fw fa-check"></i> Success!</strong>
+                           </div>
+                           <div ng-if="queryStatus=='failed'" class="alert alert-danger" role="alert">
+                                 <strong><i class="fa fa-fw fa-warning"></i> Failed!</strong>
+                           </div>
+                           <div ng-if="queryStatus=='executing'" class="alert alert-warning" role="alert">
+                                 <strong><i class="fa fa-fw fa-spin fa-gear"></i> Executing</strong>
                            </div>
                      </div>
-                 </uib-tab>
-             </uib-tabset>
-         </div>
-     </div> 
+                 </div>
+            </uib-tab>
+         </uib-tabset>
+      </div>
+   </div>
 </div>
