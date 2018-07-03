@@ -137,7 +137,7 @@
                   <thead>
                     <th> ID </th>
                     <th> Unique Name </th>
-                    <th ng-if="tab.showAttributes" ng-repeat="(key,value) in tab.result.attributes"> {{key}} </th>
+                    <th ng-if="tab.showAttributes" ng-repeat="attribute in tab.result.attributes"> {{attribute.Name}} </th>
 
                   </thead>
                   <tbody>
@@ -148,8 +148,8 @@
                       <td>
                         {{item.Members[0].UniqueName}}
                       </td>
-                      <td ng-if="tab.showAttributes" ng-repeat="attribute in item.Members[0].Attributes">
-                        {{attribute}}
+                      <td ng-if="tab.showAttributes" ng-repeat="attribute in tab.result.attributes">
+                        {{item.Members[0].Attributes[attribute.Name]}}
                       </td>
                     </tr>
                   </tbody>

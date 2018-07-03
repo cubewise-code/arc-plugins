@@ -133,13 +133,17 @@ arc.directive("cubewiseMdx", function () {
                                 table: $tm1.resultsetTransform($scope.instance, cube, success.data)
                             }
                         } else {
-                            tab.result = {
-                                mdx: 'dimension',
-                                json: success.data,
-                                table: success.data.Tuples,
-                                attributes: success.data.Tuples[0].Members[0].Attributes
-                            }
-                            console.log(tab.result.attributes);
+                           //Get attributes
+                           var dimension = success.data.Hierarchies[0].Dimension.Name;
+                           var hierarchy = success.data.Hierarchies[0].Name;
+                           $http.get(encodeURIComponent($scope.instance) + "/Dimensions('"+dimension+"')/Hierarchies('"+hierarchy+"')/ElementAttributes?$select=Name").then(function (result) {
+                              tab.result = {
+                                 mdx: 'dimension',
+                                 json: success.data,
+                                 table: success.data.Tuples,
+                                 attributes: result.data.value
+                             }
+                           });
                         }
                         var receiveDate = (new Date()).getTime();
                         $scope.responseTimeMs = receiveDate - sendDate;
