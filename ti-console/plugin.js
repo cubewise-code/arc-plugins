@@ -1,9 +1,9 @@
 
 arc.run(['$rootScope', function ($rootScope) {
 
-    $rootScope.plugin("arcTemplate2", "TI Console", "page", {
+    $rootScope.plugin("arcTemplate2", "Ghost TI", "page", {
         menu: "tools",
-        icon: "fa-rocket",
+        icon: "fa-snapchat-ghost",
         description: "This plugin can be used to search any TM1 objects",
         author: "Cubewise",
         url: "https://github.com/cubewise-code/arc-plugins",
