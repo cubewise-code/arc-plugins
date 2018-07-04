@@ -2,9 +2,12 @@
    <div class="row">
       <div class="col-md-12">
          <h5> Run TI code without creating a TI</h5>
+         <div ng-if="!tm1VersionSupported" class="alert alert-warning" role="alert">
+            <strong><i class="fa fa-fw fa-warning"></i> This plugin is supported with PAL 2.0.3 as minimum. To use it, you will need to upgrade</strong>
+      </div>
       </div>
    </div>
-   <div class="row">
+   <div class="row" ng-if="tm1VersionSupported">
       <div class="col-md-12">
          <uib-tabset active="active">
             <uib-tab index="0" heading="Prolog">

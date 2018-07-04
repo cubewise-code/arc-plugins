@@ -23,7 +23,7 @@ arc.directive("arcTemplate2", function () {
       link: function ($scope, element, attrs) {
 
       },
-      controller: ["$scope", "$rootScope", "$http", "$tm1", "$translate", "$timeout", function ($scope, $rootScope, $http, $tm1, $translate, $timeout) {
+      controller: ["$scope", "$rootScope", "$http", "$tm1", "$translate", "$timeout", "$helper", function ($scope, $rootScope, $http, $tm1, $translate, $timeout,$helper) {
 
          //Define variables
          $scope.defaults = {};
@@ -35,6 +35,20 @@ arc.directive("arcTemplate2", function () {
             epilog: ''
          };
          $scope.queryStatus = '';
+
+         //Check TM1 Version
+         $scope.checkTM1Version = function () {
+            $scope.tm1VersionSupported = false;
+            $scope.instanceData = {};
+            $tm1.instance($scope.instance).then(function (data) {
+                $scope.instanceData = data;
+                if ($helper.versionCompare($scope.instanceData.ProductVersion, "11.1.0") >= 0) {
+                   $scope.tm1VersionSupported = true;
+                };
+            });
+        };
+        // Execute checkTM1Version
+        $scope.checkTM1Version();
 
          //Functions
          $scope.Execute = function () {

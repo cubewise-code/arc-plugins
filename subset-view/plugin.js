@@ -23,7 +23,7 @@ arc.directive("cubewiseSubsetAndView", function () {
       link: function ($scope, element, attrs) {
 
       },
-      controller: ["$scope", "$rootScope", "$http", "$tm1", "$translate", "$timeout", "ngDialog", function ($scope, $rootScope, $http, $tm1, $translate, $timeout, ngDialog) {
+      controller: ["$scope", "$rootScope", "$http", "$tm1", "$translate", "$timeout", "ngDialog", "$helper", function ($scope, $rootScope, $http, $tm1, $translate, $timeout, ngDialog, $helper) {
 
          // Store the active tab index
          $scope.selections = {
@@ -50,7 +50,20 @@ arc.directive("cubewiseSubsetAndView", function () {
             allViewsPerSubset: [],
             allSubsets: []
          }
-
+         //Check TM1 Version
+         $scope.checkTM1Version = function () {
+            $scope.tm1VersionSupported = false;
+            $scope.instanceData = {};
+            $tm1.instance($scope.instance).then(function (data) {
+                $scope.instanceData = data;
+                if ($helper.versionCompare($scope.instanceData.ProductVersion, "11.1.0") >= 0) {
+                   $scope.tm1VersionSupported = true;
+                };
+            });
+        };
+        // Execute checkTM1Version
+        $scope.checkTM1Version();
+         //Reset the lists and refresh the subsets
          $scope.refresh = function () {
             $scope.subsetsToDelete = [];
             $scope.subsetsViewsToDelete = [];
@@ -504,7 +517,6 @@ arc.directive("cubewiseSubsetAndView", function () {
             styleObject["background-color"] = 'hsl(' + h + ', ' + saturation + '%, ' + lightness + '%)';
             return styleObject;
          };
-
 
          $scope.$on("login-reload", function (event, args) {
 

@@ -64,17 +64,17 @@
                                             </td>
                                             <td>
                                                 <div ng-repeat="subset in item.subsetsRow" class="badge ml-1" ng-style="generateHSLColour(subset)" ng-click="">
-                                                   <i class="fa fa-w fa-retweet" aria-hidden="true" style="cursor:pointer" ng-click="openModalReplaceSubset(item,subset)"></i> {{subset}}
+                                                   <i ng-if="tm1VersionSupported" class="fa fa-w fa-retweet" aria-hidden="true" style="cursor:pointer" ng-click="openModalReplaceSubset(item,subset)"></i> {{subset}}
                                                 </div>
                                             </td>
                                             <td>
                                                 <div ng-repeat="subset in item.subsetsColumn" class="badge ml-1" ng-style="generateHSLColour(subset)" ng-click="">
-                                                   <i class="fa fa-w fa-retweet" aria-hidden="true" style="cursor:pointer" ng-click="openModalReplaceSubset(item,subset)"></i> {{subset}}
+                                                   <i ng-if="tm1VersionSupported" class="fa fa-w fa-retweet" aria-hidden="true" style="cursor:pointer" ng-click="openModalReplaceSubset(item,subset)"></i> {{subset}}
                                                 </div>
                                             </td>
                                             <td>
                                                 <div ng-repeat="subset in item.subsetsTitle" class="badge ml-1" ng-style="generateHSLColour(subset)" ng-click="">
-                                                   <i class="fa fa-w fa-retweet" aria-hidden="true" style="cursor:pointer" ng-click="openModalReplaceSubset(item,subset)"></i> {{subset}}
+                                                   <i ng-if="tm1VersionSupported" class="fa fa-w fa-retweet" aria-hidden="true" style="cursor:pointer" ng-click="openModalReplaceSubset(item,subset)"></i> {{subset}}
                                                 </div>
                                             </td>
                                         </tr>
@@ -127,7 +127,7 @@
                                                     popover-class="popover-class-danger">
                                             </td>
                                             <td>
-                                             <i class="fa fa-retweet fa-fw text-warning clickable" aria-hidden="true" style="cursor:pointer" ng-click="openModalReplaceSubset(item.views,item.name)"></i>
+                                             <i ng-if="tm1VersionSupported" class="fa fa-retweet fa-fw text-warning clickable" aria-hidden="true" style="cursor:pointer" ng-click="openModalReplaceSubset(item.views,item.name)"></i>
                                               {{item.name}}
                                             </td>
                                             <td>
