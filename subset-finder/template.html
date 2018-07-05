@@ -1,0 +1,106 @@
+<div class="mdx">
+    <style>
+        .popover-class-danger {
+            color: #a94442;
+            background-color: #f2dede;
+            border-color: #ebccd1;
+        }
+
+        .popover-class-warning {
+            color: #8a6d3b;
+            background-color: #fcf8e3;
+            border-color: #faebcc;
+        }
+    </style>
+    <!--SEARCH SUBSET BY DIMENSION-->
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header" style="padding: 5px 10px;">
+                    <i class="fa fa-search" style="margin-right:5px"></i>
+                    Find a subset</div>
+                <div class="card-body">
+                    <div class="card-text">
+                        <i class="fa dimensions" style="margin-right:5px"></i> Dimension:
+                    </div>
+                    <div>
+                        <select class="form-control ng-pristine ng-valid ng-empty ng-touched" ng-model="selections.dimension" ng-change="getHierarchies()"
+                            title="">
+                            <option value="? undefined:undefined ?" selected="selected">
+                            </option>
+                            <option ng-repeat="item in lists.dimensions" class="ng-binding ng-scope" value="{{item.Name}}">{{item.Name}}</option>
+                        </select>
+                    </div>
+                    <div ng-if="selections.dimension && nbHierarchies>1">
+                        <div class="card-text">
+                            <i class="fa hierarchy" style="margin-right:5px"></i> Hierarchy:
+                        </div>
+                        <div>
+                            <select class="form-control ng-pristine ng-valid ng-empty ng-touched" ng-model="selections.hierarchy" ng-change="getSubsets()"
+                                title="">
+                                <option value="? undefined:undefined ?" selected="selected">
+                                </option>
+                                <option ng-repeat="item in lists.hierarchies" class="ng-binding ng-scope" value="{{item.Name}}">{{item.Name}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div ng-if="selections.hierarchy">
+                        <div class="card-text">
+                            <i class="fa subset" style="margin-right:5px"></i> Subset:
+                        </div>
+                        <div>
+                            <select class="form-control ng-pristine ng-valid ng-empty ng-touched" ng-model="selections.subset" ng-change="findViewsFromSubset()"
+                                title="">
+                                <option value="? undefined:undefined ?" selected="selected">
+                                </option>
+                                <option ng-repeat="item in lists.subsets" class="ng-binding ng-scope" value="{{item.Name}}">{{item.Name}}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header" style="padding: 5px 10px;">
+                    <i class="fa cubes" style="margin-right:5px"></i>
+                    Views which contains subset {{selections.subsetName}}</div>
+                <div class="card-body">
+                        <div ng-if="!subsetFound && selections.subsetName" class="text-center">
+                            <div class="alert alert-info"><span style="font-weight: bold">{{selections.subsetName}}</span> is not attached to any views</div>
+                        </div>
+                    <div ng-if="subsetFound">
+                        <table class="table table-hover table-sm">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">
+                                        <input type="checkbox" ng-model="change" ng-change="toggleAllViewsToDelete(lists.viewsFiltered)" class="ng-pristine ng-untouched ng-valid ng-empty">
+                                        </input>
+                                    </th>
+                                    <th class="text-center">
+                                        <button ng-disabled="!viewsToDelete.length" class="btn btn-danger pull-right" title="Delete View" ng-click="deleteViews()"
+                                            disabled="disabled">
+                                            <i class="fa fa-fw fa-trash"></i>
+                                        </button>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="view in lists.viewsFiltered track by $index">
+                                    <td class="text-center">
+                                        <input type="checkbox" ng-model="change" ng-change="toggleViewsToDelete(view)" class="ng-pristine ng-untouched ng-valid ng-empty">
+                                        </input>
+                                    </td>
+                                    <td>
+                                        <i class="fa cubes" style="margin-right:5px"></i>
+                                        {{view}}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

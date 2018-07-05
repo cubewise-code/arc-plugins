@@ -1,0 +1,211 @@
+<div>
+    <style>
+        .outside_box {
+            background: #333;
+            color: #fff;
+            min-height: 180px;
+            background-color: #fff;
+            /* For browsers that do not support gradients */
+            transition: height 0.3s;
+        }
+
+        .card-btn {
+            position: relative;
+            background-color: transparent;
+        }
+
+        .card-holder {
+            background-color: transparent;
+            color: #fff;
+        }
+
+        .white-icon {
+            color: #fff;
+        }
+
+        .card {
+            border: 0;
+            left: 0px;
+            right: auto;
+            color: #fff !important;
+        }
+
+        .object {
+            background-color: #247BA0 !important;
+        }
+
+        .admin {
+            background-color: #FF1654 !important;
+        }
+
+        .plugins {
+            background-color: #B2DBBF !important;
+        }
+
+        .inner-card {
+            pointer-events: none;
+            text-align: center;
+            pointer-events: none;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .inner-card-heading {
+            font-size: 1em;
+            position: absolute;
+            top: 100%;
+            padding-left: 0px;
+            color: rgba(0, 0, 0, 0.6)
+        }
+
+        .inner-card-footer {
+            position: relative;
+            bottom: 0px;
+            padding-top: 10px;
+            font-size: 1.2em;
+            color: rgba(0, 0, 0, 0.6);
+            width: 100%;
+            height: 50px;
+            text-align: center;
+            background-color: #fff;
+        }
+
+        .inner-card-text {
+            font-size: 1em;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .ourcontent {
+            /* Initially we don't want any height, and we want the contents to be hidden */
+            position: absolute;
+            color: #666;
+            bottom: 5px;
+            height: 180px;
+            background-color: #fff;
+            max-height: 0px;
+            overflow: hidden;
+            width: 100%;
+            z-index: 999;
+            /* Set our transitions up. */
+            -webkit-transition: max-height 0.5s;
+            -moz-transition: max-height 0.5s;
+            transition: max-height 0.5s;
+        }
+
+        .outside_box:hover .ourcontent {
+            /* On hover, set the max-height to something large. In this case there's an obvious limit. */
+            max-height: 180px;
+        }
+
+        .menu-section {
+            background-color: #F8F8F8;
+        }
+
+        .nopadding {
+            padding: 0px;
+            margin: 0px;
+        }
+    </style>
+    <div class="row">
+        <br>
+    </div>
+    <!-- TM1 OBJECTS BUTTONS -->
+    <auto-height>
+        <div class="row">
+            <div class="col-lg-3 col-md-6 outside_box" ng-repeat="item in tm1Objects">
+                <div class="col-md-12">
+                    <div class="col-md-12 inner-card">
+                        <h1 class="col-md-12 inner-card-heading">
+                            <i class="fa {{item.icon}} fa-4x"> </i>
+                            <br/>
+                            <br/>
+                        </h1>
+                        <footer class="inner-card-footer">
+                            <strong>{{item.key}}</strong>
+                            <strong ng-if="item.value">({{item.value}})</strong>
+                        </footer>
+                    </div>
+                </div>
+                <div class="col-md-12 ourcontent card">
+                    <div class="inner-card-text {{item.class}}" style="height:180px">
+                        {{item.description}}
+                        <br/>
+                        <br/>
+                        <button class="btn btn-primary card-btn">
+                            <a href="{{item.link}}{{instance}}" class="card-holder">
+                                <i class="fa fa-chevron-circle-down fa-2x white-icon"></i>
+                            </a>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <br>
+        </div>
+        <!-- CONFIGURATION BUTTONS -->
+        <div class="row">
+            <div class="col-lg-3 col-md-6 outside_box" ng-repeat="item in configurations">
+                <div class="col-md-12">
+                    <div class="col-md-12 inner-card">
+                        <h1 class="col-md-12 inner-card-heading">
+                            <i class="fa {{item.icon}} fa-4x"> </i>
+                            <br/>
+                            <br/>
+                        </h1>
+                        <footer class="inner-card-footer">
+                            <strong>{{item.key}}</strong>
+                            <strong ng-if="item.value">({{item.value}})</strong>
+                        </footer>
+                    </div>
+                </div>
+                <div class="col-md-12 ourcontent card">
+                    <div class="inner-card-text {{item.class}}" style="height:180px">
+                        {{item.description}}
+                        <br/>
+                        <br/>
+                        <button class="btn btn-primary card-btn">
+                            <a href="{{item.link}}{{instance}}" class="card-holder">
+                                <i class="fa fa-chevron-circle-down fa-2x white-icon"></i>
+                            </a>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <br>
+        </div>
+        <!-- PLUGINS BUTTONS -->
+        <div class="row">
+            <div class="col-lg-3 col-md-6 outside_box" ng-repeat="item in plugins">
+                <div class="col-md-12">
+                    <div class="col-md-12 inner-card">
+                        <h1 class="col-md-12 inner-card-heading">
+                            <i class="fa {{item.icon}} fa-4x"> </i>
+                            <br/>
+                            <br/>
+                        </h1>
+                        <footer class="inner-card-footer">
+                            <strong>{{item.key}}</strong>
+                            <strong ng-if="item.value">({{item.value}})</strong>
+                        </footer>
+                    </div>
+                </div>
+                <div class="col-md-12 ourcontent card">
+                    <div class="inner-card-text {{item.class}}" style="height:180px">
+                        {{item.description}}
+                        <br/>
+                        <br/>
+                        <button class="btn btn-primary card-btn">
+                            <a href="{{item.link}}{{instance}}" class="card-holder">
+                                <i class="fa fa-chevron-circle-down fa-2x white-icon"></i>
+                            </a>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </auto-height>
+</div>

@@ -1,0 +1,71 @@
+<div>
+   <div class="modal-header text-white bg-warning">
+      <span>
+         <i class="fa fa-retweet"></i>
+         <span> Replace subset
+         </span>
+      </span>
+   </div>
+   <div class="modal-body">
+      <div class="row">
+         <div class="col-md-12" ng-if="!replaceMultipleViews">
+            Replace subset <span style="font-weight:bold">{{subsetToBeReplaced}}</span> in view <span style="font-weight:bold">{{targetCube}}:{{targetView}}</span> with...
+         </div>
+         <div class="col-md-12" ng-if="replaceMultipleViews">
+               Replace subset <span style="font-weight:bold">{{subsetToBeReplaced}}</span> in views <span style="font-weight:bold">{{targetViews}}</span> with...
+            </div>
+      </div>
+      <div class="row" style="margin-top:10px">
+         <div class="col-md-12">
+            <div class="card">
+               <div class="card-header" style="padding: 5px 10px;">
+                  <i class="fa fa-search" style="margin-right:5px"></i>
+                  Pick a subset</div>
+               <div class="card-body">
+                  <div class="card-text">
+                     <i class="fa dimensions" style="margin-right:5px"></i> Dimension:
+                  </div>
+                  <div>
+                     <select class="form-control ng-pristine ng-valid ng-empty ng-touched" ng-model="selections.dimension" ng-change="getHierarchies()"
+                        title="">
+                        <option value="? undefined:undefined ?" selected="selected">
+                        </option>
+                        <option ng-repeat="item in dimensions" class="ng-binding ng-scope" value="{{item.Name}}">{{item.Name}}</option>
+                     </select>
+                  </div>
+                  <div ng-if="selections.dimension && nbHierarchies>1">
+                     <div class="card-text">
+                        <i class="fa hierarchy" style="margin-right:5px"></i> Hierarchy:
+                     </div>
+                     <div>
+                        <select class="form-control ng-pristine ng-valid ng-empty ng-touched" ng-model="selections.hierarchy" ng-change="getSubsets()"
+                           title="">
+                           <option value="? undefined:undefined ?" selected="selected">
+                           </option>
+                           <option ng-repeat="item in lists.hierarchies" class="ng-binding ng-scope" value="{{item.Name}}">{{item.Name}}</option>
+                        </select>
+                     </div>
+                  </div>
+                  <div ng-if="selections.hierarchy">
+                     <div class="card-text">
+                        <i class="fa subset" style="margin-right:5px"></i> Subset:
+                     </div>
+                     <div>
+                        <select class="form-control ng-pristine ng-valid ng-empty ng-touched" ng-model="selections.subset" ng-change="findViewsFromSubset()"
+                           title="">
+                           <option value="? undefined:undefined ?" selected="selected">
+                           </option>
+                           <option ng-repeat="item in lists.subsets" class="ng-binding ng-scope" value="{{item.Name}}">{{item.Name}}</option>
+                        </select>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div class="modal-footer">
+      <button type="button" class="btn btn-warning action ng-scope" ng-click="replaceSubsets()" translate="REPLACE">Replace</button>
+      <button type="button" class="btn btn-default action ng-scope" ng-click="closeThisDialog(0)" translate="CANCEL">Cancel</button>
+   </div>
+</div>

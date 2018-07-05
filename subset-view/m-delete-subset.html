@@ -1,0 +1,58 @@
+<div>
+   <div class="modal-header text-white bg-danger">
+      <span>
+         <i class="fa fa-trash"></i>
+         <span>Delete the following subsets and views
+         </span>
+      </span>
+   </div>
+   <div class="modal-body">
+      <div class="row">
+         <div class="col-md-12">
+            <div class="card">
+               <div class="card-header" style="padding: 5px 10px;">
+                  <i class="fa fa-w view"></i> Views ({{views.length}})
+               </div>
+               <div class="card-body">
+                  <div ng-if="views.length>0" ng-repeat="item in views track by $index">
+                     <div class="alert alert-danger" role="alert" style="padding: 5px 10px;">
+                        <div><i class="fa fa-w view"></i> {{item.view}} </div>
+                         <dl style="padding:5px 5px 0px 20px;margin-bottom:0px" ><i class="fa fa-w subset"></i> {{item.subset}}</dl>
+                     </div>
+                  </div>
+                  <div ng-if="viewsDeleted.length>0" ng-repeat="view in viewsDeleted track by $index">
+                     <div class="alert alert-success" role="alert">
+                        <i class="fa fa-w fa-check-square-o"></i> {{view}} has been deleted
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="row" style="margin-top:10px">
+         <div class="col-md-12">
+            <div class="card">
+               <div class="card-header" style="padding: 5px 10px;">
+                  <i class="fa fa-w subset"></i> Subsets ({{subsets.length}})
+               </div>
+               <div class="card-body">
+                  <div ng-if="subsets.length>0" ng-repeat="subset in subsets track by $index">
+                     <div class="alert alert-danger" role="alert" style="padding: 5px 10px;">
+                        <i class="fa fa-fw subset"></i> {{subset.name}}
+                     </div>
+                  </div>
+                  <div ng-if="subsetsDeleted.length>0" ng-repeat="subset in subsetsDeleted track by $index">
+                     <div class="alert alert-success" role="alert">
+                        <i class="fa fa-w fa-check-square-o"></i> {{subset}} has been deleted
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div class="modal-footer">
+      <button type="button" class="btn btn-danger action ng-scope" ng-click="deleteViewsAndSubsets()" translate="DELETE">Delete</button>
+      <button type="button" class="btn btn-default action ng-scope" ng-click="closeThisDialog(0)" translate="CANCEL">Cancel</button>
+   </div>
+</div>

@@ -1,0 +1,25 @@
+<div>
+   <div class="modal-header text-white bg-danger">
+      <span>
+         <i class="fa fa-trash"></i>
+         <span>Delete the following views
+         </span>
+      </span>
+   </div>
+   <div class="modal-body">
+      <div class="col-md-12">
+         <div ng-if="viewsDeleted.length==0" ng-repeat="view in viewsToDelete">
+            <i class="fa fa-w view"></i> {{view.name}}
+         </div>
+         <div ng-if="viewsDeleted.length>0" ng-repeat="view in viewsDeleted">
+            <div class="alert alert-success" role="alert">
+                  <i class="fa fa-w fa-check-square-o"></i> {{view}} has been deleted
+            </div>
+         </div>
+      </div>
+   </div>
+   <div class="modal-footer">
+      <button type="button" ng-if="viewsDeleted.length==0" class="btn btn-danger action ng-scope" ng-click="deleteViews()" translate="DELETE">Delete</button>
+      <button type="button" class="btn btn-default action ng-scope" ng-click="closeThisDialog(0)" translate="CANCEL">Cancel</button>
+   </div>
+</div>

@@ -1,0 +1,103 @@
+<div>
+    <style>
+        
+        .bg-image {
+            background: url('__/plugins/admin-tasks-horizontal/Lake-Landscape-bg.jpg') no-repeat center center fixed;
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+        }
+
+        .progress {
+            background: none;
+            -webkit-box-shadow: none;
+            box-shadow: none;
+        }
+    </style>
+    <uib-tabset active="active" class="bg-image">
+        <uib-tab index="$index + 1" ng-repeat="tab in tabs" heading="{{tab.title}}" disable="tab.disabled">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="progress" style="height:10px">
+                        <div class="progress-bar progress-bar-striped bg-success" value="dynamic" ng-class="{'bg-info':tab.stepPercentage<100}" role="progressbar"
+                            style="width: {{tab.stepPercentage}}%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">{{tab.stepPercentage}}%</div>
+                    </div>
+                </div>
+            </div>
+            <auto-height>
+                <!-- TEST TRELLO-->
+                <div class="row">
+                    <div class="col-md-3" ng-repeat="step in tab.content" style="margin-top:10px">
+                        <div class="card" ng-class="{'bg-light':step.open==true,'text-white bg-info':step.open==false && tab.stepPercentage<100,'text-white bg-success':step.open==false && tab.stepPercentage==100}">
+                            <div class="card-body" style="padding:5px">
+                                <div class="card-text">
+                                    <h5>
+                                        <input style="cursor:pointer;margin-top:5px" type="checkbox" ng-model="change" ng-change="step.open=!step.open;calculatePercentage(tab)"
+                                            class="ng-pristine ng-untouched ng-valid ng-empty pull-right">
+                                        </input>
+                                        {{step.title}}
+                                    </h5>
+                                </div>
+                                <div ng-if="step.open" ng-repeat="action in step.actions">
+                                    <div class="card mb-3">
+                                        <div class="card-body" style="padding:10px">
+                                            <div class="col-md-2" style="padding-left:0px;" ng-if="action.category">
+                                                <div class="progress" style="height:7px">
+                                                    <div class="progress-bar" ng-class="action.category" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0"
+                                                        aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
+                                            <i ng-if="action.view" class="fa cubes" style="margin-right:5px"></i>
+                                            <i ng-if="action.subset" class="fa subset" style="margin-right:5px"></i>
+                                            <i ng-if="action.process" class="fa processes" style="margin-right:5px"></i>
+                                            <i ng-if="action.chore" class="fa chores" style="margin-right:5px"></i>
+                                            {{action.name}}
+                                            <!-- OPEN A CUBEVIEW -->
+                                            <button ng-if="action.view" class="btn btn-light btn-sm pull-right" title="Open view {{action.view}}">
+                                                <a href="#/cube/view/{{instance}}/{{action.cube}}/{{action.view}}?name={{action.view}}" 
+                                                    ng-click="user_clicks_branch(row.branch)"
+                                                    ng-class="[row.branch.item_class]">
+                                                    <i class="fa fa-fw fa-link" style="color:black"></i>
+                                                </a>
+                                            </button>
+                                            <!-- OPEN A SUBSET -->
+                                            <button ng-if="action.subset" class="btn btn-light btn-sm pull-right" title="Open subset {{action.subset}}">
+                                                <a href="#/dimension/subset/{{instance}}/{{action.dimension}}/{{action.hierarchy}}/{{action.subset}}?name={{action.subset}}" ng-click="user_clicks_branch(row.branch)"
+                                                    ng-class="[row.branch.item_class]">
+                                                    <i class="fa fa-fw fa-link" style="color:black"></i>
+                                                </a>                                                
+                                            </button>
+                                            <!-- RUN PROCESS -->
+                                            <div class="btn-group pull-right" role="group" ng-if="action.process">
+                                                <button class="btn btn-light btn-sm" title="Open process {{action.process}}">
+                                                    <a href="#/process/{{instance}}/{{action.process}}?tab=parameters" ng-click="user_clicks_branch(row.branch)" ng-class="[row.branch.item_class]">
+                                                        <i class="fa fa-fw fa-link" style="color:black"></i>
+                                                    </a>
+                                                </button>
+                                                <button class="btn btn-dark btn-sm" title="Execute {{action.process}}" ng-click="executeProcess(action.process)">
+                                                    <i class="fa fa-fw fa-bolt"></i>
+                                                </button>
+                                            </div>
+                                            <!-- RUN CHORE -->
+                                            <div class="btn-group pull-right" role="group" ng-if="action.chore">
+                                                <button class="btn btn-light btn-sm" title="Open chore {{action.chore}}">
+                                                    <a href="#/chore/{{instance}}/{{action.chore}}" ng-click="user_clicks_branch(row.branch)" ng-class="[row.branch.item_class]">
+                                                        <i class="fa fa-fw fa-link" style="color:black"></i>
+                                                    </a>
+                                                </button>
+                                                <button class="btn btn-dark btn-sm" title="Execute {{action.chore}}" ng-click="executeChore(action.chore)">
+                                                    <i class="fa fa-fw fa-bolt"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </auto-height>
+        </uib-tab>
+    </uib-tabset>
+</div>

@@ -1,0 +1,51 @@
+<div class="mdx">
+
+    <div class="row">
+        <!-- SHOW CONFIGURATIONS TABLE-->
+        <div class="col-md-6">
+            <table class="table table-hover table-sm">
+                <thead>
+                        <h5>Configuration</h5>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="item in configurations">
+                        <td>
+                            <i class="fa {{item.icon}}" aria-hidden="true"></i>
+                        </td>
+                        <td ng-if="!item.link">
+                            {{item.key}}
+                        </td>
+                        <td ng-if="item.link">
+                            <a href="{{item.link}}{{instance}}" ng-click="user_clicks_branch(row.branch)" ng-class="[row.branch.item_class]">
+                                {{item.key}}</a>
+                        </td>
+                        <td> {{item.value}} </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <table class="table table-hover table-sm">
+                <thead>
+                         <h5>TM1 Objects</h5>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="item in tm1Objects">
+                        <td>
+                            <i class="fa {{item.icon}}" aria-hidden="true"></i>
+                        </td>
+                        <td ng-if="!item.link">
+                            {{item.key}}
+                        </td>
+                        <td ng-if="item.link">
+                            <a href="{{item.link}}{{instance}}" ng-click="user_clicks_branch(row.branch)" ng-class="[row.branch.item_class]">
+                                {{item.key}}</a>
+                        </td>
+                        <td> {{item.value}} </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

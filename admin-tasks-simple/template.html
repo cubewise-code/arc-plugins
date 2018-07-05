@@ -1,0 +1,124 @@
+<div>
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Admin tasks</h2>
+        </div>
+        <div class="col-md-12">
+            <table class="table table-hover table-sm">
+                <thead>
+                    <tr>
+                        <th class="text-center"> Step </th>
+                        <th class="text-center"> Description </th>
+                        <th class="text-center"> Action </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="text-center">
+                            Step 1
+                        </td>
+                        <td>
+                            <i class="fa fa-fw cubes"></i> Update System Settings
+                        </td>
+                        <td>
+                            <a href="#/cube/view/Canvas%20Sample/System%20Info/Default">
+                                System Info
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">
+                            Step 2
+                        </td>
+                        <td>
+                            <i class="fa fa-fw processes"></i> Load General Ledger data
+                        </td>
+                        <td>
+                            <button class="btn btn-warning" title="Cube.GeneralLedger.LoadFromFile" ng-click="executeProcess('Cube.GeneralLedger.LoadFromFile')">
+                                <i class="fa fa-fw fa-bolt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">
+                            Step 3
+                        </td>
+                        <td>
+                            <i class="fa fa-fw cubes"></i> Check data in General Ledger
+                        </td>
+                        <td>
+                            <a href="#/cube/view/Canvas%20Sample/General%20Ledger/Default" ng-click="user_clicks_branch(row.branch)" ng-class="[row.branch.item_class]">
+                                Default view
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">
+                            Step 4
+                        </td>
+                        <td>
+                            <i class="fa fa-fw subset"></i> Check Expense subset of the Account dimension
+                        </td>
+                        <td>
+                            <a href="#/dimension/subset/Canvas%20Sample/Account/Account/Expense" ng-click="user_clicks_branch(row.branch)" ng-class="[row.branch.item_class]">
+                                Category List subset
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">
+                            Step 5
+                        </td>
+                        <td>
+                            <i class="fa fa-fw chores"></i> Run Save Data
+                        </td>
+                        <td>
+                            <button class="btn btn-warning" title="CXTM1SaveDataAll" ng-click="executeChore('CXTM1SaveDataAll')">
+                                <i class="fa fa-fw fa-bolt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">
+                            Step 6
+                        </td>
+                        <td>
+                            <i class="fa fa-fw cubes"></i> Open GL Rule
+                        </td>
+                        <td>
+                            <a href="#/cube/Canvas%20Sample/Balance%20Sheet" ng-click="user_clicks_branch(row.branch)" ng-class="[row.branch.item_class]">
+                                Open rule file
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">
+                            Step 7
+                        </td>
+                        <td>
+                            <i class="fa fa-fw cubes"></i> Open dimension
+                        </td>
+                        <td>
+                            <a href="#/dimension/Canvas%20Sample/Account/Account?hierarchy=Account" ng-click="user_clicks_branch(row.branch)" ng-class="[row.branch.item_class]">
+                                Open rule file
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">
+                            Step 8
+                        </td>
+                        <td>
+                            <i class="fa fa-fw cubes"></i> Open TI
+                        </td>
+                        <td>
+                            <a href="#/process/Canvas%20Sample/Dim.Element.Order?tab=parameters" ng-click="user_clicks_branch(row.branch)" ng-class="[row.branch.item_class]">
+                                Open TI
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

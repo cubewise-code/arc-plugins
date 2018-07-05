@@ -1,0 +1,150 @@
+<div class="mdx">
+    <style>
+        .popover-class-danger {
+            color: #a94442;
+            background-color: #f2dede;
+            border-color: #ebccd1;
+        }
+
+        .popover-class-warning {
+            color: #8a6d3b;
+            background-color: #fcf8e3;
+            border-color: #faebcc;
+        }
+    </style>
+    <!--SEARCH SUBSET BY DIMENSION-->
+    <div class="row">
+        <div class="col-md-12">
+            <uib-tabset active="active">
+                <uib-tab index="0" heading="Subsets per Views">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="pull-right">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <input type="text" ng-model="select.filterallSubsetsPerView" placeholder="Search" class="form-control ng-pristine ng-untouched ng-valid ng-empty"
+                                            style="display:inline; width:200px;">
+                                    </div>
+                                    <div class="input-group-append input-group-prepend">
+                                        <button class="btn btn-primary" title="Refresh" ng-click="refresh()">
+                                            <i class="fa fa-fw fa-refresh"></i>
+                                        </button>
+                                    </div>
+                                    <div class="input-group-append">
+                                        <button ng-disabled="saving || !viewsToDelete.length" class="btn btn-danger" title="Delete" ng-click="openModalView()" disabled="disabled">
+                                            <i class="fa fa-fw fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <auto-height>
+                                <table class="table table-hover table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center"> </th>
+                                            <th class="text-center"> View </th>
+                                            <th class="text-center"> Subset on Row</th>
+                                            <th class="text-center"> Subset on Column</th>
+                                            <th class="text-center"> Subset on Title </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="item in lists.allSubsetsPerView | filter:select.filterallSubsetsPerView">
+                                            <td>
+                                                <input style="margin-top:5px" type="checkbox" ng-disabled="item.chores.length" ng-model="item.change" ng-change="toggleDeleteView(item)" class="ng-pristine ng-untouched ng-valid ng-empty"
+                                                    uib-popover="Delete item" popover-append-to-body="true" popover-trigger="'mouseenter'"
+                                                    popover-class="popover-class-danger">
+                                            </td>
+                                            <td>
+                                                {{item.name}}
+                                            </td>
+                                            <td>
+                                                <div ng-repeat="subset in item.subsetsRow" class="badge ml-1" ng-style="generateHSLColour(subset)" ng-click="">
+                                                   <i ng-if="tm1VersionSupported" class="fa fa-w fa-retweet" aria-hidden="true" style="cursor:pointer" ng-click="openModalReplaceSubset(item,subset)"></i> {{subset}}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div ng-repeat="subset in item.subsetsColumn" class="badge ml-1" ng-style="generateHSLColour(subset)" ng-click="">
+                                                   <i ng-if="tm1VersionSupported" class="fa fa-w fa-retweet" aria-hidden="true" style="cursor:pointer" ng-click="openModalReplaceSubset(item,subset)"></i> {{subset}}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div ng-repeat="subset in item.subsetsTitle" class="badge ml-1" ng-style="generateHSLColour(subset)" ng-click="">
+                                                   <i ng-if="tm1VersionSupported" class="fa fa-w fa-retweet" aria-hidden="true" style="cursor:pointer" ng-click="openModalReplaceSubset(item,subset)"></i> {{subset}}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </auto-height>
+                        </div>
+                    </div>
+                </uib-tab>
+                <uib-tab index="1" heading="Views per Subsets">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="pull-right">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <input type="text" ng-model="select.filterallViewsPerSubset" placeholder="Search" class="form-control ng-pristine ng-untouched ng-valid ng-empty"
+                                            style="display:inline; width: 200px;">
+                                    </div>
+                                    <div class="input-group-append input-group-prepend">
+                                        <button class="btn btn-primary" title="Refresh" ng-click="refresh()">
+                                            <i class="fa fa-fw fa-refresh"></i>
+                                        </button>
+                                    </div>
+                                    <div class="input-group-append">
+                                        <button ng-disabled="saving || !subsetsToDelete.length" class="btn btn-danger" title="Delete" ng-click="openModalSubset()"
+                                            disabled="disabled">
+                                            <i class="fa fa-fw fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <auto-height>
+                                <table class="table table-hover table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center"> </th>
+                                            <th class="text-center"> Subset </th>
+                                            <th class="text-center"> View </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="item in lists.allViewsPerSubset | filter:select.filterallViewsPerSubset">
+                                            <td>
+                                                <input style="margin-top:5px" type="checkbox" ng-disabled="item.chores.length" ng-model="item.change" ng-change="toggleDeleteSubset(item)" class="ng-pristine ng-untouched ng-valid ng-empty"
+                                                    uib-popover="Delete subset" popover-append-to-body="true" popover-trigger="'mouseenter'"
+                                                    popover-class="popover-class-danger">
+                                            </td>
+                                            <td>
+                                             <i ng-if="tm1VersionSupported" class="fa fa-retweet fa-fw text-warning clickable" aria-hidden="true" style="cursor:pointer" ng-click="openModalReplaceSubset(item.views,item.name)"></i>
+                                              {{item.name}}
+                                            </td>
+                                            <td>
+                                                <div ng-repeat="view in item.views" class="badge ml-1" ng-style="generateHSLColour(view)" style="cursor:default;" ng-click="">
+                                                    {{view}}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </auto-height>
+                        </div>
+                    </div>
+                </uib-tab>
+            </uib-tabset>
+        </div>
+    </div>
+
+
+</div>

@@ -1,0 +1,72 @@
+<div>
+        <uib-tabset active="active">
+            <uib-tab index="$index + 1" ng-repeat="tab in tabs" heading="{{tab.title}}" disable="tab.disabled">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped bg-success" value="dynamic"
+                                ng-class="{'bg-info':tab.stepPercentage<100}"
+                                role="progressbar" style="width: {{tab.stepPercentage}}%" aria-valuenow="50"
+                                aria-valuemin="0" aria-valuemax="100">{{tab.stepPercentage}}%</div>
+                        </div>
+                    </div>
+                </div>
+                <auto-height>
+                    <div class="row" ng-repeat="step in tab.content" style="margin-top:10px">
+                        <div class="col-md-12">
+                            <div class="card" ng-class="{'text-white bg-info':step.open==false && tab.stepPercentage<100,'text-white bg-success':step.open==false && tab.stepPercentage==100}">
+                                <div class="card-header" style="padding: 5px 10px;">
+                                    <input style="cursor:pointer" type="checkbox" ng-model="change" ng-change="step.open=!step.open;calculatePercentage(tab.number)" class="ng-pristine ng-untouched ng-valid ng-empty">
+                                    </input>
+                                    Step {{step.number}} - {{step.title}}</div>
+                                <div class="card-body" ng-if="step.open">
+                                    <div class="card-deck">
+                                        <div class="card text-center" ng-repeat="action in step.actions">
+                                            <!-- OPEN A CUBEVIEW -->
+                                            <div class="card-body" ng-if="action.view">
+                                                <h5 class="card-title">
+                                                    <i class="fa cubes" style="margin-right:5px"></i>{{action.name}}</h5>
+                                                <button class="btn btn-primary" title="{{action.view}}">
+                                                    <a href="#/cube/view/{{instance}}/{{action.cube}}/{{action.view}}?name={{action.view}}" ng-click="user_clicks_branch(row.branch)"
+                                                        ng-class="[row.branch.item_class]">
+                                                        <i class="fa fa-fw fa-share" style="color:white"></i>
+                                                    </a>
+                                                </button>
+                                            </div>
+                                            <!-- OPEN A SUBSET -->
+                                            <div class="card-body" ng-if="action.subset">
+                                                <h5 class="card-title">
+                                                    <i class="fa subset" style="margin-right:5px"></i>{{action.name}}</h5>
+                                                <button class="btn btn-primary" title="{{action.subset}}">
+                                                    <a href="#/cube/view/{{instance}}/{{action.dimension}}/{{action.hierarchy}}/{{action.subset}}?name={{action.subset}}" ng-click="user_clicks_branch(row.branch)"
+                                                        ng-class="[row.branch.item_class]">
+                                                        <i class="fa fa-fw fa-share" style="color:white"></i>
+                                                    </a>
+                                                </button>
+                                            </div>
+                                            <!-- RUN PROCESS -->
+                                            <div class="card-body" ng-if="action.process">
+                                                <h5 class="card-title">
+                                                    <i class="fa processes" style="margin-right:5px"></i>{{action.name}}</h5>
+                                                <button class="btn btn-warning" title="{{action.process}}" ng-click="executeProcess(action.process)">
+                                                    <i class="fa fa-fw fa-bolt"></i>
+                                                </button>
+                                            </div>
+                                            <!-- RUN CHORE -->
+                                            <div class="card-body" ng-if="action.chore">
+                                                <h5 class="card-title">
+                                                    <i class="fa chores" style="margin-right:5px"></i>{{action.name}}</h5>
+                                                <button class="btn btn-warning" title="{{action.chore}}" ng-click="executeChore(action.chore)">
+                                                    <i class="fa fa-fw fa-bolt"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </auto-height>
+            </uib-tab>
+        </uib-tabset>
+    </div>
