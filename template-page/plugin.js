@@ -1,4 +1,8 @@
 
+// Uncomment the code arc.run.. below to enable this plugin
+
+/*
+
 arc.run(['$rootScope', function ($rootScope) {
 
     $rootScope.plugin("arcTemplate", "Template Title", "page", {
@@ -11,6 +15,8 @@ arc.run(['$rootScope', function ($rootScope) {
     });
 
 }]);
+
+*/
 
 arc.directive("arcTemplate", function () {
     return {
