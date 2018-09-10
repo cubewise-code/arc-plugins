@@ -50,6 +50,10 @@ arc.directive("cubewiseSubsetAndView", function () {
             allViewsPerSubset: [],
             allSubsets: []
          }
+         //Add Scroll bar when changing tabs
+         $scope.tabSelected = function ($event) {
+            $scope.$broadcast("auto-height-resize");
+         };  
          //Check TM1 Version
          $scope.checkTM1Version = function () {
             $scope.tm1VersionSupported = false;
