@@ -39,7 +39,6 @@ arc.directive("arcTemplate", function () {
 
             //Functions
             $scope.myFirstFunction = function () {
-                console.log("My first function");
             };
 
             //Trigger Functions

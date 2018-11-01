@@ -112,7 +112,6 @@ arc.directive("cubewiseMdx", function () {
                 $scope.message = null;
                 $http.post(encodeURIComponent($scope.instance) + "/" + tab.queryType + "?" + args, { MDX: tab.mdx }).then(function (success) {
                     tab.executing = false;
-                    console.log(success);
                     if (success.status == 401) {
                         return;
                     } else if (success.status >= 400) {

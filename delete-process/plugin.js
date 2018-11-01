@@ -18,14 +18,12 @@ arc.service('cubewiseDeleteTI', ['$rootScope', '$tm1', 'ngDialog', '$dialogs', '
 
       // Create a callback function for the dialog
       var deleteObject = function (options) {
-         console.log(name);
          var config = {
             method: "DELETE",
             url: encodeURIComponent(instance) + "/Processes('" + name + "')"
             //,headers: {Accept:'application/json;odata.metadata=none'}
          };
          $http(config).then(function (result) {
-            console.log(result);
             if (result.status == 200 || result.status == 201 || result.status == 204) {
                resultQuery = result.data;
                $rootScope.reloadInstance(instance);

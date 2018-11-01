@@ -113,7 +113,6 @@ arc.directive("tm1RestApiQuery", function () {
                                 //,headers: {Accept:'application/json;odata.metadata=none'}
                                 };
                 $http(config).then(function (result) {
-                    console.log(result);
                     if (result.status == 200 || result.status == 201 || result.status == 204) {
                         tab.queryStatus = 'success';
                         tab.resultQuery = result.data;
