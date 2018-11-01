@@ -109,9 +109,9 @@ arc.directive("cubewiseMdx", function () {
                 } else {
                     var args = "$expand=Hierarchies($select=Name;$expand=Dimension($select=Name)),Tuples($expand=Members($select=Name,UniqueName,Ordinal,Attributes))";
                 }
+                $scope.message = null;
                 $http.post(encodeURIComponent($scope.instance) + "/" + tab.queryType + "?" + args, { MDX: tab.mdx }).then(function (success) {
                     tab.executing = false;
-                    console.log(success);
                     if (success.status == 401) {
                         return;
                     } else if (success.status >= 400) {
