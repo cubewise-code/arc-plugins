@@ -44,7 +44,8 @@ arc.directive("cubewiseMdx", function () {
                         + "FROM [General Ledger] \n"
                         + "WHERE ([Department].[Corporate], [Year].[2012])",
                     queryType: "ExecuteMDX",
-                    maxRows: 1000
+                    maxRows: 1000,
+                    message: null
                 });
                 $timeout(function () {
                     $scope.selections.activeTab = $scope.tabs.length - 1;
@@ -98,9 +99,8 @@ arc.directive("cubewiseMdx", function () {
                 _editor.setShowPrintMargin(false);
             };
 
-            $scope.execute = function () {
+            $scope.execute = function (tab) {
                 var sendDate = (new Date()).getTime();
-                var tab = $scope.tabs[$scope.selections.activeTab];
                 //If dimension execute
                 var mdx = tab.mdx;
                 var n = mdx.indexOf("WHERE");
@@ -109,16 +109,16 @@ arc.directive("cubewiseMdx", function () {
                 } else {
                     var args = "$expand=Hierarchies($select=Name;$expand=Dimension($select=Name)),Tuples($expand=Members($select=Name,UniqueName,Ordinal,Attributes))";
                 }
-                $scope.message = null;
+                tab.message = null;
                 $http.post(encodeURIComponent($scope.instance) + "/" + tab.queryType + "?" + args, { MDX: tab.mdx }).then(function (success) {
                     tab.executing = false;
                     if (success.status == 401) {
                         return;
                     } else if (success.status >= 400) {
                         // Error
-                        $scope.message = success.data;
+                        tab.message = success.data;
                         if (success.data.error && success.data.error.message) {
-                            $scope.message = success.data.error.message;
+                            tab.message = success.data.error.message;
                         }
                     } else {
                         // Success
@@ -146,7 +146,7 @@ arc.directive("cubewiseMdx", function () {
                            });
                         }
                         var receiveDate = (new Date()).getTime();
-                        $scope.responseTimeMs = receiveDate - sendDate;
+                        tab.responseTimeMs = receiveDate - sendDate;
                     }
                 });
             };

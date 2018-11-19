@@ -27,8 +27,7 @@
                         </button>
                     </uib-tab-heading>
                     <div class="card" style="margin-bottom: 5px;">
-                        <div class="card-header" style="padding: 5px 10px;" ng-click="toggleQuery(tab)">
-                            <span>{ }</span>
+                        <disv class="card-header" style="padding: 5px 10px;" ng-click="toggleQuery(tab)">
                             <span translate="QUERY"></span>
                             <div class="pull-right">
                                 <a href ng-click="tab.hideQuery = !tab.hideQuery">
@@ -89,14 +88,21 @@
                         </div>
                     </div>
 
-                    <div class="card border border-success" style="margin-top:10px" ng-if="tab.queryStatus" ng-class="{'border border-danger':tab.queryStatus!='success'}">
+                    <div class="card" style="margin-top:10px" ng-if="tab.queryStatus">
 
                         <div class="card-header" style="padding: 5px 10px;">
                             <span style="margin-bottom:0px">
-                                <i style="margin-top:2px" class="fa fa-check text-success pull-left" aria-hidden="true" ng-class="{'fa-exclamation-triangle text-danger':tab.queryStatus!='success'}"></i>
-                                Result - Run in {{tab.responseTimeMs | number:0}} ms</span>
+                                {} Result - Run in {{tab.responseTimeMs | number:0}} ms</span>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body" ng-if="tab.message">
+                              <div>
+                                 <button class="btn btn-warning">
+                                    <span class="fa fa-warning" aria-hidden="true"></span>
+                                    <span>{{tab.message}}</span>
+                                 </button>
+                              </div>
+                           </div>
+                        <div class="card-body" ng-if="!tab.message">
                             <auto-height>
                                 <json-formatter json="tab.resultQuery" open="1"></json-formatter>
                             </auto-height>
