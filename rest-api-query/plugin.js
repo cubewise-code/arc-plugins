@@ -83,7 +83,8 @@ arc.directive("tm1RestApiQuery", function () {
                     + '\tNON EMPTY {TM1SUBSETALL([Account])} ON ROWS \n'
                     + 'FROM [General Ledger] \n'
                     + 'WHERE ([Department].[Corporate], [Year].[2012])"}',
-                    hideBody: false
+                    hideBody: false,
+                    message: null
                 });
                 $timeout(function () {
                     $scope.selections.activeTab = $scope.tabs.length - 1;
@@ -116,9 +117,11 @@ arc.directive("tm1RestApiQuery", function () {
                     if (result.status == 200 || result.status == 201 || result.status == 204) {
                         tab.queryStatus = 'success';
                         tab.resultQuery = result.data;
+                        tab.message = null;
                     } else {
                         tab.queryStatus = 'failed';
                         tab.resultQuery = result.data.error;
+                        tab.message = result.data.error.message;
                     }
                     var receiveDate = (new Date()).getTime();
                     tab.responseTimeMs = receiveDate - sendDate;
