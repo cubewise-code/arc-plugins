@@ -144,7 +144,7 @@ arc.directive("cubewiseSubsetAndView", function () {
                            $scope.viewsDeleted.push(viewFullName);
                            //Remove view from view list
                            _.remove($scope.subsetsViewsToDelete, function (i) {
-                              return i.view === viewFullName;
+                              return i.view.fullName === viewFullName;
                            });
                         }
                         if ($scope.subsetsViewsToDelete.length == 0) {
@@ -158,7 +158,7 @@ arc.directive("cubewiseSubsetAndView", function () {
                      //Delete views
                      $scope.viewsDeleted = [];
                      for (var v in $scope.subsetsViewsToDelete) {
-                        var viewFullName = $scope.subsetsViewsToDelete[v].view;
+                        var viewFullName = $scope.subsetsViewsToDelete[v].view.fullName;
                         $scope.deleteView(viewFullName);
                      }
                   };
@@ -178,6 +178,10 @@ arc.directive("cubewiseSubsetAndView", function () {
                            _.remove($scope.subsetsToDelete, function (i) {
                               return i.name === subsetFullName;
                            });
+                        }else{
+                           //Can't delete subset
+                           $scope.errorMessage = "Delete "+subsetFullName+" failed because "+result.data.error.message;
+                           console.log($scope.errorMessage);
                         }
                      });
                   }
@@ -196,7 +200,8 @@ arc.directive("cubewiseSubsetAndView", function () {
                   subsetsDeleted: $scope.subsetsDeleted,
                   views: $scope.subsetsViewsToDeleteUnique,
                   viewsToDelete: $scope.subsetsViewsToDeleteUnique,
-                  viewsDeleted: $scope.viewsDeleted
+                  viewsDeleted: $scope.viewsDeleted,
+                  errorMessage: $scope.errorMessage,
                }
             });
          };
@@ -444,16 +449,20 @@ arc.directive("cubewiseSubsetAndView", function () {
                   //Create view name
                   cube = $scope.lists.viewsAndSubsetsStructured[item].cube;
                   view = $scope.lists.viewsAndSubsetsStructured[item].view;
-                  viewFullName = cube + ':' + view;
+                  viewFullName = cube+":"+view;
+                  viewInfo = {fullName: cube+":"+view,
+                                 cube:cube,
+                                 name:view};
                   //Create subsetKeys array
                   if (!subsetKeys[subsetFullName]) {
                      subsetKeys[subsetFullName] = {
                         dimension: dimensionName,
+                        hierarchy: hierarchyName,
                         subsetName: subsetName,
                         views: []
                      };
                   }
-                  subsetKeys[subsetFullName].views.push(viewFullName);
+                  subsetKeys[subsetFullName].views.push(viewInfo);
                   //Create viewKeys array
                   if (!viewKeys[viewFullName]) {
                      viewKeys[viewFullName] = {
@@ -470,19 +479,31 @@ arc.directive("cubewiseSubsetAndView", function () {
                   subsetNameColumn = $scope.lists.viewsAndSubsetsStructured[item].subsetColumn;
                   if (subsetNameColumn) {
                      subsetFullNameColumn = dimensionName + ':' + hierarchyName + ':' + subsetNameColumn;
-                     viewKeys[viewFullName].subsetsColumn.push(subsetFullNameColumn);
+                     subsetFullNameColumnInfo = {fullName:subsetFullNameColumn,
+                        dimension:dimensionName,
+                        hierarchy:hierarchyName,
+                        name:subsetNameColumn};
+                     viewKeys[viewFullName].subsetsColumn.push(subsetFullNameColumnInfo);
                   }
                   //Create subsetFullNameRow
                   subsetNameRow = $scope.lists.viewsAndSubsetsStructured[item].subsetRow;
                   if (subsetNameRow) {
                      subsetFullNameRow = dimensionName + ':' + hierarchyName + ':' + subsetNameRow;
-                     viewKeys[viewFullName].subsetsRow.push(subsetFullNameRow);
+                     subsetFullNameRowInfo = {fullName:subsetFullNameRow,
+                                             dimension:dimensionName,
+                                             hierarchy:hierarchyName,
+                                             name:subsetNameRow};
+                     viewKeys[viewFullName].subsetsRow.push(subsetFullNameRowInfo);
                   }
                   //Create subsetFullNameTitle
                   subsetNameTitle = $scope.lists.viewsAndSubsetsStructured[item].subsetTitle;
                   if (subsetNameTitle) {
                      subsetFullNameTitle = dimensionName + ':' + hierarchyName + ':' + subsetNameTitle;
-                     viewKeys[viewFullName].subsetsTitle.push(subsetFullNameTitle);
+                     subsetFullNameTitleInfo = {fullName:subsetFullNameTitle,
+                        dimension:dimensionName,
+                        hierarchy:hierarchyName,
+                        name:subsetNameTitle};
+                     viewKeys[viewFullName].subsetsTitle.push(subsetFullNameTitleInfo);
                   }
                }
                //Create lists.allViewsPerSubset array
@@ -491,6 +512,7 @@ arc.directive("cubewiseSubsetAndView", function () {
                   $scope.lists.allViewsPerSubset.push({
                      name: key,
                      dimension: value.dimension,
+                     hierarchy: value.hierarchy,
                      subsetName: subsetName,
                      views: value.views
                   });

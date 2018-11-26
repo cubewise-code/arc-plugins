@@ -11,6 +11,10 @@
          background-color: #fcf8e3;
          border-color: #faebcc;
       }
+
+      .badge-text {
+         font-size: 1.2em;
+      }
    </style>
    <!--SEARCH SUBSET BY DIMENSION-->
    <div class="row">
@@ -54,7 +58,7 @@
                               </tr>
                            </thead>
                            <tbody>
-                              <tr ng-repeat="item in lists.allSubsetsPerView | filter:select.filterallSubsetsPerView">
+                              <tr ng-repeat="item in lists.allSubsetsPerView | filter:select.filterallSubsetsPerView track by $index">
                                  <td class="text-center">
                                     <span class="ng-binding">{{$index+1}}</span>
                                  </td>
@@ -64,22 +68,39 @@
                                        popover-trigger="'mouseenter'" popover-class="popover-class-danger">
                                  </td>
                                  <td>
-                                    {{item.name}}
+                                       <a href="#/cube/{{instance}}/{{item.cube}}/view/{{item.viewName}}">
+                                       {{item.cube}}:{{item.viewName}}
+                                   </a>
                                  </td>
                                  <td>
-                                    <div ng-repeat="subset in item.subsetsRow" class="badge ml-1" ng-style="generateHSLColour(subset)" ng-click="">
-                                       <i ng-if="tm1VersionSupported" class="fa fa-w fa-retweet" aria-hidden="true" style="cursor:pointer" ng-click="openModalReplaceSubset(item,subset)"></i> {{subset}}
+                                    <div ng-repeat="subset in item.subsetsRow track by $index" class="badge ml-1" ng-style="generateHSLColour(subset.fullName)" ng-click="">
+                                       <span class="badge-text">
+                                          <i ng-if="tm1VersionSupported" class="fa fa-w fa-retweet" aria-hidden="true" style="cursor:pointer" ng-click="openModalReplaceSubset(item,subset)"></i>   
+                                       <a style="color:white" href="#/dimension/{{instance}}/{{subset.dimension}}/{{subset.hierarchy}}/subset/{{subset.name}}">
+                                          {{subset.fullName}}
+                                      </a>
+                                    </span>
                                     </div>
                                  </td>
                                  <td>
-                                    <div ng-repeat="subset in item.subsetsColumn" class="badge ml-1" ng-style="generateHSLColour(subset)" ng-click="">
-                                       <i ng-if="tm1VersionSupported" class="fa fa-w fa-retweet" aria-hidden="true" style="cursor:pointer" ng-click="openModalReplaceSubset(item,subset)"></i> {{subset}}
+                                    <div ng-repeat="subset in item.subsetsColumn track by $index" class="badge ml-1" ng-style="generateHSLColour(subset.fullName)" ng-click="">
+                                          <span class="badge-text">
+                                       <i ng-if="tm1VersionSupported" class="fa fa-w fa-retweet" aria-hidden="true" style="cursor:pointer" ng-click="openModalReplaceSubset(item,subset)"></i> 
+                                       <a style="color:white" href="#/dimension/{{instance}}/{{subset.dimension}}/{{subset.hierarchy}}/subset/{{subset.name}}">
+                                          {{subset.fullName}}
+                                      </a>
+                                       </span>
                                     </div>
                                  </td>
                                  <td>
-                                    <div ng-repeat="subset in item.subsetsTitle" class="badge ml-1" ng-style="generateHSLColour(subset)" ng-click="">
-                                       <i ng-if="tm1VersionSupported" class="fa fa-w fa-retweet" aria-hidden="true" style="cursor:pointer" ng-click="openModalReplaceSubset(item,subset)"></i> {{subset}}
-                                    </div>
+                                    <div ng-repeat="subset in item.subsetsTitle track by $index" class="badge ml-1" ng-style="generateHSLColour(subset.fullName)" ng-click="">
+                                       <span class="badge-text">
+                                             <i ng-if="tm1VersionSupported" class="fa fa-w fa-retweet" aria-hidden="true" style="cursor:pointer" ng-click="openModalReplaceSubset(item,subset)"></i>
+                                             <a style="color:white" href="#/dimension/{{instance}}/{{subset.dimension}}/{{subset.hierarchy}}/subset/{{subset.name}}">
+                                                {{subset.fullName}}
+                                            </a>                                   
+                                       </span>
+                                     </div>
                                  </td>
                               </tr>
                            </tbody>
@@ -125,7 +146,7 @@
                               </tr>
                            </thead>
                            <tbody>
-                              <tr ng-repeat="item in lists.allViewsPerSubset | filter:select.filterallViewsPerSubset">
+                              <tr ng-repeat="item in lists.allViewsPerSubset | filter:select.filterallViewsPerSubset track by $index">
                                  <td class="text-center">
                                     <span class="ng-binding">{{$index+1}}</span>
                                  </td>
@@ -136,12 +157,18 @@
                                  </td>
                                  <td>
                                     <i ng-if="tm1VersionSupported" class="fa fa-retweet fa-fw text-warning clickable" aria-hidden="true" style="cursor:pointer"
-                                       ng-click="openModalReplaceSubset(item.views,item.name)"></i>
-                                    {{item.name}}
+                                       ng-click="openModalReplaceSubset(item.views,item.name)"></i>  
+                                    <a href="#/dimension/{{instance}}/{{item.dimension}}/{{item.hierarchy}}/subset/{{item.subsetName}}">
+                                       {{item.name}}
+                                   </a> 
                                  </td>
                                  <td>
-                                    <div ng-repeat="view in item.views" class="badge ml-1" ng-style="generateHSLColour(view)" style="cursor:default;" ng-click="">
-                                       {{view}}
+                                    <div ng-repeat="view in item.views track by $index" class="badge ml-1" ng-style="generateHSLColour(view.fullName)" style="cursor:default;" ng-click="">
+                                          <span class="badge-text">
+                                                <a style="color:white" href="#/cube/{{instance}}/{{view.cube}}/view/{{view.name}}">
+                                                   {{view.cube}}:{{view.name}}
+                                               </a>
+                                             </span>
                                     </div>
                                  </td>
                               </tr>
