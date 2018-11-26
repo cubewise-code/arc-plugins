@@ -21,7 +21,7 @@
                <div class="card-body">
                   <div ng-if="viewsDeleted.length==0" ng-repeat="item in views track by $index">
                      <div>{{$index + 1}}.
-                        <i class="fa fa-w view"></i> {{item}}
+                        <i class="fa fa-w view"></i> {{item.fullName}}
                      </div>
                   </div>
                   <div ng-if="viewsDeleted.length>0" ng-repeat="view in viewsDeleted track by $index">
@@ -45,6 +45,11 @@
                   </div>
                </div>
                <div class="card-body">
+                  <div ng-if="errorMessage.length>0">
+                     <div class="alert alert-warning" role="alert" style="padding: 5px 10px">
+                        <i class="fa fa-w fa-warning"></i> {{errorMessage}}
+                     </div>
+                  </div>
                   <div ng-if="subsets.length>0" ng-repeat="subset in subsets track by $index">
                      {{$index + 1}}.
                      <i class="fa fa-fw subset"></i> {{subset.name}}
