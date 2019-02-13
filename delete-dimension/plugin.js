@@ -1,7 +1,7 @@
 
 arc.run(['$rootScope', function ($rootScope) {
 
-   $rootScope.plugin("cubewiseDeleteChore", "Delete", "menu/dimension", {
+   $rootScope.plugin("cubewiseDeleteDimension", "Delete", "menu/dimension", {
       icon: "fa-trash",
       description: "This plugin clones a cube using Bedrock.Cube.Clone, you have the option to include rules and data.",
       author: "Cubewise",
@@ -11,7 +11,7 @@ arc.run(['$rootScope', function ($rootScope) {
 
 }]);
 
-arc.service('cubewiseDeleteChore', ['$rootScope', '$tm1', 'ngDialog', '$dialogs', '$http', function ($rootScope, $tm1, ngDialog, $dialogs, $http) {
+arc.service('cubewiseDeleteDimension', ['$rootScope', '$tm1', 'ngDialog', '$dialogs', '$http', function ($rootScope, $tm1, ngDialog, $dialogs, $http) {
 
    // The interface you must implement
    this.execute = function (instance, name) {
