@@ -68,7 +68,7 @@
                <div class="card-header" style="padding: 5px 10px;">
                   <i class="fa fa-table"></i>
                   <span translate="RESULT"></span>
-                  - Run in {{tab.responseTimeMs | number:0}} ms
+                  - Run in {{tab.responseTimeMs | num:0}} ms
                   <div class="pull-right">
                      <a href class="click" ng-click="tab.showJSON = !tab.showJSON">
                         <i class="fa fa-toggle-on" ng-if="tab.showJSON"></i>
@@ -119,7 +119,7 @@
                                  <td ng-repeat="cell in row.cells" class="text-right">
                                     <input ng-if="!cell.isReadOnly" type="text" class="form-control text-right" style="padding: 1px 5px;" ng-model="cell.value"
                                        ng-blur="cell.update(query);" />
-                                    <span ng-if="cell.isReadOnly">{{cell.value | number:2}}</span>
+                                    <span ng-if="cell.isReadOnly">{{cell.value | num:2}}</span>
                                  </td>
                               </tr>
                            </tbody>
