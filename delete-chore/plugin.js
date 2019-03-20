@@ -21,7 +21,6 @@ arc.service('cubewiseDeleteChore', ['$rootScope', '$tm1', 'ngDialog', '$dialogs'
          var config = {
             method: "DELETE",
             url: encodeURIComponent(instance) + "/Chores('" + name + "')"
-            //,headers: {Accept:'application/json;odata.metadata=none'}
          };
          $http(config).then(function (result) {
             if (result.status == 200 || result.status == 201 || result.status == 204) {

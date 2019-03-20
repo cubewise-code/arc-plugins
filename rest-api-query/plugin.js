@@ -109,9 +109,8 @@ arc.directive("tm1RestApiQuery", function () {
                 var sendDate = (new Date()).getTime();
                 var mdxClean = tab.body.replace(/(\n|\t)/gm,"");
                 var config = {method: tab.type, 
-                                url: encodeURIComponent($scope.instance) + "/" + tab.restApiQuery, 
+                                url: encodeURIComponent($scope.instance) + "/" + tab.restApiQuery,
                                 data:mdxClean
-                                //,headers: {Accept:'application/json;odata.metadata=none'}
                                 };
                 $http(config).then(function (result) {
                     if (result.status == 200 || result.status == 201 || result.status == 204) {
