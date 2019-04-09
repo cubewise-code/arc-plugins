@@ -1,0 +1,62 @@
+<div class="mdx">
+   <style>
+      .popover-class-danger {
+         color: #a94442;
+         background-color: #f2dede;
+         border-color: #ebccd1;
+      }
+
+      .popover-class-warning {
+         color: #8a6d3b;
+         background-color: #fcf8e3;
+         border-color: #faebcc;
+      }
+   </style>
+   <!--SEARCH SUBSET BY DIMENSION-->
+
+
+   <div class="row">
+      <div class="col-md-12">
+         <label class="page-title">
+            <i class="fa fa-search" style="padding-right:5px" aria-hidden="true"></i>
+            <span translate="SEARCHBYELEMENTID"></span></label>
+      </div>
+   </div>
+   <div class="row h-100 justify-content-center align-items-center">
+      <div class="col-md-12">
+         <span class="btn-toolbar">
+            <span class="input-group">
+               <input type="text" ng-model="elementToSearch" placeholder="Type Element ID"
+                  class="form-control ng-pristine ng-untouched ng-valid ng-empty" style="display:inline; width:250px;"
+                  ng-keydown="key($event)">
+               <span class="input-group-append input-group-prepend">
+                  <button ng-disabled="saving || !elementToSearch.length" class="btn btn-primary" title="Refresh"
+                     ng-click="getDimensions()">
+                     <i class="fa fa-fw fa-refresh"></i>
+                  </button>
+               </span>
+            </span>
+         </span>
+      </div>
+   </div>
+   <div class="row" ng-if="lists.dimensions.length>0">
+         <div class="col-md-12">
+            <label class="page-title">
+               {{lists.dimensions.length}} <span translate="LISTOFALLDIMENSIONSWITHANELEMENTIDCONTAINING"></span> "{{elementToSearch}}":</label>
+         </div>
+   </div>
+   <div class="row">
+      <div class="col-md-12">
+         <span ng-if="lists.dimensions.length>0" ng-repeat="item in lists.dimensions">
+            <span class="badge m-2" style="font-size:1em;color:white" ng-style="generateHSLColour(item.Name)">
+               <a href="#/dimension/{{instance}}/{{item.Name}}/{{item.Name}}" style="color:white">
+                  {{item.Name}} <i class="fa fa-search-plus" aria-hidden="true"></i>
+               </a>
+            </span>
+         </span>
+         <div ng-if="lists.dimensions==0 && options.searched" class="mt-1 alert alert-warning" role="alert">
+            <span translate="NODIMENSIONSFOUNDWITHANELEMENTIDCONTAINING"></span> "{{elementToSearch}}"
+         </div>
+      </div>
+   </div>
+</div>
