@@ -19,7 +19,8 @@
             <span style="font-weight:bold" ng-if="targetViews.length>1">{{targetViews.length}} views:</span>
             <span style="font-weight:bold" ng-if="targetViews.length==1"> view:</span>
             <span ng-repeat="view in targetViews" style="font-weight:bold">
-               {{$index+1}}. <span style="margin-right:5px"></i> {{view}}</span>
+               {{$index+1}}. <span style="margin-right:5px"></i> 
+                  <div class="badge"  ng-style="generateHSLColour(view.fullName)">{{view.fullName}}</div></span>
          </div>
       </div>
       <div class="row" style="margin-top:10px">
