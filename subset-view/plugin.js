@@ -336,7 +336,7 @@ arc.directive("cubewiseSubsetAndView", function () {
                   $scope.replaceSubsets = function () {
                      if ($scope.replaceMultipleViews) {
                         for (var v in $scope.targetViews) {
-                           var viewFullName = $scope.targetViews[v];
+                           var viewFullName = $scope.targetViews[v].fullName;
                            var semiColumn = viewFullName.indexOf(":");
                            var cubeName = viewFullName.substr(0, semiColumn);
                            var viewName = viewFullName.substr(semiColumn + 1, viewFullName.length - semiColumn + 1);
