@@ -1,7 +1,7 @@
 
 arc.run(['$rootScope', function ($rootScope) {
 
-   $rootScope.plugin("cubewiseSubsetAndView", "Native Views and Subsets", "page", {
+   $rootScope.plugin("cubewiseSubsetAndView", "VIEWSANDSUBSETS", "page", {
       menu: "tools",
       icon: "fa-eraser",
       description: "This plugin can be used to search any TM1 objects",
