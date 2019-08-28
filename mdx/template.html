@@ -1,107 +1,101 @@
 <div class="mdx">
 
-   <uib-tabset active="selections.activeTab">
-
-      <uib-tab ng-repeat="tab in tabs" select="tabSelected()">
-         <uib-tab-heading>
-            {{tab.name}}
-            <a href class="click" ng-click="closeTab($index)">
-               <i class="fa fa-fw fa-close"></i>
+   <div>
+      <div class="card" style="margin-bottom: 5px;">
+         <div class="card-header" style="padding: 5px 10px;">
+            <a href>
+               <i class="fa fa-toggle-on" ng-if="options.queryType=='ExecuteMDXSetExpression'" ng-click="options.queryType='ExecuteMDX'"></i>
+               <i class="fa fa-toggle-off" ng-if="options.queryType=='ExecuteMDX'" ng-click="options.queryType='ExecuteMDXSetExpression'"></i>
             </a>
-            <button style="padding:1px" ng-if="$index==tabs.length-1" class="btn btn-secondary btn-sm" title="{{'ADDTAB' | translate}}"
-               ng-click="addTab()">
-               <i class="fa fa-fw fa-plus"></i>
-            </button>
-         </uib-tab-heading>
-         <div>
-            <div class="card" style="margin-bottom: 5px;">
-               <div class="card-header" style="padding: 5px 10px;">
-                  <a href>
-                     <i class="fa fa-toggle-on" ng-if="tab.queryType=='ExecuteMDXSetExpression'" ng-click="tab.queryType='ExecuteMDX'"></i>
-                     <i class="fa fa-toggle-off" ng-if="tab.queryType=='ExecuteMDX'" ng-click="tab.queryType='ExecuteMDXSetExpression'"></i>
-                  </a>
-                  <span>Execute MDX Set Expressions</span>
-                  <div class="pull-right">
-                     <a href ng-click="tab.hideQuery = !tab.hideQuery">
-                        <i class="fa fa-toggle-on" ng-if="!tab.hideQuery"></i>
-                        <i class="fa fa-toggle-off" ng-if="tab.hideQuery"></i>
-                     </a>
+            <span>Execute MDX Set Expressions</span>
+            <div class="pull-right">
+               <a href ng-click="hideQuery = !hideQuery">
+                  <i class="fa fa-toggle-on" ng-if="!hideQuery"></i>
+                  <i class="fa fa-toggle-off" ng-if="hideQuery"></i>
+               </a>
+            </div>
+         </div>
+         <div class="card-body" style="padding: 5px;" ng-if="!hideQuery">
+            <div class="input-group mb-1">
+               <span class="input-group-prepend" uib-dropdown dropdown-append-to-body>
+                  <button class="btn btn-primary" ng-class="{'btn-info':options.queryType!='ExecuteMDX'}" uib-dropdown-toggle>
+                     <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="split-button">
+                     <li role="menuitem" ng-repeat="item in lists[options.queryType]">
+                        <div ng-click="options.mdx = item.query" style="margin-left:10px;cursor:pointer">
+                           <span class="badge {{item.badge}}">{{item.name}} </span> {{item.query}}</div>
+                     </li>
+                  </ul>
+               </span>
+               <span class="input-group-prepend">
+                  <span class="input-group-text" translate="NAME"></span>
+               </span>
+               <input type="text" class="form-control" ng-model="options.name" style="width:60%"
+               >
+               <span class="input-group-prepend">
+                  <span class="input-group-text ng-scope" translate="MAXROWS">Max. Rows</span>
+               </span>
+               <input type="number" class="form-control ng-pristine ng-untouched ng-valid ng-not-empty input-group-append" ng-model="maxRows"
+                  placeholder="Max. Rows" style="width: 70px">
+               <span class="input-group-append">
+                  <button ng-click="execute()" class="btn btn-warning" title="{{'EXECUTE' | translate}}">
+                     <i ng-if="!executing" class="fa fa-fw fa-bolt"></i>
+                     <i ng-if="executing" class="fa fa-refresh fa-spin"></i>
+                  </button>
+               </span>
+            </div>
+            <pre ui-ace="{ onLoad : editorLoaded }" ng-model="options.mdx" style="height: 200px;"></pre>
+         </div>
+      </div>
+      <uib-tabset active="currentTabIndex">
+         <uib-tab index="0">
+            <uib-tab-heading>
+               Result
+            </uib-tab-heading>
+            <div class="row">
+                  <div class="col-md-12 text-center">
+                        <i ng-if="executing" class="fa fa-refresh fa-3x fa-spin"></i>
                   </div>
                </div>
-               <div class="card-body" style="padding: 5px;" ng-if="!tab.hideQuery">
-                  <div class="input-group mb-1">
-                     <span class="input-group-prepend" uib-dropdown dropdown-append-to-body>
-                        <button class="btn btn-primary" ng-class="{'btn-info':tab.queryType!='ExecuteMDX'}" uib-dropdown-toggle>
-                           <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="split-button">
-                           <li role="menuitem" ng-repeat="item in lists[tab.queryType]">
-                              <div ng-click="tab.mdx = item.query" style="margin-left:10px;cursor:pointer">
-                                 <span class="badge {{item.badge}}">{{item.name}} </span> {{item.query}}</div>
-                           </li>
-                        </ul>
-                     </span>
-                     <span class="input-group-prepend">
-                        <span class="input-group-text" translate="NAME"></span>
-                     </span>
-                     <input type="text" class="form-control" ng-model="tab.name" style="width:60%">
-                     <span class="input-group-prepend">
-                        <span class="input-group-text ng-scope" translate="MAXROWS">Max. Rows</span>
-                     </span>
-                     <input type="number" class="form-control ng-pristine ng-untouched ng-valid ng-not-empty input-group-append" ng-model="tab.maxRows"
-                        placeholder="Max. Rows" style="width: 70px">
-                     <span class="input-group-append">
-                        <button class="btn btn-warning" title="{{'EXECUTE' | translate}}" ng-click="execute(tab)">
-                           <i class="fa fa-fw fa-bolt"></i>
-                        </button>
-                     </span>
-                  </div>
-                  <pre ui-ace="{ onLoad : editorLoaded }" ng-model="tab.mdx" style="height: 200px;"></pre>
-               </div>
-            </div>
-
-            <div ng-if="tab.executing" style="padding-top: 20px;">
-               <i class="fa fa-refresh fa-spin fa-fw fa-2x"></i>
-            </div>
-
-            <div class="card" ng-if="tab.result">
+            <div class="card" ng-if="result">
                <div class="card-header" style="padding: 5px 10px;">
                   <i class="fa fa-table"></i>
                   <span translate="RESULT"></span>
-                  - Run in {{tab.responseTimeMs | num:0}} ms
+                  - Run in {{options.responseTimeMs | num:0}} ms
                   <div class="pull-right">
-                     <a href class="click" ng-click="tab.showJSON = !tab.showJSON">
-                        <i class="fa fa-toggle-on" ng-if="tab.showJSON"></i>
-                        <i class="fa fa-toggle-off" ng-if="!tab.showJSON"></i>
+                     <a href class="click" ng-click="showJSON = !showJSON">
+                        <i class="fa fa-toggle-on" ng-if="showJSON"></i>
+                        <i class="fa fa-toggle-off" ng-if="!showJSON"></i>
                         <span translate="JSON"></span>
                      </a>
                   </div>
-                  <div ng-if="tab.queryType=='ExecuteMDXSetExpression'" class="pull-right">
-                     <a href class="click" ng-click="tab.showAttributes = !tab.showAttributes">
-                        <i class="fa fa-toggle-on" ng-if="tab.showAttributes"></i>
-                        <i class="fa fa-toggle-off" ng-if="!tab.showAttributes"></i>
+                  <div ng-if="options.queryType=='ExecuteMDXSetExpression'" class="pull-right">
+                     <a href class="click" ng-click="options.showAttributes = !options.showAttributes">
+                        <i class="fa fa-toggle-on" ng-if="options.showAttributes"></i>
+                        <i class="fa fa-toggle-off" ng-if="!options.showAttributes"></i>
                         <span translate="Attributes"> </span>
                      </a>
                      <span style="padding-right:5px;padding-left:5px"> | </span>
                   </div>
                </div>
-               <div class="card-body" ng-if="tab.message">
+               <div class="card-body" ng-if="options.message">
                   <div>
                      <button class="btn btn-warning">
                         <span class="fa fa-warning" aria-hidden="true"></span>
-                        <span>{{tab.message}}</span>
+                        <span>{{options.message}}</span>
                      </button>
                   </div>
                </div>
-               <div class="card-body" style="padding: 5px 0px 0px 5px;" ng-if="!tab.message">
+               <div class="card-body" style="padding: 5px 0px 0px 5px;" ng-if="!options.message">
                   <auto-height>
-                     <json-formatter ng-if="tab.showJSON" json="tab.result.json" open="1"></json-formatter>
-                     <div ng-if="!tab.showJSON">
+                     <json-formatter ng-if="showJSON" json="result.json" open="1"></json-formatter>
+                     <div ng-if="!showJSON">
                         <!-- =======================-->
                         <!-- Table for cube query-->
-                        <table class="table table-sm" ng-if="tab.result.mdx!='dimension'">
+                        <table class="table table-sm" ng-if="result.mdx!='dimension'">
                            <thead>
-                              <tr ng-repeat="row in tab.result.table.headers">
+                              <tr ng-repeat="row in result.table.headers">
                                  <th ng-repeat="col in row.rows" ng-if="col.visible" colspan="{{col.colspan}}" rowspan="{{col.rowspan}}" class="text-left">
                                     {{col.dimension}}
                                  </th>
@@ -111,7 +105,7 @@
                               </tr>
                            </thead>
                            <tbody>
-                              <tr ng-repeat="row in tab.result.table.rows | limitTo : tab.maxRows">
+                              <tr ng-repeat="row in result.table.rows | limitTo : maxRows">
                                  <td ng-repeat="el in row.elements" class="text-left" style="margin-right:5px;">
                                     </i>
                                     {{el.name}}
@@ -126,22 +120,22 @@
                         </table>
                         <!-- =======================-->
                         <!-- Table for dimension query-->
-                        <table class="table table-sm" ng-if="tab.result.mdx=='dimension'">
+                        <table class="table table-sm" ng-if="result.mdx=='dimension'">
                            <thead>
                               <th> ID </th>
                               <th> Unique Name </th>
-                              <th ng-if="tab.showAttributes" ng-repeat="attribute in tab.result.attributes"> {{attribute.Name}} </th>
+                              <th ng-if="options.showAttributes" ng-repeat="attribute in result.attributes"> {{attribute.Name}} </th>
 
                            </thead>
                            <tbody>
-                              <tr ng-repeat="item in tab.result.table | limitTo : tab.maxRows">
+                              <tr ng-repeat="item in result.table | limitTo : maxRows">
                                  <td>
                                     {{item.Members[0].Name}}
                                  </td>
                                  <td>
                                     {{item.Members[0].UniqueName}}
                                  </td>
-                                 <td ng-if="tab.showAttributes" ng-repeat="attribute in tab.result.attributes">
+                                 <td ng-if="options.showAttributes" ng-repeat="attribute in result.attributes">
                                     {{item.Members[0].Attributes[attribute.Name]}}
                                  </td>
                               </tr>
@@ -152,10 +146,38 @@
                   </auto-height>
                </div>
             </div>
-
-         </div>
-      </uib-tab>
-
-   </uib-tabset>
+         </uib-tab>
+         <uib-tab index="1" ng-if="$root.uiPrefs.mdxHistory.length>0">
+            <uib-tab-heading >
+               History <span
+                  ng-if="$root.uiPrefs.mdxHistory.length>0">({{$root.uiPrefs.mdxHistory.length}})</span>
+               <span ng-if="$root.uiPrefs.mdxHistory.length>0" title="{{'CLEAR' | translate}}"
+                  ng-click="clearMDXHistory()" ng-disabled="!$root.uiPrefs.mdxHistory.length">
+                  <i class="fa fa-fw fa-trash text-danger"></i>
+               </span>
+            </uib-tab-heading>
+            <auto-height>
+               <div ng-repeat="item in $root.uiPrefs.mdxHistory"
+                  ng-class="{'func-active': indexTiFunctions === $index}">
+                  <div class="mt-1 mb-1" ng-click="updateCurrentQuery(item)" style="cursor:pointer">
+                     <span>
+                        <i class="fa fa-fw fa-info-circle"
+                                       title="{{item.name}}"></i>
+                     </span>
+                     <span>{{item.mdx}}</span>
+                     <span ng-if="item.queryStatus == 'success'" class="badge ml-1 badge-success"
+                        style="font-size:0.9em">
+                        {{item.responseTimeMs | num:0}} ms
+                     </span>
+                     <span ng-if="item.message.length>0" class="badge ml-1 badge-warning"
+                        style="font-size:0.9em">
+                        {{item.message}}
+                     </span>
+                  </div>
+               </div>
+            </auto-height>
+         </uib-tab>
+      </uib-tabset>
+   </div>
 
 </div>
