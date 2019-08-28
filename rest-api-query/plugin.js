@@ -22,111 +22,153 @@ arc.directive("tm1RestApiQuery", function () {
         link: function ($scope, element, attrs) {
 
         },
-        controller: ["$scope", "$rootScope", "$http", "$tm1", "$translate", "$timeout", function ($scope, $rootScope, $http, $tm1, $translate, $timeout) {
+        controller: ["$scope", "$rootScope", "$http", "$tm1", "$translate", "$timeout", "$helper", function ($scope, $rootScope, $http, $tm1, $translate, $timeout, $helper) {
 
-            // Create the tabs
-            $scope.tabs = [];
-
-            $scope.selections = {
+            $scope.options = {
                 activeTab: 0,
                 queryCounter: 0,
-                type: 'GET',
+                method: 'GET',
                 restApiQuery: 'Cubes',
-                queryStatus: ''
+                queryStatus: '',
+                name: $translate.instant("QUERY"),
+                method: "GET",
+                  body: '{"MDX":"SELECT \n'
+                  + '\tNON EMPTY {[Version].[Actual], [Version].[Budget]} ON COLUMNS, \n'
+                  + '\tNON EMPTY {TM1SUBSETALL([Account])} ON ROWS \n'
+                  + 'FROM [General Ledger] \n'
+                  + 'WHERE ([Department].[Corporate], [Year].[2012])"}',
+               hideBody: false,
+               message: null,
+               executing: false
             };
 
+            $scope.clearRestHistory = function () {
+               $rootScope.uiPrefs.restHistory = [];
+            }
+   
+            if(!$rootScope.uiPrefs.restHistory || $rootScope.uiPrefs.restHistory.length === 0){
+               $scope.clearRestHistory();
+            }
+
             $scope.lists = {
-                types: ['GET', 'POST', 'PATCH', 'DELETE'],
+                methods: ['GET', 'POST', 'PATCH', 'DELETE'],
                 resultQuery: [],
                 GET: [
-                    { icon: 'cubes', name: 'Get list', query: 'Cubes' },
-                    { icon: 'cubes', name: 'Get list only names', query: 'Cubes?$select=Name' },
-                    { icon: 'cubes', name: 'Count All', query: 'Cubes/$count' },
-                    { icon: 'cubes', name: 'Get Dimensions', query: "Cubes('cubeName')/Dimensions" },
-                    { icon: 'cubes', name: 'Get only model cubes', query: 'ModelCubes()' },
-                    { icon: 'dimensions', name: 'Get list', query: 'Dimensions' },
-                    { icon: 'dimensions', name: 'Get one dimension', query: "Dimensions('dimensionName')" },
-                    { icon: 'dimensions', name: 'Get hierarchies', query: "Dimensions('dimensionName')/Hierarchies" },
-                    { icon: 'dimensions', name: 'Get list of attributes', query: "Dimensions('dimensionName')/Hierarchies('dimensionName')/ElementAttributes" },
-                    { icon: 'processes', name: 'Get list', query: 'Processes' },
-                    { icon: 'processes', name: 'Get only Model TI', query: "Processes?$filter=substringof('}',Name) eq false&$select=Name" },
-                    { icon: 'processes', name: 'Get hierarchies', query: "Processes('processName')" },
-                    { icon: 'fa-server', name: 'Metadata', query: "$metadata" },
-                    { icon: 'fa-server', name: 'Get Configuration', query: "Configuration" },
-                    { icon: 'fa-server', name: 'Get TM1 Version', query: "Configuration/ProductVersion/$value" },
-                    { icon: 'fa-server', name: 'Get Sessions', query: "Threads?$expand=Session" }
+                    { icon: 'cubes', name: 'Get list', restApiQuery: 'Cubes' },
+                    { icon: 'cubes', name: 'Get list only names', restApiQuery: 'Cubes?$select=Name' },
+                    { icon: 'cubes', name: 'Count All', restApiQuery: 'Cubes/$count' },
+                    { icon: 'cubes', name: 'Get Dimensions', restApiQuery: "Cubes('cubeName')/Dimensions" },
+                    { icon: 'cubes', name: 'Get only model cubes', restApiQuery: 'ModelCubes()' },
+                    { icon: 'dimensions', name: 'Get list', restApiQuery: 'Dimensions' },
+                    { icon: 'dimensions', name: 'Get one dimension', restApiQuery: "Dimensions('dimensionName')" },
+                    { icon: 'dimensions', name: 'Get hierarchies', restApiQuery: "Dimensions('dimensionName')/Hierarchies" },
+                    { icon: 'dimensions', name: 'Get list of attributes', restApiQuery: "Dimensions('dimensionName')/Hierarchies('dimensionName')/ElementAttributes" },
+                    { icon: 'processes', name: 'Get list', restApiQuery: 'Processes' },
+                    { icon: 'processes', name: 'Get only Model TI', restApiQuery: "Processes?$filter=substringof('}',Name) eq false&$select=Name" },
+                    { icon: 'processes', name: 'Get hierarchies', restApiQuery: "Processes('processName')" },
+                    { icon: 'fa-server', name: 'Metadata', restApiQuery: "$metadata" },
+                    { icon: 'fa-server', name: 'Get Configuration', restApiQuery: "Configuration" },
+                    { icon: 'fa-server', name: 'Get TM1 Version', restApiQuery: "Configuration/ProductVersion/$value" },
+                    { icon: 'fa-server', name: 'Get Sessions', restApiQuery: "Threads?$expand=Session" }
                 ],
                 POST: [
-                    { icon: 'cubes', name: 'Execute MDX', query: 'ExecuteMDX?' },
-                    { icon: 'cubes', name: 'Execute MDX with Cells', query: 'ExecuteMDX?$expand=Cells' },
-                    { icon: 'cubes', name: 'Execute MDX with Axes', query: 'ExecuteMDX?$expand=Axes($expand=Hierarchies($select=Name;$expand=Dimension($select=Name)))' }
+                    { icon: 'cubes', name: 'Execute MDX', restApiQuery: 'ExecuteMDX?' },
+                    { icon: 'cubes', name: 'Execute MDX with Cells', restApiQuery: 'ExecuteMDX?$expand=Cells' },
+                    { icon: 'cubes', name: 'Execute MDX with Axes', restApiQuery: 'ExecuteMDX?$expand=Axes($expand=Hierarchies($select=Name;$expand=Dimension($select=Name)))' }
                 ],
                 PATCH: [
-                    { icon: 'chores', name: 'Update Chore', query: "Chores('choreName')" }
+                    { icon: 'chores', name: 'Update Chore', restApiQuery: "Chores('choreName')" }
                 ],
                 DELETE: [
-                    { icon: 'cubes', name: 'Delete a view', query: "Cubes('cubeName')/Views('viewName')" },
-                    { icon: 'dimensions', name: 'Delete a dimension', query: "Dimensions('dimensionName')" },
-                    { icon: 'subset', name: 'Delete a subset', query: "Dimensions('dimensionName')/Hierarchies('hierarchyName')/Subsets('subsetName')"}
+                    { icon: 'cubes', name: 'Delete a view', restApiQuery: "Cubes('cubeName')/Views('viewName')" },
+                    { icon: 'dimensions', name: 'Delete a dimension', restApiQuery: "Dimensions('dimensionName')" },
+                    { icon: 'subset', name: 'Delete a subset', restApiQuery: "Dimensions('dimensionName')/Hierarchies('hierarchyName')/Subsets('subsetName')"}
                 ]
             }
 
-            $scope.addTab = function () {
-                // Add a tab
-                $scope.selections.queryCounter++;
-                $scope.tabs.push({
-                    name: $translate.instant("QUERY") + " " + $scope.selections.queryCounter,
-                    type: "GET",
-                    restApiQuery: "Cubes",
-                    body: '{"MDX":"SELECT \n'
-                    + '\tNON EMPTY {[Version].[Actual], [Version].[Budget]} ON COLUMNS, \n'
-                    + '\tNON EMPTY {TM1SUBSETALL([Account])} ON ROWS \n'
-                    + 'FROM [General Ledger] \n'
-                    + 'WHERE ([Department].[Corporate], [Year].[2012])"}',
-                    hideBody: false,
-                    message: null
-                });
-                $timeout(function () {
-                    $scope.selections.activeTab = $scope.tabs.length - 1;
-                });
-            };
-            // Add the initial tab
-            $scope.addTab();
-
-            $scope.closeTab = function (index) {
-                // Remove a tab
-                $scope.tabs.splice(index, 1);
-            };
-
-            $scope.tabSelected = function () {
-                // This is required to resize the MDX panel after clicking on a tab
-                //$scope.$broadcast("auto-height-resize");
-            };
+            $scope.updateCurrentQuery = function(item){
+               $scope.options.restApiQuery = item.restApiQuery;
+               $scope.options.method = item.method;
+               $scope.options.body = item.body;
+            }
 
             //Execute Query
             $scope.executeQuery = function () {
-                var tab = $scope.tabs[$scope.selections.activeTab];
+               $scope.options.executing = true;
+                var restApiQuery = "/" + $scope.options.restApiQuery;
                 var sendDate = (new Date()).getTime();
-                var mdxClean = tab.body.replace(/(\n|\t)/gm,"");
-                var config = {method: tab.type, 
-                                url: encodeURIComponent($scope.instance) + "/" + tab.restApiQuery,
-                                data:mdxClean
-                                };
-                $http(config).then(function (result) {
+                var mdxClean = $scope.options.body.replace(/(\n|\t)/gm,"");
+                var method = $scope.options.method;
+                $tm1.async($scope.instance, method, restApiQuery, mdxClean).then(function (result) {
+                   $scope.currentTabIndex = 0;
                     if (result.status == 200 || result.status == 201 || result.status == 204) {
-                        tab.queryStatus = 'success';
-                        tab.resultQuery = result.data;
-                        tab.message = null;
+                        $scope.options.queryStatus = 'success';
+                        $scope.options.resultQuery = result.data;
+                        $scope.options.message = null;
                     } else {
-                        tab.queryStatus = 'failed';
-                        tab.resultQuery = result.data.error;
-                        tab.message = result.data.error.message;
+                        $scope.options.queryStatus = 'failed';
+                        $scope.options.resultQuery = result.data.error;
+                        $scope.options.message = result.data.error.message;
                     }
                     var receiveDate = (new Date()).getTime();
-                    tab.responseTimeMs = receiveDate - sendDate;
+                    $scope.options.responseTimeMs = receiveDate - sendDate;
+                    var newQuery = { restApiQuery: $scope.options.restApiQuery, 
+                                    method:method,
+                                    body: mdxClean, 
+                                    resultQuery: '', 
+                                    queryStatus: $scope.options.queryStatus, 
+                                    message: $scope.options.message,
+                                    responseTimeMs: $scope.options.responseTimeMs}
+                    $rootScope.uiPrefs.restHistory.splice(0, 0, newQuery);
+                    $scope.options.executing = false;
                 });
             }
 
+            $scope.indexTiFunctions = $rootScope.uiPrefs.restHistory.length - 1;
+
+            $scope.key = function ($event) {
+               if($scope.indexTiFunctions == -1){
+                  $scope.indexTiFunctions = 0;
+               }
+               var query = $scope.options.restApiQuery;
+               var body = $scope.options.body;
+               var currentQuery = $rootScope.uiPrefs.restHistory[$scope.indexTiFunctions]
+               //Arrow up
+               if ($event.keyCode == 38) {
+                  $scope.updateCurrentQuery(currentQuery);
+                  $scope.updateindexTiFunctions("-1");
+               }
+               //Arrow down
+               else if ($event.keyCode == 40) {
+                  $scope.updateCurrentQuery(currentQuery);
+                  $scope.updateindexTiFunctions("+1");
+               }
+               //Enter
+               else if ($event.keyCode == 13) {
+                  $scope.executeQuery();
+               }
+            }
+
+            $scope.updateindexTiFunctions = function (string) {
+               if (string == "reset") {
+                  $scope.indexTiFunctions = $rootScope.uiPrefs.restHistory.length - 1;
+               } else if (string == "+1") {
+                  var newindex = $scope.indexTiFunctions + 1;
+                  if (newindex > $rootScope.uiPrefs.restHistory.length - 1) {
+                     $scope.indexTiFunctions = 0;
+                  } else {
+                     $scope.indexTiFunctions = newindex;
+                  }
+               } else if (string == "-1") {
+                  var newindex = $scope.indexTiFunctions - 1;
+                  if (newindex < 0) {
+                     $scope.indexTiFunctions = $rootScope.uiPrefs.restHistory.length - 1;
+                  } else {
+                     $scope.indexTiFunctions = newindex;
+                  }
+               }
+            };
+            
             $scope.$on("login-reload", function (event, args) {
 
             });
