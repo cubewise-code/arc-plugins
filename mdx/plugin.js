@@ -97,6 +97,7 @@ arc.directive("cubewiseMdx", function () {
                 _editor.$blockScrolling = Infinity;
                 _editor.setFontSize($rootScope.uiPrefs.fontSize);
                 _editor.setShowPrintMargin(false);
+                _editor.getSession().setUseWrapMode($rootScope.uiPrefs.editorWrapLongLines);
             };
 
             $scope.execute = function (tab) {
