@@ -42,12 +42,28 @@ arc.directive("tm1RestApiQuery", function () {
                executing: false
             };
 
+            $rootScope.uiPrefs.showRESTChecked = true;
+            $rootScope.uiPrefs.showRESTHistory = true;
+
             $scope.clearRestHistory = function () {
                $rootScope.uiPrefs.restHistory = [];
             }
    
             if(!$rootScope.uiPrefs.restHistory || $rootScope.uiPrefs.restHistory.length === 0){
                $scope.clearRestHistory();
+            }
+
+            $scope.clearRestChecked = function () {
+               $rootScope.uiPrefs.restChecked = [];
+            }
+   
+            if(!$rootScope.uiPrefs.restChecked || $rootScope.uiPrefs.restChecked.length === 0){
+               $scope.clearRestChecked();
+            }
+
+            $scope.clearAllHistory = function () {
+               $scope.clearRestHistory();
+               $scope.clearRestChecked();
             }
 
             $scope.lists = {
@@ -118,10 +134,66 @@ arc.directive("tm1RestApiQuery", function () {
                                     resultQuery: '', 
                                     queryStatus: $scope.options.queryStatus, 
                                     message: $scope.options.message,
-                                    responseTimeMs: $scope.options.responseTimeMs}
+                                    responseTimeMs: $scope.options.responseTimeMs,
+                                    bookmark: false,
+                                    uniqueID: Math.random().toString(36).slice(2)}
                     $rootScope.uiPrefs.restHistory.splice(0, 0, newQuery);
                     $scope.options.executing = false;
                 });
+               // If more than 100 remove the last one
+               if($rootScope.uiPrefs.restHistory.length>99){
+                  $rootScope.uiPrefs.restHistory.splice($rootScope.uiPrefs.restHistory.length-1, 1);
+               }
+            }
+
+            $scope.removeOneQuery = function(queryToBeRemoved,index){
+               $rootScope.uiPrefs.restHistory.splice(index, 1);
+               _.each($rootScope.uiPrefs.restChecked, function (query, key) {
+                  if(query.uniqueID == queryToBeRemoved.uniqueID){
+                     $rootScope.uiPrefs.restChecked.splice(key, 1);
+                  }
+               });
+            }
+   
+            $scope.removeOneQueryFromChecked = function(list, index, uniqueID){
+               if(list == 'restChecked'){
+               //Remove from checked
+               $rootScope.uiPrefs.restChecked.splice(index, 1);
+               //Remove Bookmark from History
+               _.each($rootScope.uiPrefs.restHistory, function (query, key) {
+                  if(query.uniqueID == uniqueID){
+                     query.bookmark = false;
+                  }
+               });
+               } else{
+                  $rootScope.uiPrefs.restHistory[index].bookmark = false;
+                  _.each($rootScope.uiPrefs.restChecked, function (query, key) {
+                     if(query.uniqueID == uniqueID){
+                        $rootScope.uiPrefs.restChecked.splice(key, 1);
+                     }
+                  });
+               }
+            }
+   
+            $scope.moveOneQuery = function(query, index, move){
+               if(move == 'top'){
+                  query.bookmark = true;
+                  $rootScope.uiPrefs.restChecked.push(query);
+               } else if(move == 'up'){
+                  $rootScope.uiPrefs.restChecked.splice(index, 1);  
+                  if(index == 0){
+                     $rootScope.uiPrefs.restChecked.push(query); 
+                  } else {
+                  $rootScope.uiPrefs.restChecked.splice(index-1, 0, query); 
+                  }
+               } else {
+                  $rootScope.uiPrefs.restChecked.splice(index, 1); 
+                  if(index == $rootScope.uiPrefs.restChecked.length){
+                  $rootScope.uiPrefs.restChecked.splice(0, 0, query);  
+                  } else {
+                     $rootScope.uiPrefs.restChecked.splice(index+1, 0, query);    
+                  }             
+               }
             }
 
             $scope.indexTiFunctions = $rootScope.uiPrefs.restHistory.length - 1;
