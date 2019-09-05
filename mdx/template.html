@@ -31,8 +31,8 @@
                <span class="input-group-prepend">
                   <span class="input-group-text" translate="NAME"></span>
                </span>
-               <input type="text" class="form-control" ng-model="options.name" style="width:60%"
-               >
+               <input type="text" class="form-control" ng-model="options.name" 
+               placeholder="Query name..." style="width:60%" >
                <span class="input-group-prepend">
                   <span class="input-group-text ng-scope" translate="MAXROWS">Max. Rows</span>
                </span>
@@ -152,27 +152,77 @@
                History <span
                   ng-if="$root.uiPrefs.mdxHistory.length>0">({{$root.uiPrefs.mdxHistory.length}})</span>
                <span ng-if="$root.uiPrefs.mdxHistory.length>0" title="{{'CLEAR' | translate}}"
-                  ng-click="clearMDXHistory()" ng-disabled="!$root.uiPrefs.mdxHistory.length">
+                  ng-click="clearAllHistory()" ng-disabled="!$root.uiPrefs.mdxHistory.length">
                   <i class="fa fa-fw fa-trash text-danger"></i>
                </span>
             </uib-tab-heading>
             <auto-height>
-               <div ng-repeat="item in $root.uiPrefs.mdxHistory"
+                  <span ng-if="$root.uiPrefs.mdxChecked.length>0">
+                        <i class="click fa" ng-class="{'fa-minus-square-o':$root.uiPrefs.showMDXChecked,'fa-plus-square-o':!$root.uiPrefs.showMDXChecked}" ng-click="$root.uiPrefs.showMDXChecked=!$root.uiPrefs.showMDXChecked"></i>
+                        Pinned ({{$root.uiPrefs.mdxChecked.length}})
+                     </span>
+               <div ng-repeat="item in $root.uiPrefs.mdxChecked" ng-if="$root.uiPrefs.showMDXChecked"
+               ng-class="{'func-active': indexTiFunctions === $index}">
+               <div class="mt-1 mb-1 ml-2" style="white-space:nowrap;">
+                  <span ng-if="item.bookmark" ng-click="removeOneQueryFromChecked('mdxChecked',$index,item.uniqueID)">
+                     <i class="click fa fa-check-square text-info"
+                                    title="Move to the top"></i>
+                  </span>
+                  <span ng-click="moveOneQuery(item, $index, 'up')">
+                     <i class="click fa fa-chevron-circle-up text-info"
+                                    title="Remove from history"></i>
+                  </span>
+                  <span ng-click="moveOneQuery(item, $index, 'down')">
+                     <i class="click fa fa-chevron-circle-down text-info"
+                                    title="Remove from history"></i>
+                  </span>
+                  <span ng-if="item.queryStatus == 'success'" class="badge ml-1 badge-success"
+                  style="font-size:0.9em">
+                  {{item.responseTimeMs | num:0}} ms
+               </span>
+                  <span>
+                     <label ng-if="item.name.length>0"
+                                    >{{item.name}}</label>
+                  </span>
+               <span ng-if="item.message.length>0" class="badge ml-1 badge-warning"
+                  style="font-size:0.9em">
+                  {{item.message}}
+               </span>
+                  <span ng-click="updateCurrentQuery(item)" class="click">{{item.mdx}}</span>
+               </div>
+            </div>
+            <span ng-if="$root.uiPrefs.mdxHistory.length>0">
+                  <i class="click fa" ng-class="{'fa-minus-square-o':$root.uiPrefs.showMDXHistory,'fa-plus-square-o':!$root.uiPrefs.showMDXHistory}" ng-click="$root.uiPrefs.showMDXHistory=!$root.uiPrefs.showMDXHistory"></i>
+                  All ({{$root.uiPrefs.mdxHistory.length}})
+               </span>
+               <div ng-repeat="item in $root.uiPrefs.mdxHistory" ng-if="$root.uiPrefs.showMDXHistory"
                   ng-class="{'func-active': indexTiFunctions === $index}">
-                  <div class="mt-1 mb-1" ng-click="updateCurrentQuery(item)" style="cursor:pointer">
-                     <span>
-                        <i class="fa fa-fw fa-info-circle"
-                                       title="{{item.name}}"></i>
+                  <div class="click mt-1 mb-1 ml-2" ng-click="updateCurrentQuery(item)" style="white-space:nowrap;">
+                     <span ng-click="removeOneQuery(item, $index)">
+                        <i class="fa fa-fw fa-trash text-danger"
+                                       title="Remove from history"></i>
                      </span>
-                     <span>{{item.mdx}}</span>
+                     <span ng-if="!item.bookmark" ng-click="moveOneQuery(item, $index, 'top')">
+                        <i class="fa fa-square-o text-info"
+                                       title="Move to the top"></i>
+                     </span>
+                     <span ng-if="item.bookmark" ng-click="removeOneQueryFromChecked('mdxHistory',$index,item.uniqueID)">
+                        <i class="fa fa-check-square text-info"
+                                       title="Remove from checked list"></i>
+                     </span>
                      <span ng-if="item.queryStatus == 'success'" class="badge ml-1 badge-success"
-                        style="font-size:0.9em">
-                        {{item.responseTimeMs | num:0}} ms
+                     style="font-size:0.9em">
+                     {{item.responseTimeMs | num:0}} ms
+                  </span>
+                     <span>
+                        <label ng-if="item.name.length>0"
+                                       >{{item.name}}</label>
                      </span>
-                     <span ng-if="item.message.length>0" class="badge ml-1 badge-warning"
-                        style="font-size:0.9em">
-                        {{item.message}}
-                     </span>
+                  <span ng-if="item.message.length>0" class="badge ml-1 badge-warning"
+                     style="font-size:0.9em">
+                     {{item.message}}
+                  </span>
+                     <span>{{item.mdx}}</span>
                   </div>
                </div>
             </auto-height>
