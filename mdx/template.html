@@ -60,26 +60,28 @@
                </div>
             <div class="card" ng-if="result">
                <div class="card-header" style="padding: 5px 10px;">
-                  <i class="fa fa-table"></i>
-                  <span translate="RESULT"></span>
-                  - Run in {{options.responseTimeMs | num:0}} ms
+                  <span>
+                     <i class="fa fa-table"></i>
+                     <span translate="RESULT"></span>
+                     - Run in {{options.responseTimeMs | num:0}} ms
+                  </span>
                   <div class="pull-right">
-                     <label>
+                     <span>
                         <input type="radio" ng-model="options.resultType" value="table" />
                         <span>Table</span>
-                     </label>
-                     <label>
+                     </span>
+                     <span>
                         <input type="radio" ng-model="options.resultType" value="json-tree" />
                         <span>JSON Tree</span>
-                     </label>
-                     <label>
+                     </span>
+                     <span>
                         <input type="radio" ng-model="options.resultType" value="json" />
                         <span>JSON</span>
-                     </label>
-                     <label>
+                     </span>
+                     <span>
                         <input type="radio" ng-model="options.resultType" value="hjson" />
                         <span>HJSON</span>
-                     </label>
+                     </span>
                   </div>
                   <div ng-if="options.queryType=='ExecuteMDXSetExpression'" class="pull-right">
                      <a href class="click" ng-click="options.showAttributes = !options.showAttributes">

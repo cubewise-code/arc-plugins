@@ -103,21 +103,23 @@
                   </div>
                   <div class="card" ng-if="!options.executing && options.queryStatus">
                      <div class="card-header" style="padding: 5px 10px;">
-                        <span style="margin-bottom:0px">
+                        <span>
+                           <span style="margin-bottom:0px">
                            {} Result - Run in {{options.responseTimeMs | num:0}} ms</span>
+                        </span>
                         <div class="pull-right">
-                           <label>
+                           <span>
                               <input type="radio" ng-model="options.resultType" value="json-tree" />
                               <span>JSON Tree</span>
-                           </label>
-                           <label>
+                           </span>
+                           <span>
                               <input type="radio" ng-model="options.resultType" value="json" />
                               <span>JSON</span>
-                           </label>
-                           <label>
+                           </span>
+                           <span>
                               <input type="radio" ng-model="options.resultType" value="hjson" />
                               <span>HJSON</span>
-                           </label>
+                           </span>
                         </div>
                      </div>
                      <div class="card-body" ng-if="options.message">
