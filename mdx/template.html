@@ -147,14 +147,10 @@
                </div>
             </div>
          </uib-tab>
-         <uib-tab index="1" ng-if="$root.uiPrefs.mdxHistory.length>0">
+         <uib-tab index="1">
             <uib-tab-heading >
                History <span
                   ng-if="$root.uiPrefs.mdxHistory.length>0">({{$root.uiPrefs.mdxHistory.length}})</span>
-               <span ng-if="$root.uiPrefs.mdxHistory.length>0" title="{{'CLEAR' | translate}}"
-                  ng-click="clearAllHistory()" ng-disabled="!$root.uiPrefs.mdxHistory.length">
-                  <i class="fa fa-fw fa-trash text-danger"></i>
-               </span>
             </uib-tab-heading>
             <auto-height>
                   <span ng-if="$root.uiPrefs.mdxChecked.length>0">
@@ -194,6 +190,10 @@
             <span ng-if="$root.uiPrefs.mdxHistory.length>0">
                   <i class="click fa" ng-class="{'fa-minus-square-o':$root.uiPrefs.showMDXHistory,'fa-plus-square-o':!$root.uiPrefs.showMDXHistory}" ng-click="$root.uiPrefs.showMDXHistory=!$root.uiPrefs.showMDXHistory"></i>
                   All ({{$root.uiPrefs.mdxHistory.length}})
+                  <a href="" ng-if="$root.uiPrefs.mdxHistory.length>0" title="{{'CLEAR' | translate}}"
+                     ng-click="clearMDXHistory()" ng-disabled="!$root.uiPrefs.mdxHistory.length">
+                     <i class="fa fa-fw fa-trash text-danger"></i>
+                  </a>
                </span>
                <div ng-repeat="item in $root.uiPrefs.mdxHistory" ng-if="$root.uiPrefs.showMDXHistory"
                   ng-class="{'func-active': indexTiFunctions === $index}">

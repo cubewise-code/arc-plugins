@@ -121,14 +121,10 @@
                      </div>
                   </div>
                </uib-tab>
-               <uib-tab ng-if="$root.uiPrefs.restHistory.length>0" index="1">
+               <uib-tab index="1">
                   <uib-tab-heading>
                      History <span
                         ng-if="$root.uiPrefs.restHistory.length>0">({{$root.uiPrefs.restHistory.length}})</span>
-                     <span ng-if="$root.uiPrefs.restHistory.length>0" title="{{'CLEAR' | translate}}"
-                        ng-click="clearAllHistory()" ng-disabled="!$root.uiPrefs.restHistory.length">
-                        <i class="fa fa-fw fa-trash text-danger"></i>
-                     </span>
                   </uib-tab-heading>
                   <auto-height>
                      <span ng-if="$root.uiPrefs.restChecked.length>0">
@@ -166,6 +162,10 @@
                            ng-class="{'fa-minus-square-o':$root.uiPrefs.showRESTHistory,'fa-plus-square-o':!$root.uiPrefs.showRESTHistory}"
                            ng-click="$root.uiPrefs.showRESTHistory=!$root.uiPrefs.showRESTHistory"></i>
                         All ({{$root.uiPrefs.restHistory.length}})
+                        <a href="" ng-if="$root.uiPrefs.restHistory.length>0" title="{{'CLEAR' | translate}}"
+                           ng-click="clearRestHistory()" ng-disabled="!$root.uiPrefs.restHistory.length">
+                           <i class="fa fa-fw fa-trash text-danger"></i>
+                        </a>
                      </span>
                      <div ng-repeat="item in $root.uiPrefs.restHistory" ng-if="$root.uiPrefs.showRESTHistory"
                         ng-class="{'func-active': indexTiFunctions+1 === $index}">
