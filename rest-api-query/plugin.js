@@ -39,7 +39,8 @@ arc.directive("tm1RestApiQuery", function () {
                   + 'WHERE ([Department].[Corporate], [Year].[2012])"}',
                hideBody: false,
                message: null,
-               executing: false
+               executing: false,
+               resultType: "json-tree"
             };
 
             $rootScope.uiPrefs.showRESTChecked = true;

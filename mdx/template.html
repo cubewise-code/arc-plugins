@@ -64,11 +64,18 @@
                   <span translate="RESULT"></span>
                   - Run in {{options.responseTimeMs | num:0}} ms
                   <div class="pull-right">
-                     <a href class="click" ng-click="showJSON = !showJSON">
-                        <i class="fa fa-toggle-on" ng-if="showJSON"></i>
-                        <i class="fa fa-toggle-off" ng-if="!showJSON"></i>
-                        <span translate="JSON"></span>
-                     </a>
+                     <label>
+                        <input type="radio" ng-model="options.resultType" value="table" />
+                        <span>Table</span>
+                     </label>
+                     <label>
+                        <input type="radio" ng-model="options.resultType" value="json-tree" />
+                        <span>JSON Tree</span>
+                     </label>
+                     <label>
+                        <input type="radio" ng-model="options.resultType" value="json" />
+                        <span>JSON</span>
+                     </label>
                   </div>
                   <div ng-if="options.queryType=='ExecuteMDXSetExpression'" class="pull-right">
                      <a href class="click" ng-click="options.showAttributes = !options.showAttributes">
@@ -89,8 +96,9 @@
                </div>
                <div class="card-body" style="padding: 5px 0px 0px 5px;" ng-if="!options.message">
                   <auto-height>
-                     <json-formatter ng-if="showJSON" json="result.json" open="1"></json-formatter>
-                     <div ng-if="!showJSON">
+                     <json-formatter ng-if="options.resultType == 'json-tree'" json="result.json" open="1"></json-formatter>
+                     <pre ng-if="options.resultType == 'json'" open="1">{{result.json | json}}</pre>
+                     <div ng-if="options.resultType == 'table'">
                         <!-- =======================-->
                         <!-- Table for cube query-->
                         <table class="table table-sm" ng-if="result.mdx!='dimension'">

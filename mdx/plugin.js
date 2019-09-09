@@ -65,7 +65,8 @@ arc.directive("cubewiseMdx", function () {
             queryType:"ExecuteMDX",
             maxRows: 1000,
             message: null,
-            showAttributes: false
+            showAttributes: false,
+            resultType: "table"
          };
 
          $scope.lists = {

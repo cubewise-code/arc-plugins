@@ -105,6 +105,16 @@
                      <div class="card-header" style="padding: 5px 10px;">
                         <span style="margin-bottom:0px">
                            {} Result - Run in {{options.responseTimeMs | num:0}} ms</span>
+                        <div class="pull-right">
+                           <label>
+                              <input type="radio" ng-model="options.resultType" value="json-tree" />
+                              <span>JSON Tree</span>
+                           </label>
+                           <label>
+                              <input type="radio" ng-model="options.resultType" value="json" />
+                              <span>JSON</span>
+                           </label>
+                        </div>
                      </div>
                      <div class="card-body" ng-if="options.message">
                         <div>
@@ -116,7 +126,8 @@
                      </div>
                      <div class="card-body" ng-if="!options.message">
                         <auto-height>
-                           <json-formatter json="options.resultQuery" open="1"></json-formatter>
+                           <json-formatter ng-if="options.resultType == 'json-tree'" json="options.resultQuery" open="1"></json-formatter>
+                           <pre ng-if="options.resultType == 'json'">{{options.resultQuery | json}}</pre>
                         </auto-height>
                      </div>
                   </div>
