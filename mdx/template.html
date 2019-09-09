@@ -76,6 +76,10 @@
                         <input type="radio" ng-model="options.resultType" value="json" />
                         <span>JSON</span>
                      </label>
+                     <label>
+                        <input type="radio" ng-model="options.resultType" value="hjson" />
+                        <span>HJSON</span>
+                     </label>
                   </div>
                   <div ng-if="options.queryType=='ExecuteMDXSetExpression'" class="pull-right">
                      <a href class="click" ng-click="options.showAttributes = !options.showAttributes">
@@ -97,7 +101,8 @@
                <div class="card-body" style="padding: 5px 0px 0px 5px;" ng-if="!options.message">
                   <auto-height>
                      <json-formatter ng-if="options.resultType == 'json-tree'" json="result.json" open="1"></json-formatter>
-                     <pre ng-if="options.resultType == 'json'" open="1">{{result.json | json}}</pre>
+                     <pre ng-if="options.resultType == 'json'" >{{result.json | json}}</pre>
+                     <pre ng-if="options.resultType == 'hjson'" >{{result.json | hjson}}</pre>
                      <div ng-if="options.resultType == 'table'">
                         <!-- =======================-->
                         <!-- Table for cube query-->

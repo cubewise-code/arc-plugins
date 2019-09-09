@@ -114,6 +114,10 @@
                               <input type="radio" ng-model="options.resultType" value="json" />
                               <span>JSON</span>
                            </label>
+                           <label>
+                              <input type="radio" ng-model="options.resultType" value="hjson" />
+                              <span>HJSON</span>
+                           </label>
                         </div>
                      </div>
                      <div class="card-body" ng-if="options.message">
@@ -128,6 +132,7 @@
                         <auto-height>
                            <json-formatter ng-if="options.resultType == 'json-tree'" json="options.resultQuery" open="1"></json-formatter>
                            <pre ng-if="options.resultType == 'json'">{{options.resultQuery | json}}</pre>
+                           <pre ng-if="options.resultType == 'hjson'">{{options.resultQuery | hjson}}</pre>
                         </auto-height>
                      </div>
                   </div>
