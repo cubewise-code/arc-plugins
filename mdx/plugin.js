@@ -126,7 +126,7 @@ arc.directive("cubewiseMdx", function () {
                var args = "$expand=Hierarchies($select=Name;$expand=Dimension($select=Name)),Tuples($expand=Members($select=Name,UniqueName,Ordinal,Attributes))";
             }
             message = null;
-            $http.post(encodeURIComponent($scope.instance) + "/" + $scope.options.queryType + "?" + args, { MDX: $scope.options.mdx }).then(function (success) {
+            $tm1.post($scope.instance, "/" + $scope.options.queryType + "?" + args, { MDX: $scope.options.mdx }).then(function (success) {
                $scope.executing = false;
                if (success.status == 401) {
                   return;
