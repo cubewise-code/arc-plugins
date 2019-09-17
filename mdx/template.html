@@ -54,10 +54,18 @@
                Result
             </uib-tab-heading>
             <div class="row">
-                  <div class="col-md-12 text-center">
-                        <i ng-if="executing" class="fa fa-refresh fa-3x fa-spin"></i>
-                  </div>
+               <div class="col-md-12 text-center">
+                     <i ng-if="executing" class="fa fa-refresh fa-3x fa-spin"></i>
                </div>
+            </div>
+            <div class="card-body" ng-if="options.message">
+               <div>
+                  <button class="btn btn-warning">
+                     <span class="fa fa-warning" aria-hidden="true"></span>
+                     <span>{{options.message}}</span>
+                  </button>
+               </div>
+            </div>
             <div class="card" ng-if="result">
                <div class="card-header" style="padding: 5px 10px;">
                   <span>
@@ -90,14 +98,6 @@
                         <span translate="Attributes"> </span>
                      </a>
                      <span style="padding-right:5px;padding-left:5px"> | </span>
-                  </div>
-               </div>
-               <div class="card-body" ng-if="options.message">
-                  <div>
-                     <button class="btn btn-warning">
-                        <span class="fa fa-warning" aria-hidden="true"></span>
-                        <span>{{options.message}}</span>
-                     </button>
                   </div>
                </div>
                <div class="card-body" style="padding: 5px 0px 0px 5px;" ng-if="!options.message">

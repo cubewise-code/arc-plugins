@@ -55,6 +55,8 @@ arc.directive("cubewiseMdx", function () {
             $scope.clearMDXChecked();
          }
 
+         $scope.currentTabIndex = 1;
+
          $scope.options = {
             name: "",
             mdx: "SELECT \n"
@@ -117,6 +119,7 @@ arc.directive("cubewiseMdx", function () {
          $scope.executing = false;
          $scope.execute = function () {
             $scope.executing = true;
+            $scope.options.message = null;
             var sendDate = (new Date()).getTime();
             //If dimension execute
             var n = $scope.options.mdx.indexOf("WHERE");
@@ -141,7 +144,7 @@ arc.directive("cubewiseMdx", function () {
                } else {
                   $scope.currentTabIndex = 0;
                   $scope.options.queryStatus = 'success';
-                  $scope.options.message = "";
+                  $scope.options.message = null;
                   // Success
                   if ($scope.options.queryType == "ExecuteMDX") {
                      $tm1.cellsetDelete($scope.instance, success.data.ID);
