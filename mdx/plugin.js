@@ -126,6 +126,7 @@ arc.directive("cubewiseMdx", function () {
                var args = "$expand=Hierarchies($select=Name;$expand=Dimension($select=Name)),Tuples($expand=Members($select=Name,UniqueName,Ordinal,Attributes))";
             }
             message = null;
+            $scope.result = null;
             $tm1.post($scope.instance, "/" + $scope.options.queryType + "?" + args, { MDX: $scope.options.mdx }).then(function (success) {
                $scope.executing = false;
                if (success.status == 401) {
@@ -154,16 +155,25 @@ arc.directive("cubewiseMdx", function () {
                      }
                   } else {
                      //Get attributes
-                     var dimension = success.data.Hierarchies[0].Dimension.Name;
-                     var hierarchy = success.data.Hierarchies[0].Name;
-                     $http.get(encodeURIComponent($scope.instance) + "/Dimensions('" + dimension + "')/Hierarchies('" + hierarchy + "')/ElementAttributes?$select=Name").then(function (result) {
+                     if(success.data.Hierarchies.length){
+                        var dimension = success.data.Hierarchies[0].Dimension.Name;
+                        var hierarchy = success.data.Hierarchies[0].Name;
+                        $http.get(encodeURIComponent($scope.instance) + "/Dimensions('" + dimension + "')/Hierarchies('" + hierarchy + "')/ElementAttributes?$select=Name").then(function (result) {
+                           $scope.result = {
+                              mdx: 'dimension',
+                              json: success.data,
+                              table: success.data.Tuples,
+                              attributes: result.data.value
+                           }
+                        });
+                     } else {
                         $scope.result = {
                            mdx: 'dimension',
                            json: success.data,
                            table: success.data.Tuples,
-                           attributes: result.data.value
+                           attributes: []
                         }
-                     });
+                     }
                   }
                   var receiveDate = (new Date()).getTime();
                   $scope.options.responseTimeMs = receiveDate - sendDate;
