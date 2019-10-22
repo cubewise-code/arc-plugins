@@ -11,7 +11,7 @@ arc.run(['$rootScope', function ($rootScope) {
 
 }]);
 
-arc.service('cubewiseDeleteDimension', ['$rootScope', '$tm1', 'ngDialog', '$dialogs', '$http', function ($rootScope, $tm1, ngDialog, $dialogs, $http) {
+arc.service('cubewiseDeleteDimension', ['$rootScope', '$tm1', 'ngDialog', '$dialogs', '$http', '$helper', function ($rootScope, $tm1, ngDialog, $dialogs, $http, $helper) {
 
    // The interface you must implement
    this.execute = function (instance, name) {
@@ -20,7 +20,7 @@ arc.service('cubewiseDeleteDimension', ['$rootScope', '$tm1', 'ngDialog', '$dial
       var deleteObject = function (options) {
          var config = {
             method: "DELETE",
-            url: encodeURIComponent(instance) + "/Dimensions('" + name + "')"
+            url: encodeURIComponent(instance) + "/Dimensions('" + $helper.encodeName(name) + "')"
          };
          $http(config).then(function (result) {
             if (result.status == 200 || result.status == 201 || result.status == 204) {
