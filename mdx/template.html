@@ -18,7 +18,7 @@
          <div class="card-body" style="padding: 5px;" ng-if="!hideQuery">
             <div class="input-group mb-1">
                <span class="input-group-prepend" uib-dropdown dropdown-append-to-body>
-                  <button class="btn btn-primary" ng-class="{'btn-info':options.queryType!='ExecuteMDX'}" uib-dropdown-toggle>
+                  <button class="btn btn-primary" ng-class="{'active':options.queryType!='ExecuteMDX'}" uib-dropdown-toggle>
                      <span class="caret"></span>
                   </button>
                   <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="split-button">
