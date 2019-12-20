@@ -138,7 +138,7 @@ arc.directive("cubewiseSubsetAndView", function () {
                      var semiColumn = viewFullName.indexOf(":");
                      var cubeName = viewFullName.substr(0, semiColumn);
                      var viewName = viewFullName.substr(semiColumn + 1, viewFullName.length - semiColumn + 1);
-                     $http.delete(encodeURIComponent($scope.instance) + "/Cubes('" + cubeName + "')/Views('" + viewName + "')").then(function (result) {
+                     $http.delete(encodeURIComponent($scope.instance) + "/Cubes('" + $helper.encodeName(cubeName) + "')/Views('" + $helper.encodeName(viewName) + "')").then(function (result) {
                         if (result.status == 204) {
                            // Add view to viewsDeleted list
                            $scope.viewsDeleted.push(viewFullName);
@@ -170,7 +170,7 @@ arc.directive("cubewiseSubsetAndView", function () {
                      var semiColumn2 = hierarchyAndSubset.indexOf(":");
                      var hierarchy = hierarchyAndSubset.substr(0, semiColumn2);
                      var subset = hierarchyAndSubset.substr(semiColumn2 + 1, hierarchyAndSubset.length - semiColumn2 + 1);
-                     $http.delete(encodeURIComponent($scope.instance) + "/Dimensions('" + dimension + "')/Hierarchies('" + hierarchy + "')/Subsets('" + subset + "')").then(function (result) {
+                     $http.delete(encodeURIComponent($scope.instance) + "/Dimensions('" + $helper.encodeName(dimension) + "')/Hierarchies('" + hierarchy + "')/Subsets('" + $helper.encodeName(subset) + "')").then(function (result) {
                         if (result.status == 204) {
                            // Add subsets to subsetsDeleted list
                            $scope.subsetsDeleted.push(subsetFullName);
@@ -231,7 +231,7 @@ arc.directive("cubewiseSubsetAndView", function () {
                         var semiColumn = viewFullName.indexOf(":");
                         var cubeName = viewFullName.substr(0, semiColumn);
                         var viewName = viewFullName.substr(semiColumn + 1, viewFullName.length - semiColumn + 1);
-                        $http.delete(encodeURIComponent($scope.instance) + "/Cubes('" + cubeName + "')/Views('" + viewName + "')").then(function (result) {
+                        $http.delete(encodeURIComponent($scope.instance) + "/Cubes('" + $helper.encodeName(cubeName) + "')/Views('" + $helper.encodeName(viewName) + "')").then(function (result) {
                            if (result.status == 204) {
                               $scope.selections.queryStatus = 'success';
                               $scope.viewsDeleted.push(viewFullName);
@@ -262,7 +262,7 @@ arc.directive("cubewiseSubsetAndView", function () {
          };
          // GET HIERARCHY DATA
          $scope.getHierarchies = function () {
-            $http.get(encodeURIComponent($scope.instance) + "/Dimensions('" + $scope.selections.dimension + "')/Hierarchies").then(function (hierarchiesData) {
+            $http.get(encodeURIComponent($scope.instance) + "/Dimensions('" + $helper.encodeName($scope.selections.dimension) + "')/Hierarchies").then(function (hierarchiesData) {
                $scope.lists.hierarchies = hierarchiesData.data.value;
                //If only one hierarchy
                $scope.nbHierarchies = hierarchiesData.data.value.length;
@@ -274,7 +274,7 @@ arc.directive("cubewiseSubsetAndView", function () {
          };
          // GET SUBSET DATA
          $scope.getSubsets = function () {
-            $http.get(encodeURIComponent($scope.instance) + "/Dimensions('" + $scope.selections.dimension + "')/Hierarchies('" + $scope.selections.hierarchy + "')/Subsets").then(function (subsetsData) {
+            $http.get(encodeURIComponent($scope.instance) + "/Dimensions('" + $helper.encodeName($scope.selections.dimension) + "')/Hierarchies('" + $helper.encodeName($scope.selections.hierarchy) + "')/Subsets").then(function (subsetsData) {
                $scope.lists.subsets = subsetsData.data.value;
             });
          };

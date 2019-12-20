@@ -23,7 +23,7 @@ arc.directive("cubewiseMdx", function () {
       link: function ($scope, element, attrs) {
 
       },
-      controller: ["$scope", "$rootScope", "$http", "$tm1", "$translate", "$timeout", function ($scope, $rootScope, $http, $tm1, $translate, $timeout) {
+      controller: ["$scope", "$rootScope", "$http", "$tm1", "$translate", "$timeout", "$helper", function ($scope, $rootScope, $http, $tm1, $translate, $timeout, $helper) {
 
          // Store the active tab index
          $scope.selections = {
@@ -161,7 +161,7 @@ arc.directive("cubewiseMdx", function () {
                      if(success.data.Hierarchies.length){
                         var dimension = success.data.Hierarchies[0].Dimension.Name;
                         var hierarchy = success.data.Hierarchies[0].Name;
-                        $http.get(encodeURIComponent($scope.instance) + "/Dimensions('" + dimension + "')/Hierarchies('" + hierarchy + "')/ElementAttributes?$select=Name").then(function (result) {
+                        $http.get(encodeURIComponent($scope.instance) + "/Dimensions('" + $helper.encodeName(dimension) + "')/Hierarchies('" + $helper.encodeName(hierarchy) + "')/ElementAttributes?$select=Name").then(function (result) {
                            $scope.result = {
                               mdx: 'dimension',
                               json: success.data,
