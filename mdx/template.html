@@ -92,10 +92,15 @@
                      </span>
                   </div>
                   <div ng-if="options.queryType=='ExecuteMDXSetExpression'" class="pull-right">
+                     <a href class="click" ng-click="options.showUniqueName = !options.showUniqueName">
+                        <i class="fa fa-toggle-on" ng-if="options.showUniqueName"></i>
+                        <i class="fa fa-toggle-off" ng-if="!options.showUniqueName"></i>
+                        <span translate=""> UniqueName </span>
+                     </a>
                      <a href class="click" ng-click="options.showAttributes = !options.showAttributes">
                         <i class="fa fa-toggle-on" ng-if="options.showAttributes"></i>
                         <i class="fa fa-toggle-off" ng-if="!options.showAttributes"></i>
-                        <span translate="Attributes"> </span>
+                        <span class="text-info" translate="Attributes"> </span>
                      </a>
                      <span style="padding-right:5px;padding-left:5px"> | </span>
                   </div>
@@ -137,27 +142,37 @@
                         <!-- Table for dimension query-->
                         <table class="table table-sm" ng-if="result.mdx=='dimension'">
                            <thead>
-                              <th> ID </th>
-                              <th> Unique Name </th>
-                              <th ng-if="options.showAttributes" ng-repeat="attribute in result.attributes"> {{attribute.Name}} </th>
-
+                              <th style="width: 50px;">Tuple</th>
+                              <th>Id</th>
+                              <th ng-repeat="member in result.table[0].Members track by $index">
+                                 Member{{$index+1}}
+                              </th>
                            </thead>
-                           <tbody>
-                              <tr ng-repeat="item in result.table | limitTo : maxRows">
-                                 <td>
-                                    {{item.Members[0].Name}}
-                                 </td>
-                                 <td>
-                                    {{item.Members[0].UniqueName}}
-                                 </td>
-                                 <td ng-if="options.showAttributes" ng-repeat="attribute in result.attributes">
-                                    {{item.Members[0].Attributes[attribute.Name]}}
+                           <tbody >
+                              <tr ng-repeat-start="tuple in result.table track by $index | limitTo : maxRows" style="border-bottom-width: 2px !important;">
+                                 <td><strong>{{$index+1}}</strong></td>
+                                 <td class="text-primary">Name</td>
+                                 <td class="text-primary" ng-repeat="member in tuple.Members">
+                                    {{member.Name}}
                                  </td>
                               </tr>
-                           </tbody>
+                              <tr ng-if="options.showUniqueName">
+                                 <td></td>
+                                 <td >UniqueName</td>
+                                 <td ng-repeat="member in tuple.Members">
+                                    {{member.UniqueName}}
+                                  </td>
+                              </tr>
+                              <tr ng-repeat-end="" ng-if="options.showAttributes" ng-repeat="attributeName in tuple.attributeList">
+                                 <td ></td>
+                                 <td class="text-info">{{attributeName}}</td>
+                                 <td class="text-info" ng-repeat="member in tuple.Members">
+                                    {{member.Attributes[attributeName]}}
+                                 </td>
+                              </tr>
+                           </tbodyng-repeat-end="">
                         </table>
                      </div>
-
                   </auto-height>
                </div>
             </div>
