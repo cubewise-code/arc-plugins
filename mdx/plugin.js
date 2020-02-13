@@ -23,7 +23,8 @@ arc.directive("cubewiseMdx", function () {
       link: function ($scope, element, attrs) {
 
       },
-      controller: ["$scope", "$rootScope", "$http", "$tm1", "$translate", "$timeout", function ($scope, $rootScope, $http, $tm1, $translate, $timeout) {
+      controller: ["$scope", "$rootScope", "$http", "$tm1", "$translate", "$timeout", "$q",
+         function ($scope, $rootScope, $http, $tm1, $translate, $timeout, $q) {
 
          // Store the active tab index
          $scope.selections = {
@@ -68,6 +69,7 @@ arc.directive("cubewiseMdx", function () {
             maxRows: 1000,
             message: null,
             showAttributes: false,
+            showUniqueName: false,
             resultType: "table"
          };
 
@@ -157,26 +159,30 @@ arc.directive("cubewiseMdx", function () {
                         table: $tm1.resultsetTransform($scope.instance, cube, success.data)
                      }
                   } else {
-                     //Get attributes
-                     if(success.data.Hierarchies.length){
-                        var dimension = success.data.Hierarchies[0].Dimension.Name;
-                        var hierarchy = success.data.Hierarchies[0].Name;
-                        $http.get(encodeURIComponent($scope.instance) + "/Dimensions('" + dimension + "')/Hierarchies('" + hierarchy + "')/ElementAttributes?$select=Name").then(function (result) {
-                           $scope.result = {
-                              mdx: 'dimension',
-                              json: success.data,
-                              table: success.data.Tuples,
-                              attributes: result.data.value
-                           }
+                     // Get attributes for each member
+                     var table = _.cloneDeep(success.data.Tuples);
+                     _.each(table, function(tuple){
+                        tuple.attributeList = [];
+                        _.each(tuple.Members, function(member){
+                           var attr = _.clone(member.Attributes);
+                           //ignore captions
+                           delete attr.Caption; 
+                           delete attr.Caption_Default
+                           memberAttributes = _.keys(attr);
+                           _.each(memberAttributes, function(a){
+                              tuple.attributeList.push(a);
+                           });
+
                         });
-                     } else {
-                        $scope.result = {
-                           mdx: 'dimension',
-                           json: success.data,
-                           table: success.data.Tuples,
-                           attributes: []
-                        }
-                     }
+
+                     });
+                     
+                     $scope.result = {
+                        mdx: 'dimension',
+                        json: _.cloneDeep(success.data),
+                        table: table,
+                     };
+
                   }
                   var receiveDate = (new Date()).getTime();
                   $scope.options.responseTimeMs = receiveDate - sendDate;
