@@ -32,7 +32,7 @@
                   <span class="input-group-text" translate="NAME"></span>
                </span>
                <input type="text" class="form-control" ng-model="options.name" 
-               placeholder="Query name..." style="width:60%" >
+               placeholder="Query name..." style="width:60%" autocomplete="off">
                <span class="input-group-prepend">
                   <span class="input-group-text ng-scope" translate="MAXROWS">Max. Rows</span>
                </span>
@@ -132,7 +132,7 @@
                                  </td>
                                  <td ng-repeat="cell in row.cells" class="text-right">
                                     <input ng-if="!cell.isReadOnly" type="text" class="form-control text-right" style="padding: 1px 5px;" ng-model="cell.value"
-                                       ng-blur="cell.update(query);" />
+                                       ng-blur="cell.update(query);" autocomplete="off"/>
                                     <span ng-if="cell.isReadOnly">{{cell.value | num:2}}</span>
                                  </td>
                               </tr>

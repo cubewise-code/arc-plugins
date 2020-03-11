@@ -66,7 +66,7 @@
                      class="form-control ng-pristine ng-untouched ng-valid ng-empty" style="display:inline"
                      ng-keydown="key($event)"
                      uib-typeahead="function.restApiQuery for function in $roots.uiPrefs.restHistory | limitTo:20"
-                     typeahead-append-to-body="true">
+                     typeahead-append-to-body="true" autocomplete="off">
 
                   <div class="input-group-append">
                      <button ng-disabled="!options.restApiQuery" class="btn btn-secondary" title="Execute"
