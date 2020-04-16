@@ -1,0 +1,22 @@
+{
+    "ADDALIST": "Add a list",
+    "DELETEALIST": "Delete a list",
+    "ADDASTEP": "Add a step",
+    "ADDANACTION": "Add an action",
+    "CLICKTHEEDITICONTOSTART":"Click the Edit icon to start",
+    "SHOWHIDENUMBERS": "Show/Hide Numbers",
+    "CHANGEICON": "Change icon",
+    "EDIT": "Edit",
+    "RESETSTATUS": "Reset Status",
+    "NEWLIST": "New List",
+    "MOVEDOWN": "Move Down",
+    "MOVEUP": "Move Up",
+    "MOVELEFT": "Move Left",
+    "MOVERIGHT": "Move Right",
+    "CREATENEWTODOLISTTOHELPYOUORGANIZINGYOURTASKS": "Create a new list of tasks that need to be completed",
+    "CHOOSEICON": "Choose Icon",
+    "EDITLISTNAME": "Edit List Name",
+    "UPDATESTATUS": "Update Status",
+    "REMOVESTEP": "Remove Step",
+    "REMOVEACTION": "Remove Action"
+}

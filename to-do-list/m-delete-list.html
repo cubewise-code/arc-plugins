@@ -1,0 +1,23 @@
+<div>
+   <div class="modal-header text-white bg-danger">
+      <span>
+         <i class="fa fa-trash"></i>
+         <span translate="DELETE">
+         </span>
+      </span>
+   </div>
+   <div class="modal-body">
+      <div>
+         <span translate="DELETETHESEITEMS"></span>
+      </div>
+      <div style="padding: 20px; word-break: normal;">
+         <i class="fa fa-fw {{$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].icon}}"></i>
+         <span>{{$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].name}}</span>
+      </div>
+   </div>
+   <div class="modal-footer">
+      <button type="button" class="btn btn-danger action ng-scope"
+         ng-click="removeLists($root.uiPrefs.arcBauValues.taskIndex);closeThisDialog(0)" translate="DELETE"></button>
+      <button type="button" class="btn action ng-scope" ng-click="closeThisDialog(0)" translate="CANCEL"></button>
+   </div>
+</div>
