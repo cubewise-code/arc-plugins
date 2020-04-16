@@ -1,0 +1,793 @@
+<div class="bg-image">
+   <style>
+      .bg-image {
+         background: url('__/plugins/to-do-list/background.jpg') no-repeat center center fixed;
+         -webkit-background-size: cover;
+         -moz-background-size: cover;
+         -o-background-size: cover;
+         background-size: cover;
+      }
+      .todo-opacity {
+         background: rgba(250, 250, 250, 0.3);
+         border: none;
+      }
+      .btnOpacity {
+         background-color: rgba(250,250,250, 0.3);
+         border: none;
+      }
+   </style>
+      <div class="row p-2">
+         <div class="col-md-12 text-center">
+            <h5>
+               <div class="pull-left btn-group" ng-if="$root.uiPrefs.arcBauSettings.length>0">
+                  <span uib-dropdown dropdown-append-to-body class="input-group-append">
+                     <button class="btn btnOpacity" uib-dropdown-toggle>
+                        <i class="fa fa-fw {{$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].icon}} mr-1"></i> {{$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].name}}
+                        <span class="caret"></span>
+                     </button>
+                     <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="split-button">
+                        <li role="menuitem" ng-repeat="settings in $root.uiPrefs.arcBauSettings">
+                           <div ng-click="updateSettings($index)" class="ml-2 click">
+                              <span class="pull-right ml-2 mr-2">
+                                 <i class="fa" 
+                              ng-class="{'fa fa-hourglass-start':$root.uiPrefs.arcBauSettings[$index].stepPercentage==0,
+                              'fa fa-hourglass-half text-info':$root.uiPrefs.arcBauSettings[$index].stepPercentage>0 && $root.uiPrefs.arcBauSettings[$index].stepPercentage<100,
+                              'fa fa-hourglass-end text-success':$root.uiPrefs.arcBauSettings[$index].stepPercentage==100}" 
+                              aria-hidden="true"></i>
+                              </span>
+                              <i class="fa fa-fw {{settings.icon}}" title="Delete Settings"></i>
+                              <span>{{settings.name}}</span> 
+                           </div>
+                        </li>
+                     </ul>
+                  </span>
+               <button class="btn" 
+                  ng-click="$root.uiPrefs.arcBauValues.editing=!$root.uiPrefs.arcBauValues.editing"
+                  ng-class="{'active':$root.uiPrefs.arcBauValues.editing}" title="{{'EDIT' | translate}}">
+                  <i class="fa fa-fw fa-edit"></i>
+                  <i class="fa fa-check fa-mark" ng-if="$root.uiPrefs.arcBauValues.editing"></i>
+               </button>
+               <button ng-if="$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].stepPercentage>0 && !$root.uiPrefs.arcBauValues.editing"
+               class="btn" ng-click="resetPercentage()" title="{{'RESETSTATUS' | translate}}"
+               ng-class="{'active':$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].stepPercentage==0,
+               'btn-success':$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].stepPercentage==100,
+               'btn-info':$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].stepPercentage>1 && $root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].stepPercentage<100}" 
+               title="Open all cards">
+               <i class="fa fa-fw"
+               ng-class="{'fa fa-hourglass-start':$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].stepPercentage==0,
+                        'fa fa-hourglass-half':$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].stepPercentage>0 && $root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].stepPercentage<100,
+                        'fa fa-hourglass-end':$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].stepPercentage==100}" 
+                        ></i>
+            </button>
+               </div>
+               <div class="pull-right btn-group" ng-if="$root.uiPrefs.arcBauSettings.length>0 && $root.uiPrefs.arcBauValues.editing">
+                  <button class="btn btnOpacity" 
+                  title="{{'CHANGEICON' | translate}}"
+                  ng-click="updateIcon()">
+                     <i class="fa fa-fw {{$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].icon}}"></i>
+                  </button>
+                  <input spellcheck="false" spellcheck="false" type="text" 
+                  class="todo-opacity"
+                  placeholder="Enter list Name..." title="{{'EDITLISTNAME' | translate}}"
+                     ng-model="$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].name" />
+                     <button type="button" class="btn btnOpacity" title="Change view"
+                     ng-click="changeView()">
+                     <i class="fa {{$root.uiPrefs.arcBauValues.view}}" aria-hidden="true"></i>
+                  </button>
+                  <button class="btn btnOpacity"
+                  title="{{'SHOWHIDENUMBERS' | translate}}"
+                  ng-click="$root.uiPrefs.arcBauValues.numbers=!$root.uiPrefs.arcBauValues.numbers"
+                  ng-class="{'active':$root.uiPrefs.arcBauValues.numbers}">
+                     <span style="font-size: 0.9em;"><strong>123</strong></span>
+                     <i class="fa fa-check fa-mark ng-scope" ng-if="$root.uiPrefs.arcBauValues.numbers"></i>
+                  </button>
+               <button type="button" class="btn btnOpacity" ng-click="openModalRemoveList()" title="{{'DELETEALIST' | translate}}">
+                  <i class="fa fa-trash"></i>
+               </button>
+                  <button type="button" class="btn btnOpacity" ng-click="openModalAddList()" title="{{'ADDALIST' | translate}}">
+                     <i class="fa fa-plus"></i>
+                  </button>
+               </div>
+            </h5>
+         </div>
+      </div>
+      <div ng-if="$root.uiPrefs.arcBauSettings.length==0" class="row">
+         <div class="col-md-4">
+            
+         </div>
+         <div class="col-md-4">
+            <div class="card todo-opacity">
+               <div class="card-body p-2">
+                     <a href="" ng-click="openModalAddList()">
+                           <i class="fa fa-fw fa-plus mr-1"></i>
+                           <span translate="ADDALIST"></span>
+                        </a>
+               </div>
+            </div>
+            <div>
+               <div class="alert alert-default mt-2 todo-opacity" role="alert">
+                  <i class="fa fa-fw fa-question-circle mr-1"></i>
+                  <span translate="CREATENEWTODOLISTTOHELPYOUORGANIZINGYOURTASKS"></span>
+                </div>
+            </div>
+         </div>
+      </div>
+      <div class="row pr-2 pl-2 pb-2" ng-if="$root.uiPrefs.arcBauSettings.length>0">
+         <div class="col-md-12">
+            <div class="progress" style="height:5px;opacity:0.5">
+               <div class="progress-bar bg-success" role="progressbar"
+                  ng-class="{'bg-info progress-bar-striped':$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].stepPercentage<100}"
+                  ng-style="{'width': $root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].stepPercentage + '%'}">
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="row pr-2 pl-2">
+         <div class="col-md-12">
+            <div class="alert alert-info mt-2" role="alert" ng-if="$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].content.length==0 && !$root.uiPrefs.arcBauValues.editing">
+               <span translate="CLICKTHEEDITICONTOSTART"></span>
+             </div>
+         </div>
+      </div>
+      <div class="row pr-2 pl-2">
+         <div class="col-md-12">
+            <auto-height>
+               <!--             -->
+               <!-- TRELLO LIKE -->
+               <!--             -->
+               <div class="row" ng-if="$root.uiPrefs.arcBauValues.view=='fa-trello'">
+                  <div class="col-md-4 mt-2"
+                     ng-repeat="step in $root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].content track by $index"
+                     >
+                     <div class="card" ng-class="{'border-success':step.open==false && $root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].stepPercentage==100,
+                     'border-info':step.open==false && $root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].stepPercentage<100}">
+                        <div class="card-header" 
+                        ng-class="{'bg-secondary':step.open==true && $root.uiPrefs.arcBauValues.editing,'text-white bg-info':step.open==false && $root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].stepPercentage<100,'text-white bg-success':step.open==false && $root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].stepPercentage==100}"
+                        style="padding: 5px 10px; cursor: default;">
+                           <div class="card-text">
+                              <div ng-if="!$root.uiPrefs.arcBauValues.editing">
+                                 <span class="badge badge-pill badge-secondary" ng-if="$root.uiPrefs.arcBauValues.numbers">
+                                    {{$index+1}}
+                                 </span>
+                                 <label ng-if="!$root.uiPrefs.arcBauValues.editing"> {{step.title}} </label>
+                                 <a ng-if="!$root.uiPrefs.arcBauValues.editing" 
+                                    class="pull-right pt-1"
+                                    ng-click="step.open=!step.open;calculatePercentage()" title="{{'UPDATESTATUS' | translate}}">
+                                    <i class="fa fa-fw" ng-class="{'fa-check-square-o':!step.open,'fa-square-o':step.open }"></i>
+                                 </a>
+                              </div>
+                              <div class="input-group" ng-if="$root.uiPrefs.arcBauValues.editing">
+                                 <div class="input-group-text input-group-append input-group-prepend click"
+                                    ng-click="updateCategory(action)" ng-if="$root.uiPrefs.arcBauValues.numbers">
+                                    {{$index+1}}
+                                 </div>
+                                 <input spellcheck="false" spellcheck="false" type="text" class="form-control" placeholder="Enter step title..." ng-model="step.title" />
+                                 <div class="btn-group">
+                                    <button type="button" class="btn btn-secondary"
+                                    ng-disabled="$index==0"
+                                    ng-click="moveStep($index,$index-1)"
+                                    title="{{'MOVELEFT' | translate}}">
+                                    <i class="fa fa-arrow-circle-left"></i>
+                                 </button>
+                                 <button type="button" class="btn btn-secondary"
+                                    ng-click="moveStep($index,$index+2)"
+                                    ng-disabled="$index+1 == $root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].content.length"
+                                    title="{{'MOVERIGHT' | translate}}">
+                                    <i class="fa fa-arrow-circle-right"></i>
+                                 </button>
+                                    <button type="button" class="btn btn-secondary"
+                                       ng-click="removeStep($index)"
+                                       title="{{'REMOVESTEP' | translate}}">
+                                       <i class="fa fa-trash"></i>
+                                    </button>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="card-body" style="padding:5px">
+                           <div  ng-repeat="action in step.actions track by $index">
+                              <div class="card mb-2 mt-2">
+                                 <div class="card-header todo-opacity" style="padding: 5px 10px; cursor: default;">
+   
+                                    <div class="input-group" ng-if="$root.uiPrefs.arcBauValues.editing">
+                                       <div class="input-group-text input-group-append input-group-prepend click"
+                                          ng-click="updateCategory(action)" ng-class="action.category"
+                                          ng-if="$root.uiPrefs.arcBauValues.numbers">
+                                          {{$parent.$parent.$parent.$index+1}}.{{$index+1}}
+                                       </div>
+                                       <input spellcheck="false" spellcheck="false" type="text" 
+                                       class="form-control input-group-append input-group-prepend" placeholder="Enter action title..." ng-model="action.name" />
+                                       <div class="btn-group">
+                                          <button type="button" class="btn btn-secondary"
+                                          ng-disabled="$index==0"
+                                          ng-click="moveAction($parent.$parent.$index,$index,$index-1)"
+                                          title="{{'MOVEUP' | translate}}">
+                                          <i class="fa fa-arrow-circle-o-up"></i>
+                                       </button>
+                                       <button type="button" class="btn btn-secondary"
+                                          ng-click="moveAction($parent.$parent.$index,$index,$index+2)"
+                                          ng-disabled="$index+1 == $root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].content.length"
+                                          title="{{'MOVEDOWN' | translate}}">
+                                          <i class="fa fa-arrow-circle-o-down"></i>
+                                       </button>
+                                    <button type="button" class="btn btn-secondary"
+                                       ng-click="removeAction($parent.$parent.$index, $index)" 
+                                       title="{{'REMOVEACTION' | translate}}">
+                                       <i class="fa fa-trash"></i>
+                                    </button>
+                                       </div>
+                                    </div>
+   
+                                    <div ng-if="!$root.uiPrefs.arcBauValues.editing && action.name">
+                                       <span style="padding-left:0px;" ng-if="$root.uiPrefs.arcBauValues.numbers">
+                                          <span class="badge badge-pill click" ng-click="updateCategory(action)"
+                                             ng-class="action.category">
+                                             {{$parent.$parent.$parent.$index+1}}.{{$index+1}}</span>
+                                       </span>
+                                       <span ng-if="!$root.uiPrefs.arcBauValues.editing">
+                                          {{action.name}}
+                                       </span>
+                                    </div>
+                                 </div>
+                                 <div class="card-body" style="padding:10px">
+                                    <div ng-if="!$root.uiPrefs.arcBauValues.editing">
+                                       <i ng-if="action.type=='Cube View'" class="fa cubes" style="margin-right:5px"></i>
+                                       <i ng-if="action.type=='Dimension Editor'" class="fa dimensions" style="margin-right:5px"></i>
+                                       <i ng-if="action.type=='Subset Editor'" class="fa subset" style="margin-right:5px"></i>
+                                       <i ng-if="action.type=='Process'" class="fa processes" style="margin-right:5px"></i>
+                                       <i ng-if="action.type=='Rules'" class="fa rule" style="margin-right:5px"></i>
+                                       <i ng-if="action.type=='Chore'" class="fa chores" style="margin-right:5px"></i>
+                                       <a href="#/process/{{instance}}/{{action.process}}?tab=parameters" ng-if="action.type=='Process'"
+                                          ng-class="[row.branch.item_class]">
+                                          {{action.process}}
+                                       </a>
+   
+                                       <a href="#/chore/{{instance}}/{{action.chore}}" ng-class="[row.branch.item_class]" ng-if="action.type=='Chore'">
+                                          {{action.chore}}
+                                       </a>
+   
+                                       <span ng-if="action.type=='Subset Editor'">
+                                          <a ng-if="!values.enableNewHierarchyCreation"
+                                             href="#/dimension/{{instance}}/{{action.dimension}}/{{action.dimension}}/subset/{{action.subset}}"
+                                             ng-class="[row.branch.item_class]" title="Open subset {{action.subset}}">
+                                             {{action.dimension}}:{{action.subset}}
+                                          </a>
+                                          <a ng-if="values.enableNewHierarchyCreation"
+                                             href="#/dimension/{{instance}}/{{action.dimension}}/{{action.hierarchy}}/subset/{{action.subset}}"
+                                             ng-class="[row.branch.item_class]" title="Open subset {{action.subset}}">
+                                             {{action.dimension}}:{{action.hierarchy}}:{{action.subset}}
+                                          </a>
+                                       </span>
+                                       <span ng-if="action.type=='Dimension Editor'">
+                                          <a ng-if="!values.enableNewHierarchyCreation"
+                                             href="#/dimension/{{instance}}/{{action.dimension}}/{{action.dimension}}"
+                                             ng-class="[row.branch.item_class]" title="Open subset {{action.subset}}">
+                                             {{action.dimension}}
+                                          </a>
+                                          <a ng-if="values.enableNewHierarchyCreation"
+                                             href="#/dimension/{{instance}}/{{action.dimension}}/{{action.hierarchy}}"
+                                             ng-class="[row.branch.item_class]" title="Open subset {{action.subset}}">
+                                             {{action.dimension}}:{{action.hierarchy}}
+                                          </a>
+                                       </span>
+                                       <a ng-if="action.type=='Cube View'"
+                                          href="#/cube/{{instance}}/{{action.cube}}/view/{{action.view}}"
+                                          ng-class="[row.branch.item_class]" title="Open subset {{action.subset}}">
+                                          {{action.cube}}:{{action.view}}
+                                       </a>
+                                       <a ng-if="action.type=='Rules'"
+                                          href="#/cube/{{instance}}/{{action.cube}}"
+                                          ng-class="[row.branch.item_class]" title="Open rules {{action.cube}}">
+                                          {{action.cube}}
+                                       </a>
+                                       <!-- RUN PROCESS -->
+                                       <span class="pull-right" ng-if="action.type=='Process'">
+                                          <button class="btn btn-secondary btn-sm text-warning"
+                                             title="Execute {{action.process}}" ng-click="executeProcess(action.process)">
+                                             <i class="fa fa-fw fa-bolt"></i>
+                                          </button>
+                                       </span>
+                                       <!-- RUN CHORE -->
+                                       <span class="pull-right" ng-if="action.type=='Chore'">
+                                          <button class="btn btn-secondary btn-sm text-warning"
+                                             title="Execute {{action.chore}}" ng-click="executeChore(action.chore)">
+                                             <i class="fa fa-fw fa-bolt"></i>
+                                          </button>
+                                       </span>
+   
+                                    </div>
+                                    <div ng-if="$root.uiPrefs.arcBauValues.editing">
+                                       <div uib-dropdown dropdown-append-to-body>
+                                          <button class="btn btn-secondary" uib-dropdown-toggle>
+                                             {{action.type}}
+                                             <span class="caret"></span>
+                                          </button>
+                                          <ul class="dropdown-menu" uib-dropdown-menu role="menu"
+                                             aria-labelledby="split-button">
+                                             <li role="menuitem" ng-repeat="type in options.actionType">
+                                                <div ng-click="action.type = type.key" class="ml-2 mr-2 click">
+                                                   <span>{{type.key}}</span>
+                                                </div>
+                                             </li>
+                                          </ul>
+                                       </div>
+                                       <div class="input-group mt-2" ng-if="action.type=='Cube View' || action.type=='Rules'">
+                                          <div class="input-group-text input-group-append input-group-prepend">
+                                             <i class="fa " ng-class="{'cubes':action.type=='Cube View', 'rule':action.type=='Rules' }" ></i>
+                                          </div>
+                                          <input spellcheck="false" type="text" class="input-group-append input-group-prepend form-control"
+                                          placeholder="Enter cube name..."
+                                             ng-model="action.cube"
+                                             uib-typeahead="cube.Name for cube in lists.cubes | filter:$viewValue | limitTo:20"
+                                             typeahead-append-to-body="true" spellcheck="false" autofocus />
+                                       </div>
+   
+                                       <div class="input-group mt-2" ng-if="action.type=='Cube View'">
+                                          <div class="input-group-text input-group-append input-group-prepend">
+                                             <i class="fa view"></i>
+                                          </div>
+   
+                                          <input spellcheck="false" type="text" class="input-group-append input-group-prepend form-control"
+                                             ng-model="action.view"
+                                             placeholder="Enter view name..."
+                                             uib-typeahead="view.Name for view in lists.views[action.cube] | filter:$viewValue | limitTo:20"
+                                             typeahead-append-to-body="true" spellcheck="false" autofocus />
+                                       </div>
+
+                                       <div class="input-group mt-2" ng-if="action.type=='Dimension Editor'">
+                                          <div class="input-group-text input-group-append input-group-prepend">
+                                             <i class="fa dimension"></i>
+                                          </div>
+                                          <input spellcheck="false" type="text" 
+                                          class="input-group-append input-group-prepend form-control"
+                                             ng-model="action.dimension"
+                                             placeholder="Enter dimension name..."
+                                             uib-typeahead="dim.Name for dim in lists.dimensions | filter:$viewValue | limitTo:20"
+                                             typeahead-append-to-body="true" spellcheck="false" autofocus />
+                                       </div>
+
+                                       <div class="input-group mt-2"
+                                       ng-if="action.type=='Dimension Editor' && values.enableNewHierarchyCreation">
+                                       <div class="input-group-text input-group-append input-group-prepend">
+                                          <i class="fa hierarchy"></i>
+                                       </div>
+
+                                       <input spellcheck="false" type="text" class="input-group-append input-group-prepend form-control"
+                                          ng-model="action.hierarchy"
+                                          placeholder="Enter hierarchy name..."
+                                          uib-typeahead="hierarchy.Name for hierarchy in lists.hierarchies[action.dimension] | filter:$viewValue | limitTo:20"
+                                          typeahead-append-to-body="true" spellcheck="false" autofocus />
+                                    </div>
+   
+                                       <div class="input-group mt-2" ng-if="action.type=='Subset Editor'">
+                                          <div class="input-group-text input-group-append input-group-prepend">
+                                             <i class="fa dimension"></i>
+                                          </div>
+                                          <input spellcheck="false" type="text" class="input-group-append input-group-prepend form-control"
+                                             ng-model="action.dimension"
+                                             placeholder="Enter dimension name..."
+                                             uib-typeahead="dim.Name for dim in lists.dimensions | filter:$viewValue | limitTo:20"
+                                             typeahead-append-to-body="true" spellcheck="false" autofocus />
+                                       </div>
+   
+                                       <div class="input-group mt-2"
+                                          ng-if="action.type=='Subset Editor' && values.enableNewHierarchyCreation">
+                                          <div class="input-group-text input-group-append input-group-prepend">
+                                             <i class="fa hierarchy"></i>
+                                          </div>
+   
+                                          <input spellcheck="false" type="text" class="input-group-append input-group-prepend form-control"
+                                             ng-model="action.hierarchy"
+                                             placeholder="Enter hierarchy name..."
+                                             uib-typeahead="hierarchy.Name for hierarchy in lists.hierarchies[action.dimension] | filter:$viewValue | limitTo:20"
+                                             typeahead-append-to-body="true" spellcheck="false" autofocus />
+                                       </div>
+   
+                                       <div class="input-group mt-2"
+                                          ng-if="action.type=='Subset Editor' && values.enableNewHierarchyCreation">
+                                          <div class="input-group-text input-group-append input-group-prepend">
+                                             <i class="fa subset"></i>
+                                          </div>
+                                          <input spellcheck="false" type="text" class="input-group-append input-group-prepend form-control"
+                                             ng-model="action.subset"
+                                             placeholder="Enter subset name..."
+                                             uib-typeahead="subset.Name for subset in lists.subsets[action.hierarchy] | filter:$viewValue | limitTo:20"
+                                             typeahead-append-to-body="true" spellcheck="false" autofocus />
+                                       </div>
+   
+                                       <div class="input-group mt-2"
+                                          ng-if="action.type=='Subset Editor' && !values.enableNewHierarchyCreation">
+                                          <div class="input-group-text input-group-append input-group-prepend">
+                                             <i class="fa subset"></i>
+                                          </div>
+   
+                                          <input spellcheck="false" type="text" class="input-group-append input-group-prepend form-control"
+                                          placeholder="Enter subset name..."
+                                             ng-model="action.subset"
+                                             uib-typeahead="subset.Name for subset in lists.subsets[action.dimension] | filter:$viewValue | limitTo:20"
+                                             typeahead-append-to-body="true" spellcheck="false" autofocus />
+                                       </div>
+   
+                                       <div class="input-group mt-2" ng-if="action.type=='Process'">
+                                          <div class="input-group-append input-group-prepend">
+   
+                                             <span class="input-group-text input-group-append input-group-prepend"><i
+                                                   class="fa process"></i></span>
+                                          </div>
+   
+                                          <input spellcheck="false" type="text" class="input-group-append input-group-prepend form-control"
+                                          placeholder="Enter process name..."
+                                             ng-model="action.process"
+                                             uib-typeahead="pro.Name for pro in lists.processes | filter:$viewValue | limitTo:20"
+                                             typeahead-append-to-body="true" spellcheck="false" autofocus />
+                                       </div>
+   
+                                       <div class="input-group mt-2" ng-if="action.type=='Chore'">
+                                          <div class="input-group-append input-group-prepend">
+                                             <span class="input-group-text input-group-append input-group-prepend"><i
+                                                   class="fa chores"></i></span>
+                                          </div>
+   
+                                          <input spellcheck="false" type="text" class="input-group-append input-group-prepend form-control"
+                                          placeholder="Enter chore name..."
+                                             ng-model="action.chore"
+                                             uib-typeahead="cho.Name for cho in lists.chores | filter:$viewValue | limitTo:20"
+                                             typeahead-append-to-body="true" spellcheck="false" autofocus />
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                           <div class="card mb-2 mt-2" ng-if="$root.uiPrefs.arcBauValues.editing">
+                              <div class="card-body p-2">
+                                    <a href="" ng-click="addAction($index)">
+                                          <i class="fa fa-fw fa-plus mr-1"></i>
+                                          <span translate="ADDANACTION"></span>
+                                       </a>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-md-4 mt-2" 
+                  ng-if="$root.uiPrefs.arcBauValues.editing && $root.uiPrefs.arcBauSettings.length>0">
+                     <div class="card todo-opacity">
+                        <div class="card-body p-2">
+                              <a href="" ng-click="addStep()">
+                                    <i class="fa fa-fw fa-plus mr-1"></i>
+                                    <span translate="ADDASTEP"></span>
+                                 </a>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               <!--             -->
+               <!-- TABLE LIKE -->
+               <!--             -->
+               <div class="row" ng-if="$root.uiPrefs.arcBauValues.view!='fa-trello'">
+                  <div class="col-md-6 mt-2" ng-class="{'col-md-12':$root.uiPrefs.arcBauValues.view=='fa-list-alt' }"
+                     ng-repeat="step in $root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].content track by $index"
+                     >
+                     <div class="card" ng-class="{'border-success':step.open==false && $root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].stepPercentage==100,
+                     'border-info':step.open==false && $root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].stepPercentage<100}">
+                        <div class="card-header" 
+                        ng-class="{'bg-secondary':step.open==true && $root.uiPrefs.arcBauValues.editing,'text-white bg-info':step.open==false && $root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].stepPercentage<100,'text-white bg-success':step.open==false && $root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].stepPercentage==100}"
+                        style="padding: 5px 10px; cursor: default;">
+                           <span ng-if="!$root.uiPrefs.arcBauValues.editing">
+                              <span class="badge badge-pill badge-secondary" ng-if="$root.uiPrefs.arcBauValues.numbers">
+                                 {{$index+1}}</span>
+                              <a ng-if="!$root.uiPrefs.arcBauValues.editing" 
+                                    class="pull-right pt-1"
+                                    ng-click="step.open=!step.open;calculatePercentage()">
+                                    <i class="fa fa-fw" ng-class="{'fa-check-square-o':!step.open,'fa-square-o':step.open }"></i>
+                                 </a>
+                              <label ng-if="!$root.uiPrefs.arcBauValues.editing"> {{step.title}} </label>
+                           </span>
+                           <div class="input-group" ng-if="$root.uiPrefs.arcBauValues.editing">
+                              <div class="input-group-text input-group-append input-group-prepend" ng-if="$root.uiPrefs.arcBauValues.numbers">
+                                 {{$index+1}}
+                              </div>
+                              <input spellcheck="false" type="text" class="form-control" placeholder="Enter step title..." ng-model="step.title" />
+                              <div class="btn-group">
+                                 <button type="button" class="btn btn-secondary"
+                                 ng-disabled="$index==0"
+                                 ng-click="moveStep($index,$index-1)"
+                                 title="{{'MOVELEFT' | translate}}">
+                                 <i class="fa "
+                                 ng-class="{'fa-arrow-circle-up':$root.uiPrefs.arcBauValues.view == 'fa-list-alt',
+                                 'fa-arrow-circle-left':$root.uiPrefs.arcBauValues.view != 'fa-list-alt'}"></i>
+                              </button>
+                              <button type="button" class="btn btn-secondary"
+                                 ng-click="moveStep($index,$index+2)"
+                                 ng-disabled="$index+1 == $root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].content.length"
+                                 title="{{'MOVERIGHT' | translate}}">
+                                 <i class="fa "
+                                 ng-class="{'fa-arrow-circle-down':$root.uiPrefs.arcBauValues.view == 'fa-list-alt',
+                                 'fa-arrow-circle-right':$root.uiPrefs.arcBauValues.view != 'fa-list-alt'}"></i>
+                              </button>
+                                 <button type="button" class="btn btn-secondary"
+                                    ng-click="removeStep($index)"
+                                    title="ADD">
+                                    <i class="fa fa-trash"></i>
+                                 </button>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="card-body" style="padding:5px">
+                           <table class="table table-hover table-sm" ng-if="step.actions.length>0">
+                              <thead>
+                                 <tr style="cursor: default;">
+                                    <th class="text-center" translate="DESCRIPTION"> </th>
+                                    <th class="text-center" translate="ACTION"> </th>
+                                 </tr>
+                              </thead>
+                              <tbody>
+                                 <tr ng-repeat="action in step.actions track by $index" style="cursor: default;">
+                                    <td>
+                                       <div class="input-group" ng-if="$root.uiPrefs.arcBauValues.editing">
+                                          <div class="input-group-text input-group-append input-group-prepend click"
+                                             ng-click="updateCategory(action)" ng-class="action.category"
+                                             ng-if="$root.uiPrefs.arcBauValues.numbers">
+                                             {{$parent.$parent.$parent.$index+1}}.{{$index+1}}
+                                          </div>
+                                          <input spellcheck="false" type="text" class="form-control" placeholder="Enter action title..." ng-model="action.name" />
+                                       </div>
+                                       <span ng-if="!$root.uiPrefs.arcBauValues.editing && action.name">
+                                          <span class="badge badge-pill click mr-1" ng-click="updateCategory(action)"
+                                             ng-class="action.category" ng-if="$root.uiPrefs.arcBauValues.numbers">
+                                             {{$parent.$parent.$parent.$index+1}}.{{$index+1}}</span>
+                                          {{action.name}}
+                                       </span>
+                                    </td>
+                                    <td>
+   
+                                       <span ng-if="!$root.uiPrefs.arcBauValues.editing">
+                                          <i ng-if="action.type=='Cube View'" class="fa cubes" style="margin-right:5px"></i>
+                                          <i ng-if="action.type=='Subset Editor'" class="fa subset" style="margin-right:5px"></i>
+                                          <i ng-if="action.type=='Dimension Editor'" class="fa dimensions" style="margin-right:5px"></i>
+                                          <i ng-if="action.type=='Process'" class="fa processes"
+                                             style="margin-right:5px"></i>
+                                             <i ng-if="action.type=='Rules'" class="fa rule"
+                                             style="margin-right:5px"></i>
+                                          <i ng-if="action.type=='Chore'" class="fa chores" style="margin-right:5px"></i>
+
+                                          <a href="#/process/{{instance}}/{{action.process}}?tab=parameters" ng-if="action.type=='Process'"
+                                             ng-class="[row.branch.item_class]">
+                                             {{action.process}}
+                                          </a>
+   
+                                          <a href="#/chore/{{instance}}/{{action.chore}}" ng-if="action.type=='Chore'"
+                                             ng-class="[row.branch.item_class]">
+                                             {{action.chore}}
+                                          </a>
+                                          <span ng-if="action.type=='Dimension Editor'">
+                                             <a ng-if="!values.enableNewHierarchyCreation"
+                                                href="#/dimension/{{instance}}/{{action.dimension}}/{{action.dimension}}"
+                                                ng-class="[row.branch.item_class]" title="Open subset {{action.subset}}">
+                                                {{action.dimension}}
+                                             </a>
+                                             <a ng-if="values.enableNewHierarchyCreation"
+                                                href="#/dimension/{{instance}}/{{action.dimension}}/{{action.hierarchy}}"
+                                                ng-class="[row.branch.item_class]" title="Open subset {{action.subset}}">
+                                                {{action.dimension}}:{{action.hierarchy}}
+                                             </a>
+                                          </span>
+                                          <span ng-if="action.type=='Subset Editor'">
+                                             <a ng-if="!values.enableNewHierarchyCreation"
+                                                href="#/dimension/{{instance}}/{{action.dimension}}/{{action.dimension}}/subset/{{action.subset}}"
+                                                ng-class="[row.branch.item_class]" title="Open subset {{action.subset}}">
+                                                {{action.dimension}}:{{action.subset}}
+                                             </a>
+                                             <a ng-if="values.enableNewHierarchyCreation"
+                                                href="#/dimension/{{instance}}/{{action.dimension}}/{{action.hierarchy}}/subset/{{action.subset}}"
+                                                ng-class="[row.branch.item_class]" title="Open subset {{action.subset}}">
+                                                {{action.dimension}}:{{action.hierarchy}}:{{action.subset}}
+                                             </a>
+                                          </span>
+                                          <a ng-if="action.type=='Cube View'"
+                                             href="#/cube/{{instance}}/{{action.cube}}/view/{{action.vie.Name}}"
+                                             ng-class="[row.branch.item_class]" title="Open subset {{action.subset}}">
+                                             {{action.cube}}:{{action.view}}
+                                          </a>
+                                          <a ng-if="action.type=='Rules'"
+                                          href="#/cube/{{instance}}/{{action.cube}}"
+                                          ng-class="[row.branch.item_class]" title="Open rules {{action.cube}}">
+                                          {{action.cube}}
+                                       </a>
+                                          <!-- RUN PROCESS -->
+                                          <span class="pull-right" ng-if="action.type=='Process'">
+                                             <button class="btn btn-secondary btn-sm text-warning"
+                                                title="Execute {{action.process}}"
+                                                ng-click="executeProcess(action.process)">
+                                                <i class="fa fa-fw fa-bolt"></i>
+                                             </button>
+                                          </span>
+                                          <!-- RUN CHORE -->
+                                          <span class="pull-right" ng-if="action.type=='Chore'">
+                                             <button class="btn btn-secondary btn-sm text-warning"
+                                                title="Execute {{action.chore}}" ng-click="executeChore(action.chore)">
+                                                <i class="fa fa-fw fa-bolt"></i>
+                                             </button>
+                                          </span>
+                                       </span>
+   
+                                       <div class="input-group" ng-if="$root.uiPrefs.arcBauValues.editing">
+                                          <div uib-dropdown dropdown-append-to-body class="input-group-prepend">
+                                             <button class="btn btn-secondary" uib-dropdown-toggle>
+                                                {{action.type}}
+                                                <span class="caret"></span>
+                                             </button>
+                                             <ul class="dropdown-menu" uib-dropdown-menu role="menu"
+                                                aria-labelledby="split-button">
+                                                <li role="menuitem" ng-repeat="type in options.actionType">
+                                                   <div ng-click="action.type = type.key" class="ml-2 mr-2 click">
+                                                      <span>{{type.key}}</span>
+                                                   </div>
+                                                </li>
+                                             </ul>
+                                          </div>
+                                          <div ng-if="action.type=='Cube View' || action.type=='Rules'"
+                                             class="input-group-text input-group-append input-group-prepend">
+                                             <i class="fa " ng-class="{'cubes':action.type=='Cube View', 'rule':action.type=='Rules' }" ></i>
+                                          </div>
+                                          <input spellcheck="false" ng-if="action.type=='Cube View' || action.type=='Rules'" 
+                                             placeholder="Enter cube name..."
+                                             type="text"
+                                             class="input-group-append input-group-prepend form-control"
+                                             ng-model="action.cube"
+                                             uib-typeahead="cube.Name for cube in lists.cubes | filter:$viewValue | limitTo:20"
+                                             typeahead-append-to-body="true" spellcheck="false" autofocus />
+   
+                                          <div ng-if="action.type=='Cube View'"
+                                             class="input-group-text input-group-append input-group-prepend">
+                                             <i class="fa view"></i>
+                                          </div>
+   
+                                          <input spellcheck="false" ng-if="action.type=='Cube View'" type="text"
+                                             class="input-group-append input-group-prepend form-control"
+                                             placeholder="Enter view name..."
+                                             ng-model="action.view"
+                                             uib-typeahead="view.Name for view in lists.views[action.cube] | filter:$viewValue | limitTo:20"
+                                             typeahead-append-to-body="true" spellcheck="false" autofocus />
+   
+                                          <div ng-if="action.type=='Subset Editor' || action.type=='Dimension Editor'"
+                                             class="input-group-text input-group-append input-group-prepend">
+                                             <i class="fa dimension"></i>
+                                          </div>
+   
+                                          <input spellcheck="false" ng-if="action.type=='Subset Editor' || action.type=='Dimension Editor'" type="text"
+                                             class="input-group-append input-group-prepend form-control"
+                                             placeholder="Enter dimension name..."
+                                             ng-model="action.dimension"
+                                             uib-typeahead="dim.Name for dim in lists.dimensions | filter:$viewValue | limitTo:20"
+                                             typeahead-append-to-body="true" spellcheck="false" autofocus />
+   
+                                          <div ng-if="action.type=='Subset Editor' && values.enableNewHierarchyCreation"
+                                             class="input-group-text input-group-append input-group-prepend">
+                                             <i class="fa hierarchy"></i>
+                                          </div>
+
+                                          <div ng-if="action.type=='Dimension Editor' && values.enableNewHierarchyCreation"
+                                          class="input-group-text input-group-append input-group-prepend">
+                                          <i class="fa hierarchy"></i>
+                                       </div>
+   
+                                       <input spellcheck="false" ng-if="action.type=='Dimension Editor' && values.enableNewHierarchyCreation"
+                                       type="text" class="input-group-append input-group-prepend form-control"
+                                       placeholder="Enter hierarchy name..."
+                                       ng-model="action.hierarchy"
+                                       uib-typeahead="hierarchy.Name for hierarchy in lists.hierarchies[action.dimension] | filter:$viewValue | limitTo:20"
+                                       typeahead-append-to-body="true" spellcheck="false" autofocus />
+
+                                          <input spellcheck="false" ng-if="action.type=='Subset Editor' && values.enableNewHierarchyCreation"
+                                             type="text" class="input-group-append input-group-prepend form-control"
+                                             placeholder="Enter hierarchy name..."
+                                             ng-model="action.hierarchy"
+                                             uib-typeahead="hierarchy.Name for hierarchy in lists.hierarchies[action.dimension] | filter:$viewValue | limitTo:20"
+                                             typeahead-append-to-body="true" spellcheck="false" autofocus />
+   
+                                          <div ng-if="action.type=='Subset Editor' && values.enableNewHierarchyCreation"
+                                             class="input-group-text input-group-append input-group-prepend">
+                                             <i class="fa subset"></i>
+                                          </div>
+   
+                                          <input spellcheck="false" ng-if="action.type=='Subset Editor' && values.enableNewHierarchyCreation"
+                                             type="text" class="input-group-append input-group-prepend form-control"
+                                             placeholder="Enter subset name..."
+                                             ng-model="action.subset"
+                                             uib-typeahead="subset.Name for subset in lists.subsets[action.hierarchy] | filter:$viewValue | limitTo:20"
+                                             typeahead-append-to-body="true" spellcheck="false" autofocus />
+   
+                                          <div ng-if="action.type=='Subset Editor' && !values.enableNewHierarchyCreation"
+                                             class="input-group-text input-group-append input-group-prepend">
+                                             <i class="fa subset"></i>
+                                          </div>
+   
+                                          <input spellcheck="false" ng-if="action.type=='Subset Editor' && !values.enableNewHierarchyCreation"
+                                             type="text" class="input-group-append input-group-prepend form-control"
+                                             placeholder="Enter subset name..."
+                                             ng-model="action.subset"
+                                             uib-typeahead="subset.Name for subset in lists.subsets[action.dimension] | filter:$viewValue | limitTo:20"
+                                             typeahead-append-to-body="true" spellcheck="false" autofocus />
+   
+                                          <div ng-if="action.type=='Process'"
+                                             class="input-group-append input-group-prepend">
+   
+                                             <span class="input-group-text input-group-append input-group-prepend"><i
+                                                   class="fa process"></i></span>
+                                          </div>
+   
+                                          <input spellcheck="false" ng-if="action.type=='Process'" type="text"
+                                             class="input-group-append input-group-prepend form-control"
+                                             placeholder="Enter process name..."
+                                             ng-model="action.process"
+                                             uib-typeahead="pro.Name for pro in lists.processes | filter:$viewValue | limitTo:20"
+                                             typeahead-append-to-body="true" spellcheck="false" autofocus />
+   
+   
+                                          <div ng-if="action.type=='Chore'" class="input-group-append input-group-prepend">
+                                             <span class="input-group-text input-group-append input-group-prepend"><i
+                                                   class="fa chores"></i></span>
+                                          </div>
+   
+                                          <input spellcheck="false" ng-if="action.type=='Chore'" type="text"
+                                          placeholder="Enter chore name..."
+                                             class="input-group-append input-group-prepend form-control"
+                                             ng-model="action.chore"
+                                             uib-typeahead="cho.Name for cho in lists.chores | filter:$viewValue | limitTo:20"
+                                             typeahead-append-to-body="true" spellcheck="false" autofocus />
+   
+                                          <div class="btn-group">
+   
+                                             <button type="button" class="btn btn-secondary"
+                                             ng-disabled="$index==0"
+                                             ng-click="moveAction($parent.$parent.$index,$index,$index-1)"
+                                             title="{{'MOVEUP' | translate}}">
+                                             <i class="fa fa-arrow-circle-o-up"></i>
+                                          </button>
+                                          <button type="button" class="btn btn-secondary"
+                                             ng-click="moveAction($parent.$parent.$index,$index,$index+2)"
+                                             ng-disabled="$index+1 == $root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].content.length"
+                                             title="{{'MOVEDOWN' | translate}}">
+                                             <i class="fa fa-arrow-circle-o-down"></i>
+                                          </button>
+                                             <button type="button" class="btn btn-secondary"
+                                                ng-click="removeAction($parent.$parent.$index, $index)"
+                                                title="{{'REMOVEACTION' | translate}}">
+                                                <i class="fa fa-trash"></i>
+                                             </button>
+   
+                                          </div>
+   
+                                       </div>
+   
+                                    </td>
+                                 </tr>
+                              </tbody>
+                           </table>
+                           <div class="mb-2">
+                              <a href="" ng-if="$root.uiPrefs.arcBauValues.editing" ng-click="addAction($index)">
+                                 <i class="fa fa-fw fa-plus mr-1"></i>
+                                 <span translate="ADDANACTION"></span>
+                              </a>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-md-6 mt-2" 
+                  ng-class="{'col-md-12':$root.uiPrefs.arcBauValues.view=='fa-list-alt' }" 
+                  ng-if="$root.uiPrefs.arcBauValues.editing && $root.uiPrefs.arcBauSettings.length>0">
+                     <div class="card todo-opacity">
+                        <div class="card-body p-2">
+                              <a href="" ng-click="addStep()">
+                                    <i class="fa fa-fw fa-plus mr-1"></i>
+                                    <span translate="ADDASTEP"></span>
+                                 </a>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </auto-height>
+         </div>
+      </div>
+</div>
