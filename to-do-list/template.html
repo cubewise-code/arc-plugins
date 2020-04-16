@@ -237,12 +237,12 @@
                                        <i ng-if="action.type=='Process'" class="fa processes" style="margin-right:5px"></i>
                                        <i ng-if="action.type=='Rules'" class="fa rule" style="margin-right:5px"></i>
                                        <i ng-if="action.type=='Chore'" class="fa chores" style="margin-right:5px"></i>
-                                       <a href="#/process/{{instance}}/{{action.process}}?tab=parameters"
+                                       <a href="#/process/{{instance}}/{{action.process}}?tab=parameters" ng-if="action.type=='Process'"
                                           ng-class="[row.branch.item_class]">
                                           {{action.process}}
                                        </a>
    
-                                       <a href="#/chore/{{instance}}/{{action.chore}}" ng-class="[row.branch.item_class]">
+                                       <a href="#/chore/{{instance}}/{{action.chore}}" ng-class="[row.branch.item_class]" ng-if="action.type=='Chore'">
                                           {{action.chore}}
                                        </a>
    
@@ -550,12 +550,13 @@
                                              <i ng-if="action.type=='Rules'" class="fa rule"
                                              style="margin-right:5px"></i>
                                           <i ng-if="action.type=='Chore'" class="fa chores" style="margin-right:5px"></i>
-                                          <a href="#/process/{{instance}}/{{action.process}}?tab=parameters"
+
+                                          <a href="#/process/{{instance}}/{{action.process}}?tab=parameters" ng-if="action.type=='Process'"
                                              ng-class="[row.branch.item_class]">
                                              {{action.process}}
                                           </a>
    
-                                          <a href="#/chore/{{instance}}/{{action.chore}}"
+                                          <a href="#/chore/{{instance}}/{{action.chore}}" ng-if="action.type=='Chore'"
                                              ng-class="[row.branch.item_class]">
                                              {{action.chore}}
                                           </a>
