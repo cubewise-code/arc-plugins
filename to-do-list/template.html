@@ -41,7 +41,7 @@
                         </li>
                      </ul>
                   </span>
-               <button class="btn" 
+               <button class="btn btnOpacity" 
                   ng-click="$root.uiPrefs.arcBauValues.editing=!$root.uiPrefs.arcBauValues.editing"
                   ng-class="{'active':$root.uiPrefs.arcBauValues.editing}" title="{{'EDIT' | translate}}">
                   <i class="fa fa-fw fa-edit"></i>
@@ -206,7 +206,7 @@
                                        </button>
                                        <button type="button" class="btn btn-secondary"
                                           ng-click="moveAction($parent.$parent.$index,$index,$index+2)"
-                                          ng-disabled="$index+1 == $root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].content.length"
+                                          ng-disabled="$index+1 == step.actions.length"
                                           title="{{'MOVEDOWN' | translate}}">
                                           <i class="fa fa-arrow-circle-o-down"></i>
                                        </button>
@@ -747,7 +747,7 @@
                                           </button>
                                           <button type="button" class="btn btn-secondary"
                                              ng-click="moveAction($parent.$parent.$index,$index,$index+2)"
-                                             ng-disabled="$index+1 == $root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].content.length"
+                                             ng-disabled="$index+1 == step.actions.length"
                                              title="{{'MOVEDOWN' | translate}}">
                                              <i class="fa fa-arrow-circle-o-down"></i>
                                           </button>
