@@ -150,7 +150,7 @@ arc.directive("cubewiseMdx", function () {
                   // Success
                   if ($scope.options.queryType == "ExecuteMDX") {
                      $tm1.cellsetDelete($scope.instance, success.data.ID);
-                     var regex = /FROM\s\[(.*)\]/g;
+                     var regex = /FROM\s*\[(.*)\]/g;
                      var match = regex.exec($scope.options.mdx);
                      var cube = match[1];
                      $scope.result = {
