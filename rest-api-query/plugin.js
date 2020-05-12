@@ -68,7 +68,7 @@ arc.directive("tm1RestApiQuery", function () {
             }
 
             $scope.lists = {
-                methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+                methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
                 resultQuery: [],
                 GET: [
                     { icon: 'cubes', name: 'Get list', restApiQuery: 'Cubes' },
@@ -95,6 +95,8 @@ arc.directive("tm1RestApiQuery", function () {
                 ],
                 PATCH: [
                     { icon: 'chores', name: 'Update Chore', restApiQuery: "Chores('choreName')" }
+                ],
+                PUT: [
                 ],
                 DELETE: [
                     { icon: 'cubes', name: 'Delete a view', restApiQuery: "Cubes('cubeName')/Views('viewName')" },
