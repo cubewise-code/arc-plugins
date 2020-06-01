@@ -1,8 +1,8 @@
 <div>
-   <div class="modal-header text-white bg-success">
+   <div class="modal-header text-white bg-info">
       <span>
-         <i class="fa fa-fw fa-plus mr-1 text-white"></i>
-         <span translate="CREATELIST">
+         <i class="fa fa-fw fa-clone mr-1 text-white"></i>
+         <span translate="LISTSAVEAS">
          </span>
       </span>
    </div>
@@ -11,18 +11,18 @@
          <div class="input-group">
             <div uib-dropdown dropdown-append-to-body class="input-group-prepend">
                <button class="btn btn-secondary"  title="{{'CHOOSEICON' | translate}}" uib-dropdown-toggle>
-                  <i class="fa fa-fw {{options.iconList}}"></i>
+                  <i class="fa fa-fw {{newIcon}}"></i>
                   <span class="caret"></span>
                </button>
                <ul class="dropdown-menu" uib-dropdown-menu role="menu"
                   aria-labelledby="split-button" style="z-index:39999">
                   <li role="menuitem" ng-repeat="icon in options.icons">
-                     <div ng-click="options.iconList = icon" class="ml-2 mr-2 click">
+                     <div ng-click="updateNewIcon(icon)" class="ml-2 mr-2 click">
                         <span><i class="fa fa-fw {{icon}}"></i></span>
                      </div>
                   </li>
                </ul>
-            </div>
+            </div>       
             
          <input spellcheck="false" type="text" class="form-control input-group-append"
          ng-model="nameList" />
@@ -30,8 +30,8 @@
       </div>
    </div>
    <div class="modal-footer">
-      <button type="button" class="btn btn-success action ng-scope"
-         ng-click="addLists(nameList, options.iconList);closeThisDialog(0)" translate="ADD"></button>
+      <button type="button" class="btn btn-info action ng-scope"
+         ng-click="saveAsLists(nameList, newIcon);closeThisDialog(0)" translate="SAVEAS"></button>
       <button type="button" class="btn action ng-scope" ng-click="closeThisDialog(0)" translate="CANCEL"></button>
    </div>
 </div>
