@@ -36,6 +36,29 @@
          <h5>
             <div class="pull-left btn-group" ng-if="$root.uiPrefs.arcBauSettings.length>0">
                <span class="btn-group ml-2">
+                  <span uib-dropdown dropdown-append-to-body class="input-group-append"
+                  ng-if="$root.uiPrefs.arcBauSettings.length>1" title="{{'ALLLISTS' | translate}}">
+                  <button class="btn" uib-dropdown-toggle
+                     ng-class="{'btn-secondary':!$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].showBackgroundImage}">
+                     <span class="fa fa-list-ol"></span>
+                  </button>
+                  <ul class="dropdown-menu" style="max-height: 400px;" uib-dropdown-menu role="menu" aria-labelledby="split-button">
+                     <li role="menuitem" ng-repeat="settings in $root.uiPrefs.arcBauSettings">
+                        <div ng-click="updateSettings($index)" class="ml-2 click">
+                           <span
+                              ng-if="$root.uiPrefs.arcBauSettings[$index].stepPercentage>0"
+                              class="mt-1 mr-2 text-white badge badge-pill pull-right"
+                              ng-class="{'active':$root.uiPrefs.arcBauSettings[$index].stepPercentage==0,
+                              'badge-success':$root.uiPrefs.arcBauSettings[$index].stepPercentage==100,
+                              'badge-info':$root.uiPrefs.arcBauSettings[$index].stepPercentage>1 && $root.uiPrefs.arcBauSettings[$index].stepPercentage<100}">
+                              {{$root.uiPrefs.arcBauSettings[$index].stepPercentage}} %
+                           </span>
+                           <i class="fa fa-fw {{settings.icon}}" title="Delete Settings"></i>
+                           <span class="mr-2">{{settings.name}}</span>
+                        </div>
+                     </li>
+                  </ul>
+               </span>
                   <button class="btn" title="{{'CHANGEICON' | translate}}"
                      ng-class="{'btn-secondary':!$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].showBackgroundImage}"
                      ng-click="updateIcon()">
@@ -48,7 +71,7 @@
                      placeholder="Enter list Name..." title="{{'EDITLISTNAME' | translate}}"
                      ng-model="$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].name" />
                   <div uib-dropdown dropdown-append-to-body class="input-group-prepend">
-                     <button class="btn" uib-dropdown-toggle
+                     <button class="btn" uib-dropdown-toggle title="{{'OPTIONS' | translate}}"
                         ng-class="{'btn-secondary':!$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].showBackgroundImage}">
                         <i class="fa fa-ellipsis-v"></i>
                      </button>
@@ -81,19 +104,6 @@
                            <span class="mr-2" translate="TOGGLEBACKGROUND">
                            </span>
                         </li>
-                        <li role="menuitem" class="click" ng-click="resetPercentage()">
-                           <span class="ml-2 mr-2">
-                              <i class="fa fa-retweet"></i>
-                           </span>
-                           <span class="mr-2" translate="RESETSTATUS">
-                           </span>
-                        </li>
-                        <li role="menuitem" class="click" ng-click="getInstancesInfo()">
-                           <span class="ml-2 mr-2">
-                              <i class="fa fa-refresh"></i> </span>
-                           <span class="mr-2" translate="REFRESHTM1OBJECTSLIST">
-                           </span>
-                        </li>
                      </ul>
                   </div>
 
@@ -103,6 +113,16 @@
                      title="{{'EDITJSON' | translate}}">
                      <i class="fa fa-fw fa-pencil-square-o"></i>                     
                   <i class="fa fa-check fa-mark" ng-if="values.showJson"></i>
+                  </button>                  
+                  <button class="btn" ng-click="resetPercentage()"
+                     ng-class="{'btn-secondary':!$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].showBackgroundImage}"
+                     title="{{'RESETSTATUS' | translate}}">
+                     <i class="fa fa-fw fa-retweet"></i>
+                  </button>
+                  <button class="btn" ng-click="getInstancesInfo()"
+                     ng-class="{'btn-secondary':!$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].showBackgroundImage}"
+                     title="{{'REFRESHTM1OBJECTSLIST' | translate}}">
+                     <i class="fa fa-fw fa-refresh"></i>
                   </button>
                   <button class="btn" ng-click="openModalSaveAsList()"
                      ng-class="{'btn-secondary':!$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].showBackgroundImage}"
@@ -116,37 +136,13 @@
                   </button>
                   <button class="btn" ng-click="openModalRemoveList()"
                      ng-class="{'btn-secondary':!$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].showBackgroundImage}"
-                     title="{{'DELETEALIST' | translate}}">
+                     title="{{'DELETELIST' | translate}}">
                      <i class="fa fa-fw fa-trash"></i>
                   </button>
-                  <span uib-dropdown dropdown-append-to-body class="input-group-append"
-                  ng-if="$root.uiPrefs.arcBauSettings.length>1" title="{{'CHANGELIST' | translate}}">
-                  <button class="btn" uib-dropdown-toggle
-                     ng-class="{'btn-secondary':!$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].showBackgroundImage}">
-                     <span class="caret"></span>
-                  </button>
-                  <ul class="dropdown-menu" style="max-height: 400px;" uib-dropdown-menu role="menu" aria-labelledby="split-button">
-                     <li role="menuitem" ng-repeat="settings in $root.uiPrefs.arcBauSettings">
-                        <div ng-click="updateSettings($index)" class="ml-2 click">
-                           <span
-                              ng-if="$root.uiPrefs.arcBauSettings[$index].stepPercentage>0"
-                              class="mt-1 mr-2 text-white badge badge-pill pull-right"
-                              ng-class="{'active':$root.uiPrefs.arcBauSettings[$index].stepPercentage==0,
-                              'badge-success':$root.uiPrefs.arcBauSettings[$index].stepPercentage==100,
-                              'badge-info':$root.uiPrefs.arcBauSettings[$index].stepPercentage>1 && $root.uiPrefs.arcBauSettings[$index].stepPercentage<100}">
-                              {{$root.uiPrefs.arcBauSettings[$index].stepPercentage}} %
-                           </span>
-                           <i class="fa fa-fw {{settings.icon}}" title="Delete Settings"></i>
-                           <span class="mr-2">{{settings.name}}</span>
-                        </div>
-                     </li>
-                  </ul>
-               </span>
                </span>
             </div>
             <span ng-if="$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].stepPercentage>0"
-               ng-click="resetPercentage()"
-               class="click mt-2 ml-2 text-white badge badge-pill pull-left" title="{{'RESETSTATUS' | translate}}"
+               class="mt-2 ml-2 text-white badge badge-pill pull-left"
                ng-class="{'active':$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].stepPercentage==0,
       'badge-success':$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].stepPercentage==100,
       'badge-info':$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].stepPercentage>1 && $root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].stepPercentage<100}">
@@ -229,16 +225,16 @@
    <div class="row pr-2 pl-2" ng-if="!values.showJson">
       <div class="col-md-12">
          <auto-height>
-            <!--             -->
-            <!-- TRELLO LIKE -->
-            <!--             -->
             <div class="row">
                <div class="col-md-4 mt-2"
                ng-class="{'col-md-6':$root.uiPrefs.arcBauValues.view=='fa-table',
                'col-md-12':$root.uiPrefs.arcBauValues.view=='fa-list-alt' }"
                   ng-repeat="step in $root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].content track by $index">
-                  <div class="card">
-                     <div class="card-header wrapper" style="padding: 5px 10px; cursor: default;">
+                  <div class="card" 
+                  ng-class="{'bg-secondary':step.nbActionsOpen==0,
+                  'bg-success':step.nbActionsOpen==step.nbActionsTotal,
+                    'bg-info':step.nbActionsOpen>0 && step.nbActionsOpen!=step.nbActionsTotal}">
+                     <div class="card-header text-white wrapper" style="padding: 5px 10px; cursor: default;">
                         <div class="card-text">
                            <div ng-if="step.edit" class="mb-2">
                               <button class="btn btn-sm btn-secondary" ng-click="step.edit=!step.edit"
@@ -254,17 +250,20 @@
                                  title="{{step.info}}"></i>
                               <label ng-if="!step.edit" class="click" ng-click="step.edit=!step.edit"> {{step.title}}
                               </label>
-                              <button class="btn btn-sm btnHidden m-0 p-0" ng-click="step.edit=!step.edit"
+                              <button class="btn btn-sm pb-1 pt-0 mt-0 btnHidden" ng-click="step.edit=!step.edit"
                                  title="{{'EDIT' | translate}}">
-                                 <i class="fa fa-fw fa-pencil"></i>
-                              </button>
-
-                              <span ng-if="step.nbActionsTotal>0" class="mt-2 ml-2 badge badge-pill text-white pull-right" 
-                              ng-class="{'badge-secondary':step.nbActionsOpen==0,
-                               'badge-success':step.nbActionsOpen==step.nbActionsTotal,
-                                 'badge-info':step.nbActionsOpen>0 && step.nbActionsOpen!=step.nbActionsTotal}">
+                                 <i class="fa fa-fw fa-pencil text-white"></i>
+                              </button>  
+                              <span ng-if="step.nbActionsOpen>0" class="mt-2 badge badge-pill text-white pull-right"
+                                 >
                                  {{step.nbActionsOpen}}/{{step.nbActionsTotal}}
-                              </span>
+                              </span>                                                          
+                              <button class="btn btn-sm pull-right" 
+                                 ng-if="step.nbActionsOpen>0"
+                                 ng-click="resetPercentageOneStep(step)"
+                                 title="{{'RESETSTATUS' | translate}}">
+                                 <i class="fa fa-fw fa-retweet text-white"></i>
+                              </button>
                            </div>
                            <div class="input-group" ng-if="step.edit">
                               <div class="input-group-text input-group-append input-group-prepend click"
@@ -277,7 +276,7 @@
                               <input spellcheck="false" spellcheck="false" type="text" class="form-control"
                                  placeholder="Enter Title..." ng-model="step.title" />
                               <div uib-dropdown dropdown-append-to-body class="input-group-prepend">
-                                 <button class="btn btn-secondary" uib-dropdown-toggle>
+                                 <button class="btn btn-secondary" uib-dropdown-toggle title="{{'OPTIONS' | translate}}">
                                     <i class="fa fa-ellipsis-v"></i>
                                  </button>
                                  <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="split-button">
@@ -368,7 +367,7 @@
                                        class="form-control input-group-append input-group-prepend"
                                        placeholder="Enter Title..." ng-model="action.name" />
                                     <div uib-dropdown dropdown-append-to-body class="input-group-prepend">
-                                       <button class="btn btn-secondary" uib-dropdown-toggle>
+                                       <button class="btn btn-secondary" uib-dropdown-toggle title="{{'OPTIONS' | translate}}">
                                           <i class="fa fa-ellipsis-v"></i>
                                        </button>
                                        <ul class="dropdown-menu" uib-dropdown-menu role="menu"
@@ -517,7 +516,7 @@
                                              {{action.type}}
                                              <span class="caret"></span>
                                           </button>
-                                          <ul class="dropdown-menu" uib-dropdown-menu role="menu"
+                                          <ul class="dropdown-menu" style="max-height: 400px;" uib-dropdown-menu role="menu"
                                              aria-labelledby="split-button">
                                              <li role="menuitem" ng-repeat="type in options.actionType">
                                                 <div ng-click="action.type = type.key" class="ml-2 mr-2 click">

@@ -58,8 +58,8 @@ arc.directive("cubewiseToDo", function () {
             actionOperations: [
                { key: 'moveUp', name: 'Move Up', icon: 'fa-arrow-circle-o-up' },
                { key: 'moveDown', name: 'Move Down', icon: 'fa-arrow-circle-o-down' },
-               { key: 'remove', name: 'Delete Action', icon: 'fa-trash' }],               
-            icons: ['fa-list-ol','fa-server', 'fa-sliders','fa-shield','fa-star','fa-sitemap','fa-cubes'],
+               { key: 'remove', name: 'Delete Action', icon: 'fa-trash' }],
+            icons: ['fa-list-ol', 'fa-server', 'fa-sliders', 'fa-shield', 'fa-star', 'fa-sitemap', 'fa-cubes'],
             iconList: 'fa-list-ol',
             instances: []
          }
@@ -101,8 +101,8 @@ arc.directive("cubewiseToDo", function () {
             var newTask = {
                name: listName,
                icon: listIcon,
-               showBackgroundImage:true,
-               stepPercentage: 0, editing: false, numbers: true, 
+               showBackgroundImage: true,
+               stepPercentage: 0, editing: false, numbers: true,
                content: _.cloneDeep($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].content)
             }
             $rootScope.uiPrefs.arcBauSettings.push(newTask)
@@ -114,7 +114,7 @@ arc.directive("cubewiseToDo", function () {
             var newTask = {
                name: listName,
                icon: listIcon,
-               showBackgroundImage:true,
+               showBackgroundImage: true,
                stepPercentage: 0, editing: false, numbers: true, content: []
             }
             $rootScope.uiPrefs.arcBauSettings.push(newTask)
@@ -168,13 +168,13 @@ arc.directive("cubewiseToDo", function () {
                   //$scope.options.icons = $scope.ngDialogData.icons;
                   $scope.nameList = $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].name;
                   $scope.newIcon = $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].icon;
-                        
-                  $scope.updateNewIcon = function(icon){
+
+                  $scope.updateNewIcon = function (icon) {
                      $scope.newIcon = icon;
                   }
                }],
                data: {
-                  nameList: $scope.nameList, 
+                  nameList: $scope.nameList,
                   newIcon: $scope.newIcon,
                   iconList: $scope.options.iconList
                }
@@ -256,7 +256,7 @@ arc.directive("cubewiseToDo", function () {
 
          $scope.cloneStep = function (index, step) {
             var stepNew = _.cloneDeep(step);
-            $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].content.splice(index+1, 0, stepNew);
+            $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].content.splice(index + 1, 0, stepNew);
             $scope.calculatePercentage();
          }
 
@@ -274,16 +274,16 @@ arc.directive("cubewiseToDo", function () {
             }
          }
 
-         $scope.showListInJson = function(){
+         $scope.showListInJson = function () {
             $scope.values.showJson = true;
             $scope.values.stringList = JSON.stringify($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex], null, 2);
          }
 
-         $scope.cancelJson = function(){
+         $scope.cancelJson = function () {
             $scope.values.showJson = false;
-           }
+         }
 
-         $scope.validateJson = function(){
+         $scope.validateJson = function () {
             $scope.values.showJson = false;
             $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex] = JSON.parse($scope.values.stringList);
          }
@@ -308,7 +308,7 @@ arc.directive("cubewiseToDo", function () {
 
          $scope.cloneAction = function (parentIndex, index, action) {
             var actionNew = _.cloneDeep(action);
-            $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].content[parentIndex].actions.splice(index+1, 0, actionNew);
+            $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].content[parentIndex].actions.splice(index + 1, 0, actionNew);
             $scope.calculatePercentage();
          }
 
@@ -366,25 +366,32 @@ arc.directive("cubewiseToDo", function () {
             $scope.calculatePercentage();
          };
 
-         $scope.toggleBackground = function(){
+         $scope.resetPercentageOneStep = function (step) {
+            _.each(step.actions, function (action) {
+               action.open = true
+            });
+            $scope.calculatePercentage();
+         };
+
+         $scope.toggleBackground = function () {
             $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].showBackgroundImage = !$rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].showBackgroundImage;
-            if($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].showBackgroundImage){
-               $http.get("__/plugins/to-do-list/"+$scope.values.backgroundImage).then(function (value) {
-                  if(value.status == 404){
+            if ($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].showBackgroundImage) {
+               $http.get("__/plugins/to-do-list/" + $scope.values.backgroundImage).then(function (value) {
+                  if (value.status == 404) {
                      $scope.values.displayMissingBackground = true;
                      $scope.values.missingBgMessage1 = "The following image is missing /plugins/to-do-list/" + $scope.values.backgroundImage;
-                     $scope.values.missingBgMessage2 = "To use a background image, you need first to add a file called "+$scope.values.backgroundImage+ " to the following folder <Arc installation folder>/plugins/to-do-list/";
+                     $scope.values.missingBgMessage2 = "To use a background image, you need first to add a file called " + $scope.values.backgroundImage + " to the following folder <Arc installation folder>/plugins/to-do-list/";
                      $timeout(function () {
                         $scope.values.displayMissingBackground = false;
-                     },10000);
+                     }, 10000);
                   };
                });
             }
          }
 
          $scope.executeChore = function (action) {
-            $tm1.choreExecute(action.instance, action.chore).then(function(result){
-               if(result.success){
+            $tm1.choreExecute(action.instance, action.chore).then(function (result) {
+               if (result.success) {
                   action.open = false;
                   $scope.calculatePercentage();
                }
@@ -392,8 +399,8 @@ arc.directive("cubewiseToDo", function () {
          };
 
          $scope.executeProcess = function (action) {
-            $tm1.processExecute(action.instance, action.process).then(function(result){
-               if(result.success){
+            $tm1.processExecute(action.instance, action.process).then(function (result) {
+               if (result.success) {
                   action.open = false;
                   $scope.calculatePercentage();
                }
@@ -428,7 +435,7 @@ arc.directive("cubewiseToDo", function () {
             })
          };
 
-         
+
          var getChoresInfo = function (instanceName) {
             $scope.lists.chores = {};
             $http.get(encodeURIComponent(instanceName) + "/Chores?$select=Name").then(function (result) {
