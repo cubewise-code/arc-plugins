@@ -129,15 +129,15 @@
                      <li role="menuitem" ng-repeat="settings in $root.uiPrefs.arcBauSettings">
                         <div ng-click="updateSettings($index)" class="ml-2 click">
                            <span
-                              ng-if="$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].stepPercentage>0"
-                              class="mt-1 ml-2 mr-2 text-white badge badge-pill pull-right"
+                              ng-if="$root.uiPrefs.arcBauSettings[$index].stepPercentage>0"
+                              class="mt-1 mr-2 text-white badge badge-pill pull-right"
                               ng-class="{'active':$root.uiPrefs.arcBauSettings[$index].stepPercentage==0,
                               'badge-success':$root.uiPrefs.arcBauSettings[$index].stepPercentage==100,
                               'badge-info':$root.uiPrefs.arcBauSettings[$index].stepPercentage>1 && $root.uiPrefs.arcBauSettings[$index].stepPercentage<100}">
                               {{$root.uiPrefs.arcBauSettings[$index].stepPercentage}} %
                            </span>
                            <i class="fa fa-fw {{settings.icon}}" title="Delete Settings"></i>
-                           <span>{{settings.name}}</span>
+                           <span class="mr-2">{{settings.name}}</span>
                         </div>
                      </li>
                   </ul>
