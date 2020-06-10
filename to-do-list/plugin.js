@@ -359,6 +359,11 @@ arc.directive("cubewiseToDo", function () {
                      nbActionsOpen++;
                      step.nbActionsOpen++;
                   }
+                  if( step.nbActionsOpen == step.nbActionsTotal){
+                     step.open = false;
+                  } else {
+                     step.open = true;
+                  }
                });
             });
             $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].stepPercentage = parseInt(nbActionsOpen / nbActionsTotal * 100);
@@ -390,9 +395,10 @@ arc.directive("cubewiseToDo", function () {
             $scope.calculatePercentage();
          };
 
-         $scope.resetPercentageOneStep = function (step) {
+         $scope.updatePercentageOneStep = function (step) {
+            step.open = !step.open;
             _.each(step.actions, function (action) {
-               action.open = true
+               action.open = step.open
             });
             $scope.calculatePercentage();
          };

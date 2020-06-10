@@ -89,6 +89,12 @@
                            <span style="font-size: 0.8em" class="ml-2 mr-2"><strong>123</strong></span>
                            <span class="mr-2" translate="TOGGLENUMBERS">
                            </span>
+                           <a href class="pull-right mr-2">
+                              <i class="fa fa-toggle-on" ng-if="$root.uiPrefs.arcBauValues.numbers"
+                                 ></i>
+                              <i class="fa fa-toggle-off" ng-if="!$root.uiPrefs.arcBauValues.numbers"
+                                 ></i>
+                           </a>
                         </li>
                         <li role="menuitem" class="click"
                            ng-click="$root.uiPrefs.arcBauValues.showInstances=!$root.uiPrefs.arcBauValues.showInstances">
@@ -96,13 +102,25 @@
                               <i class="fa Instance"></i>
                            </span>
                            <span class="mr-2" translate="TOGGLEINSTANCENAME">
-                           </span>
+                           </span>                           
+                           <a href class="pull-right mr-2">
+                              <i class="fa fa-toggle-on" ng-if="$root.uiPrefs.arcBauValues.showInstances"
+                                 ></i>
+                              <i class="fa fa-toggle-off" ng-if="!$root.uiPrefs.arcBauValues.showInstances"
+                                 ></i>
+                           </a>
                         </li>
                         <li role="menuitem" class="click" ng-click="toggleBackground()">
                            <span class="ml-2 mr-2">
                               <i class="fa fa-picture-o"></i> </span>
                            <span class="mr-2" translate="TOGGLEBACKGROUND">
-                           </span>
+                           </span>                          
+                           <a href class="pull-right mr-2">
+                              <i class="fa fa-toggle-on" ng-if="$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].showBackgroundImage"
+                                 ></i>
+                              <i class="fa fa-toggle-off" ng-if="!$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].showBackgroundImage"
+                                 ></i>
+                           </a>
                         </li>
                      </ul>
                   </div>
@@ -270,17 +288,17 @@
                               <button class="btn btn-sm pb-1 pt-0 mt-0 btnHidden" ng-click="step.edit=!step.edit"
                                  title="{{'EDIT' | translate}}">
                                  <i class="fa fa-fw fa-pencil text-white"></i>
-                              </button>  
+                              </button>                               
+                              <a class="pull-right pt-1 mr-1"
+                              ng-click="updatePercentageOneStep(step)"
+                              title="{{'UPDATESTATUS' | translate}}">
+                              <i class="fa fa-fw"
+                                 ng-class="{'fa-check-square-o':!step.open,'fa-square-o':step.open }"></i>
+                           </a> 
                               <span ng-if="step.nbActionsOpen>0" class="mt-2 badge badge-pill text-white pull-right"
                                  >
                                  {{step.nbActionsOpen}}/{{step.nbActionsTotal}}
-                              </span>                                                          
-                              <button class="btn btn-sm pull-right" 
-                                 ng-if="step.nbActionsOpen>0"
-                                 ng-click="resetPercentageOneStep(step)"
-                                 title="{{'RESETSTATUS' | translate}}">
-                                 <i class="fa fa-fw fa-retweet text-white"></i>
-                              </button>
+                              </span> 
                            </div>
                            <div class="input-group" ng-if="step.edit">
                               <div class="input-group-text input-group-append input-group-prepend click"
