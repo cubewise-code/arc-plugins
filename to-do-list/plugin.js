@@ -36,17 +36,15 @@ arc.directive("cubewiseToDo", function () {
 
          $scope.values = {
             taskIndex: 0,
-            settingsFileJSONError: false,
-            mainProgressBar: 0,
             editing: true,
-            formatTable: false,
             view: 'fa-trello',
-            stringList: "",
             showJson: false,
             showBackgroundImage: true,
-            backgroundImage: "background.jpg"
+            backgroundImage: "background.jpg",
+            toDoListVersion: "1"
          };
          $scope.options = {
+            stringList: "",
             actionTypes: ['process', 'chore', 'view', 'subset'],
             actionType: [{ key: 'Process', name: 'Process', icon: 'processes' },
             { key: 'Rules', name: 'Rules', icon: 'rule' },
@@ -183,6 +181,7 @@ arc.directive("cubewiseToDo", function () {
 
          $scope.updateSettings = function (index) {
             $rootScope.uiPrefs.arcBauValues.taskIndex = index;
+            $scope.checkDueDate();
          }
 
          var getEnableNewHierarchyCreationValue = function (instanceName) {
@@ -276,16 +275,21 @@ arc.directive("cubewiseToDo", function () {
 
          $scope.showListInJson = function () {
             $scope.values.showJson = true;
-            $scope.values.stringList = JSON.stringify($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex], null, 2);
+            $scope.options.stringList = JSON.stringify($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex], null, 2);
          }
 
          $scope.cancelJson = function () {
             $scope.values.showJson = false;
          }
 
+         $scope.clearJson = function () {
+            $scope.options.stringList = "";
+         }
+         
+
          $scope.validateJson = function () {
             $scope.values.showJson = false;
-            $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex] = JSON.parse($scope.values.stringList);
+            $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex] = JSON.parse($scope.options.stringList);
          }
 
 
@@ -301,7 +305,10 @@ arc.directive("cubewiseToDo", function () {
                "view": "",
                "text": "",
                "link": "",
-               "type": "Process"
+               "type": "Process",
+               "dueDate": moment(),
+               "setDueDate": false,
+               "startTimeIsOpen": false
             }
             $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].content[parentIndex].actions.push(action);
          }
@@ -356,6 +363,23 @@ arc.directive("cubewiseToDo", function () {
             });
             $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].stepPercentage = parseInt(nbActionsOpen / nbActionsTotal * 100);
          };
+
+         $scope.checkDueDate = function () {
+            var currentDate = moment();
+            _.each($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].content, function (step) {
+               _.each(step.actions, function (action) {
+                  // check duedate
+                  action.dueDateBadge = 'badge-default'
+                  var deltaDays = moment(action.dueDate).diff(currentDate, 'days');          
+                  if(deltaDays < 0){
+                     action.dueDateBadge = 'badge-danger'
+                  } else if(deltaDays < 7){
+                     action.dueDateBadge = 'badge-warning'
+                  }
+               });
+            });
+         };
+         $scope.checkDueDate();
 
          $scope.resetPercentage = function () {
             _.each($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].content, function (step) {
@@ -468,6 +492,25 @@ arc.directive("cubewiseToDo", function () {
          }
 
          $scope.getInstancesInfo();
+
+         $scope.copied = false;
+         $scope.copyToClipboard = function () {
+            $scope.copied = true;
+            /* Get the text field */
+            var copyText = document.getElementById("myInput");
+          
+            /* Select the text field */
+            copyText.select();
+            copyText.setSelectionRange(0, 999999); /*For mobile devices*/
+          
+            /* Copy the text inside the text field */
+            document.execCommand("copy");
+
+            $timeout(function () {
+               $scope.copied = false;
+            }, 3000)
+          
+          }
 
          $scope.$on("login-reload", function (event, args) {
             $tm1.instance(args.instance).then(function (instance) {
