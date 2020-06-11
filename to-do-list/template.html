@@ -289,7 +289,7 @@
                                  title="{{'EDIT' | translate}}">
                                  <i class="fa fa-fw fa-pencil text-white"></i>
                               </button>                               
-                              <a class="pull-right pt-1 mr-1"
+                              <a class="pull-right pt-1 mr-2"
                               ng-click="updatePercentageOneStep(step)"
                               title="{{'UPDATESTATUS' | translate}}">
                               <i class="fa fa-fw"
@@ -353,7 +353,7 @@
                      <div class="card-body" style="padding:5px">
                         <div ng-repeat="action in step.actions track by $index">
                            <div class="card mb-2 mt-2 wrapper">
-                              <div class="card-header" ng-class="{'todo-opacity':$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].showBackgroundImage}" 
+                              <div class="card-header"
                               ng-if="!action.edit"
                                  style="padding: 5px 10px; cursor: default;">
                                  
