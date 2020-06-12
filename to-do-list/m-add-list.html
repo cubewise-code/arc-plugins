@@ -1,7 +1,7 @@
 <div>
-   <div class="modal-header text-white bg-success">
+   <div class="modal-header">
       <span>
-         <i class="fa fa-fw fa-plus mr-1 text-white"></i>
+         <i class="fa fa-fw fa-plus mr-1"></i>
          <span translate="CREATELIST">
          </span>
       </span>
@@ -30,7 +30,8 @@
       </div>
    </div>
    <div class="modal-footer">
-      <button type="button" class="btn btn-success action ng-scope"
+      <button type="button" class="btn text-success action ng-scope"
+      ng-disabled="!nameList"
          ng-click="addLists(nameList, options.iconList);closeThisDialog(0)" translate="ADD"></button>
       <button type="button" class="btn action ng-scope" ng-click="closeThisDialog(0)" translate="CANCEL"></button>
    </div>

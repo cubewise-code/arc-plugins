@@ -1,7 +1,7 @@
 <div>
-   <div class="modal-header text-white bg-danger">
+   <div class="modal-header">
       <span>
-         <i class="fa fa-trash text-white"></i>
+         <i class="fa fa-trash text-delete"></i>
          <span translate="DELETELIST">
          </span>
       </span>
@@ -13,7 +13,7 @@
       </div>
    </div>
    <div class="modal-footer">
-      <button type="button" class="btn btn-danger action ng-scope"
+      <button type="button" class="btn text-danger action ng-scope"
          ng-click="removeLists($root.uiPrefs.arcBauValues.taskIndex);closeThisDialog(0)" translate="DELETE"></button>
       <button type="button" class="btn action ng-scope" ng-click="closeThisDialog(0)" translate="CANCEL"></button>
    </div>
