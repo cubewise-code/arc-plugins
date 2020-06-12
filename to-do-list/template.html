@@ -31,34 +31,34 @@
          padding-top: 2px;
       }
    </style>
-   <div class="row p-2">
+   <div class="row p-2" ng-if="!values.showJson">
       <div class="col-md-12 text-center">
          <h5>
             <div class="pull-left btn-group" ng-if="$root.uiPrefs.arcBauSettings.length>0">
                <span class="btn-group ml-2">
                   <span uib-dropdown dropdown-append-to-body class="input-group-append"
-                  ng-if="$root.uiPrefs.arcBauSettings.length>1" title="{{'ALLLISTS' | translate}}">
-                  <button class="btn" uib-dropdown-toggle
-                     ng-class="{'btn-secondary':!$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].showBackgroundImage}">
-                     <span class="fa fa-list-ol"></span>
-                  </button>
-                  <ul class="dropdown-menu" style="max-height: 400px;" uib-dropdown-menu role="menu" aria-labelledby="split-button">
-                     <li role="menuitem" ng-repeat="settings in $root.uiPrefs.arcBauSettings">
-                        <div ng-click="updateSettings($index)" class="ml-2 click">
-                           <span
-                              ng-if="$root.uiPrefs.arcBauSettings[$index].stepPercentage>0"
-                              class="mt-1 mr-2 text-white badge badge-pill pull-right"
-                              ng-class="{'active':$root.uiPrefs.arcBauSettings[$index].stepPercentage==0,
+                     ng-if="$root.uiPrefs.arcBauSettings.length>1" title="{{'ALLLISTS' | translate}}">
+                     <button class="btn" uib-dropdown-toggle
+                        ng-class="{'btn-secondary':!$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].showBackgroundImage}">
+                        <span class="fa fa-list-ol"></span>
+                     </button>
+                     <ul class="dropdown-menu" style="max-height: 400px;" uib-dropdown-menu role="menu"
+                        aria-labelledby="split-button">
+                        <li role="menuitem" ng-repeat="settings in $root.uiPrefs.arcBauSettings">
+                           <div ng-click="updateSettings($index)" class="ml-2 click">
+                              <span ng-if="$root.uiPrefs.arcBauSettings[$index].stepPercentage>0"
+                                 class="mt-1 mr-2 text-white badge badge-pill pull-right"
+                                 ng-class="{'active':$root.uiPrefs.arcBauSettings[$index].stepPercentage==0,
                               'badge-success':$root.uiPrefs.arcBauSettings[$index].stepPercentage==100,
                               'badge-info':$root.uiPrefs.arcBauSettings[$index].stepPercentage>1 && $root.uiPrefs.arcBauSettings[$index].stepPercentage<100}">
-                              {{$root.uiPrefs.arcBauSettings[$index].stepPercentage}} %
-                           </span>
-                           <i class="fa fa-fw {{settings.icon}}" title="Delete Settings"></i>
-                           <span class="mr-2">{{settings.name}}</span>
-                        </div>
-                     </li>
-                  </ul>
-               </span>
+                                 {{$root.uiPrefs.arcBauSettings[$index].stepPercentage}} %
+                              </span>
+                              <i class="fa fa-fw {{settings.icon}}" title="Delete Settings"></i>
+                              <span class="mr-2">{{settings.name}}</span>
+                           </div>
+                        </li>
+                     </ul>
+                  </span>
                   <button class="btn" title="{{'CHANGEICON' | translate}}"
                      ng-class="{'btn-secondary':!$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].showBackgroundImage}"
                      ng-click="updateIcon()">
@@ -89,6 +89,10 @@
                            <span style="font-size: 0.8em" class="ml-2 mr-2"><strong>123</strong></span>
                            <span class="mr-2" translate="TOGGLENUMBERS">
                            </span>
+                           <a href class="pull-right mr-2">
+                              <i class="fa fa-toggle-on" ng-if="$root.uiPrefs.arcBauValues.numbers"></i>
+                              <i class="fa fa-toggle-off" ng-if="!$root.uiPrefs.arcBauValues.numbers"></i>
+                           </a>
                         </li>
                         <li role="menuitem" class="click"
                            ng-click="$root.uiPrefs.arcBauValues.showInstances=!$root.uiPrefs.arcBauValues.showInstances">
@@ -97,23 +101,31 @@
                            </span>
                            <span class="mr-2" translate="TOGGLEINSTANCENAME">
                            </span>
+                           <a href class="pull-right mr-2">
+                              <i class="fa fa-toggle-on" ng-if="$root.uiPrefs.arcBauValues.showInstances"></i>
+                              <i class="fa fa-toggle-off" ng-if="!$root.uiPrefs.arcBauValues.showInstances"></i>
+                           </a>
                         </li>
                         <li role="menuitem" class="click" ng-click="toggleBackground()">
                            <span class="ml-2 mr-2">
                               <i class="fa fa-picture-o"></i> </span>
                            <span class="mr-2" translate="TOGGLEBACKGROUND">
                            </span>
+                           <a href class="pull-right mr-2">
+                              <i class="fa fa-toggle-on"
+                                 ng-if="$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].showBackgroundImage"></i>
+                              <i class="fa fa-toggle-off"
+                                 ng-if="!$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].showBackgroundImage"></i>
+                           </a>
                         </li>
                      </ul>
                   </div>
 
-                  <button class="btn" ng-click="showListInJson()"
-                     ng-class="{'btn-secondary':!$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].showBackgroundImage,
-                  'active':values.showJson}"
-                     title="{{'EDITJSON' | translate}}">
-                     <i class="fa fa-fw fa-pencil-square-o"></i>                     
-                  <i class="fa fa-check fa-mark" ng-if="values.showJson"></i>
-                  </button>                  
+                  <button class="btn" ng-click="showListInJson()" ng-class="{'btn-secondary':!$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].showBackgroundImage,
+                  'active':values.showJson}" title="{{'EDIT' | translate}}">
+                     <i class="fa fa-fw fa-pencil-square-o"></i>
+                     <i class="fa fa-check fa-mark" ng-if="values.showJson"></i>
+                  </button>
                   <button class="btn" ng-click="resetPercentage()"
                      ng-class="{'btn-secondary':!$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].showBackgroundImage}"
                      title="{{'RESETSTATUS' | translate}}">
@@ -174,7 +186,7 @@
          </div>
       </div>
    </div>
-   <div class="row pr-2 pl-2 pb-2" ng-if="$root.uiPrefs.arcBauSettings.length>0">
+   <div class="row pr-2 pl-2 pb-2" ng-if="$root.uiPrefs.arcBauSettings.length>0 && !values.showJson">
       <div class="col-md-12">
          <div class="progress" style="height:5px;opacity:0.5">
             <div class="progress-bar bg-success" role="progressbar"
@@ -194,26 +206,45 @@
    </div>
    <div class="row pr-2 pl-2" ng-if="values.showJson">
       <div class="col-md-12">
-         <div class="card">
-            <div class="card-header p-2">
-               <span class="p-1">
-                  <i class="fa fa-fw fa-pencil-square-o mr-1"></i>
-                  <span translate="LISTINJSONFORMAT"></span>
-               </span>
-               <div class="pull-right">
-                  <button type="button" class="btn btn-sm btn-success" ng-click="validateJson()"
-                  translate="VALIDATE" title="{{'VALIDATECAHNGES' | translate}}">
+         <auto-height>
+            <div class="btn-group mb-2">
+               <button type="button" class="btn text-info" ng-click="copyToClipboard()"
+                  ng-class="{'btn-secondary':!$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].showBackgroundImage}"
+                  title="{{'COPYTOCLIPBOARD' | translate}}">
+                  <i class="fa fa-fw fa-clipboard"></i>
                </button>
-               <button type="button" class="btn btn-sm btn-secondary" ng-click="cancelJson()"
-               translate="CANCEL" title="{{'CANCELCHANGES' | translate}}">
+               <button type="button" class="btn text-danger" ng-click="clearJson()"
+                  ng-class="{'btn-secondary':!$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].showBackgroundImage}"
+                  title="{{'CLEAR' | translate}}">
+                  <i class="fa fa-fw fa-trash"></i>
                </button>
-               </div>
+               <button type="button" class="btn text-success" ng-click="validateJson()"
+                  ng-class="{'btn-secondary':!$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].showBackgroundImage}"
+                  title="{{'VALIDATE' | translate}}">
+                  <i class="fa fa-fw fa-check-circle"></i>
+               </button>
+               <button type="button" class="btn" ng-click="cancelJson()"
+                  ng-class="{'btn-secondary':!$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].showBackgroundImage}"
+                  title="{{'CANCEL' | translate}}">
+                  <i class="fa fa-fw fa-close"></i>
+               </button>
             </div>
-         <div class="card-body p-0">
-            <textarea rows="33" spellcheck="false" spellcheck="false" type="text" class="form-control"
-            ng-model="values.stringList" />
+            <button class="ml-2 btn btn-info" ng-if="copied">
+               <span translate="COPIED"></span>
+            </button>
+            <div class="card">
+               <div class="card-header p-2">
+                  <span class="p-1">
+                     <i class="fa fa-fw fa-pencil-square-o mr-1"></i>
+                     <span translate="SETTINGS"></span>
+                  </span>
+               </div>
+               <div class="card-body p-0">
+                  <textarea rows="33" id="myInput" spellcheck="false" spellcheck="false" type="text"
+                     class="form-control" ng-model="options.stringList" />
+                  </div>
          </div>
-      </div>
+         </auto-height>
          </div>
    </div>
    <div class="pr-2 pl-2 mt-2" ng-if="values.displayMissingBackground">
@@ -230,9 +261,9 @@
                ng-class="{'col-md-6':$root.uiPrefs.arcBauValues.view=='fa-table',
                'col-md-12':$root.uiPrefs.arcBauValues.view=='fa-list-alt' }"
                   ng-repeat="step in $root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].content track by $index">
-                  <div class="card" 
-                  ng-class="{'bg-secondary':step.nbActionsOpen==0,
-                  'bg-success':step.nbActionsOpen==step.nbActionsTotal,
+                  <div class="card bg-secondary" 
+                  ng-class="{
+                  'bg-success':step.nbActionsOpen>0 && step.nbActionsOpen==step.nbActionsTotal,
                     'bg-info':step.nbActionsOpen>0 && step.nbActionsOpen!=step.nbActionsTotal}">
                      <div class="card-header text-white wrapper" style="padding: 5px 10px; cursor: default;">
                         <div class="card-text">
@@ -241,42 +272,10 @@
                               title="{{'CLOSEEDITMODE' | translate}}">
                               <i class="fa fa-fw fa-close"></i>
                            </button>
-                           </div>
-                           <div ng-if="!step.edit">
-                              <span class="badge badge-pill badge-secondary" ng-if="$root.uiPrefs.arcBauValues.numbers">
-                                 {{$index+1}}
-                              </span>
-                              <i ng-if="step.info.length>0" class="fa fa-info-circle mr-1"
-                                 title="{{step.info}}"></i>
-                              <label ng-if="!step.edit" class="click" ng-click="step.edit=!step.edit"> {{step.title}}
-                              </label>
-                              <button class="btn btn-sm pb-1 pt-0 mt-0 btnHidden" ng-click="step.edit=!step.edit"
-                                 title="{{'EDIT' | translate}}">
-                                 <i class="fa fa-fw fa-pencil text-white"></i>
-                              </button>  
-                              <span ng-if="step.nbActionsOpen>0" class="mt-2 badge badge-pill text-white pull-right"
-                                 >
-                                 {{step.nbActionsOpen}}/{{step.nbActionsTotal}}
-                              </span>                                                          
-                              <button class="btn btn-sm pull-right" 
-                                 ng-if="step.nbActionsOpen>0"
-                                 ng-click="resetPercentageOneStep(step)"
-                                 title="{{'RESETSTATUS' | translate}}">
-                                 <i class="fa fa-fw fa-retweet text-white"></i>
-                              </button>
-                           </div>
-                           <div class="input-group" ng-if="step.edit">
-                              <div class="input-group-text input-group-append input-group-prepend click"
-                                 ng-click="updateCategory(action)" ng-if="$root.uiPrefs.arcBauValues.numbers">
-                                 {{$index+1}}
-                              </div>
-                              <div class="input-group-text input-group-append input-group-prepend">
-                                 <i class="fa fa-header"></i>
-                              </div>
-                              <input spellcheck="false" spellcheck="false" type="text" class="form-control"
-                                 placeholder="Enter Title..." ng-model="step.title" />
+                                                        
+                           <span class="btn-group pull-right">    
                               <div uib-dropdown dropdown-append-to-body class="input-group-prepend">
-                                 <button class="btn btn-secondary" uib-dropdown-toggle title="{{'OPTIONS' | translate}}">
+                                 <button class="btn btn-sm btn-secondary" uib-dropdown-toggle title="{{'OPTIONS' | translate}}">
                                     <i class="fa fa-ellipsis-v"></i>
                                  </button>
                                  <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="split-button">
@@ -293,18 +292,50 @@
                                        </span>
                                     </li>
                                  </ul>
-                              </div>                             
-                              <span class="btn-group">                                                                    
-                                 <button class="btn btn-secondary"  ng-click="cloneStep($index, step)"
-                                    title="{{'CLONESTEP' | translate}}">
-                                    <i class="fa fa-fw fa-clone"></i>
-                                 </button>                                 
-                                 <button class="btn btn-secondary"  ng-click="removeStep($index)"
-                                    title="{{'REMOVESTEP' | translate}}">
-                                    <i class="fa fa-fw fa-trash"></i>
-                                 </button>
+                              </div>                                                                    
+                              <button class="btn btn-sm btn-secondary"  ng-click="cloneStep($index, step)"
+                                 title="{{'CLONESTEP' | translate}}">
+                                 <i class="fa fa-fw fa-clone"></i>
+                              </button>                                 
+                              <button class="btn btn-sm btn-secondary"  ng-click="removeStep($index)"
+                                 title="{{'REMOVESTEP' | translate}}">
+                                 <i class="fa fa-fw fa-trash"></i>
+                              </button>
+                           </span> 
+                           </div>
+                           <div ng-if="!step.edit">
+                              <span class="badge badge-pill badge-secondary" ng-if="$root.uiPrefs.arcBauValues.numbers">
+                                 {{$index+1}}
+                              </span>
+                              <i ng-if="step.info.length>0" class="fa fa-info-circle mr-1"
+                                 title="{{step.info}}"></i>
+                              <label ng-if="!step.edit" class="click" ng-click="step.edit=!step.edit"> {{step.title}}
+                              </label>
+                              <button class="btn btn-sm pb-1 pt-0 mt-0 btnHidden" ng-click="step.edit=!step.edit"
+                                 title="{{'EDIT' | translate}}">
+                                 <i class="fa fa-fw fa-pencil text-white"></i>
+                              </button>                               
+                              <a class="pull-right pt-1 mr-2"
+                              ng-click="updatePercentageOneStep(step)"
+                              title="{{'UPDATESTATUS' | translate}}">
+                              <i class="fa fa-fw"
+                                 ng-class="{'fa-check-square-o':!step.open,'fa-square-o':step.open }"></i>
+                           </a> 
+                              <span ng-if="step.nbActionsOpen>0" class="mt-2 badge badge-pill text-white pull-right"
+                                 >
+                                 {{step.nbActionsOpen}}/{{step.nbActionsTotal}}
                               </span> 
-                              
+                           </div>
+                           <div class="input-group" ng-if="step.edit">
+                              <div class="input-group-text input-group-append input-group-prepend click"
+                                 ng-click="updateCategory(action)" ng-if="$root.uiPrefs.arcBauValues.numbers">
+                                 {{$index+1}}
+                              </div>
+                              <div class="input-group-text input-group-append input-group-prepend">
+                                 <i class="fa fa-header"></i>
+                              </div>
+                              <input spellcheck="false" spellcheck="false" type="text" class="form-control"
+                                 placeholder="Enter Title..." ng-model="step.title" />                              
                               <div class="input-group mt-2">
                                  <div class="input-group-text input-group-append input-group-prepend">
                                     <i class="fa fa-info-circle"></i>
@@ -318,7 +349,7 @@
                      <div class="card-body" style="padding:5px">
                         <div ng-repeat="action in step.actions track by $index">
                            <div class="card mb-2 mt-2 wrapper">
-                              <div class="card-header" ng-class="{'todo-opacity':$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].showBackgroundImage}" 
+                              <div class="card-header"
                               ng-if="!action.edit"
                                  style="padding: 5px 10px; cursor: default;">
                                  
@@ -351,23 +382,11 @@
                                  <div ng-if="action.edit" class="mb-2">
                                     <button class="btn btn-sm btn-secondary" ng-click="action.edit=!action.edit"
                                     title="{{'CLOSEEDITMODE' | translate}}">
-                                    <i class="fa fa-fw fa-close"></i>
-                                 </button>
-                                 </div>
-                                 <div class="input-group mb-2" ng-if="action.edit">
-                                    <div class="input-group-text input-group-append input-group-prepend click"
-                                       ng-click="updateCategory(action)" ng-class="action.category"
-                                       ng-if="$root.uiPrefs.arcBauValues.numbers">
-                                       {{$parent.$parent.$parent.$index+1}}.{{$index+1}}
-                                    </div>
-                                    <div class="input-group-text input-group-append input-group-prepend">
-                                       <i class="fa fa-header"></i>
-                                    </div>
-                                    <input spellcheck="false" spellcheck="false" type="text"
-                                       class="form-control input-group-append input-group-prepend"
-                                       placeholder="Enter Title..." ng-model="action.name" />
+                                    <i class="fa fa-fw fa-close"></i>   
+                                 </button>                                 
+                                 <span class="btn-group pull-right">   
                                     <div uib-dropdown dropdown-append-to-body class="input-group-prepend">
-                                       <button class="btn btn-secondary" uib-dropdown-toggle title="{{'OPTIONS' | translate}}">
+                                       <button class="btn btn-sm btn-secondary" uib-dropdown-toggle title="{{'OPTIONS' | translate}}">
                                           <i class="fa fa-ellipsis-v"></i>
                                        </button>
                                        <ul class="dropdown-menu" uib-dropdown-menu role="menu"
@@ -394,24 +413,37 @@
                                              </span>
                                           </li>
                                           <li role="menuitem" class="click mr-2">
-                                             <i class="ml-2 fa fa-arrow-circle-o-right"></i>
+                                             <i class="ml-2 fa fa-arrow-circle-o-left"></i>
                                              <span ng-disabled="$index==0"
                                                 ng-click="moveActionToStep($parent.$parent.$parent.$index,$parent.$parent.$parent.$index-1,$index)"
                                                 translate="MOVETOPREVIOUSSTEP">
                                              </span>
                                           </li>
                                        </ul>
-                                    </div> 
-                                    <span class="btn-group">                                                                    
-                                       <button class="btn btn-secondary"  ng-click="cloneAction($parent.$parent.$index, $index, action)"
-                                          title="{{'CLONEACTION' | translate}}">
-                                          <i class="fa fa-fw fa-clone"></i>
-                                       </button>                                 
-                                       <button class="btn btn-secondary"  ng-click="removeAction($parent.$parent.$index, $index)"
-                                          title="{{'REMOVEACTION' | translate}}">
-                                          <i class="fa fa-fw fa-trash"></i>
-                                       </button>
-                                    </span>   
+                                    </div>                                                                  
+                                    <button class="btn btn-sm btn-secondary"  ng-click="cloneAction($parent.$parent.$index, $index, action)"
+                                       title="{{'CLONEACTION' | translate}}">
+                                       <i class="fa fa-fw fa-clone"></i>
+                                    </button>                                 
+                                    <button class="btn btn-sm btn-secondary"  ng-click="removeAction($parent.$parent.$index, $index)"
+                                       title="{{'REMOVEACTION' | translate}}">
+                                       <i class="fa fa-fw fa-trash"></i>
+                                    </button>
+                                 </span>  
+
+                                 </div>
+                                 <div class="input-group mb-2" ng-if="action.edit">
+                                    <div class="input-group-text input-group-append input-group-prepend click"
+                                       ng-click="updateCategory(action)" ng-class="action.category"
+                                       ng-if="$root.uiPrefs.arcBauValues.numbers">
+                                       {{$parent.$parent.$parent.$index+1}}.{{$index+1}}
+                                    </div>
+                                    <div class="input-group-text input-group-append input-group-prepend">
+                                       <i class="fa fa-header"></i>
+                                    </div>
+                                    <input spellcheck="false" spellcheck="false" type="text"
+                                       class="form-control input-group-append input-group-prepend"
+                                       placeholder="Enter Title..." ng-model="action.name" />
                                  </div>
                                  <div ng-if="!action.edit">
                                     <i ng-if="action.type=='Cube View'" class="fa cubes" style="margin-right:5px"></i>
@@ -504,7 +536,11 @@
                                           <i class="fa fa-fw fa-bolt"></i>
                                        </button>
                                     </span>
-
+                                    <div class="mt-1" ng-if="action.setDueDate">
+                                       <span class="badge {{action.dueDateBadge}}" title="{{action.dueDate | amDateFormat:'dddd DD MMM YYYY'}}">
+                                          <i class="fa fa-fw fa-clock-o" ng-class="{'fa-repeat':action.pattern.key!='DOESNOTREPEAT'}"></i>
+                                       {{action.dueDate | amDateFormat:'MMM DD'}}</span>
+                                    </div>
                                  </div>
                                  <div ng-if="action.edit">
                                     <div class="input-group">
@@ -701,10 +737,66 @@
                                        <input spellcheck="false" type="text" class="form-control"
                                           placeholder="Enter Description..." ng-model="action.info" />
                                     </div>
+                                    <div class="input-group mt-2">
+                                       <div class="input-group-text input-group-append input-group-prepend">
+                                          <i class="fa fa-calendar-o" ng-class="{'fa-calendar-check-o':action.setDueDate}"></i>
+                                       </div>
+                                       <span class="btn btn-secondary pull-right" 
+                                       ng-click="action.setDueDate=!action.setDueDate">
+                                          <span translate="DUEDATE"></span>
+                                          <a href class="ml-1 mr-1 pt-2">
+                                             <i class="fa fa-toggle-on" ng-if="action.setDueDate"
+                                                ></i>
+                                             <i class="fa fa-toggle-off" ng-if="!action.setDueDate"
+                                                ></i>
+                                          </a>
+                                       </span>
+                                    </div>
+                                    <div class="input-group mt-2" ng-if="action.setDueDate" uib-dropdown is-open="action.startTimeIsOpen">
+                                          <span class="input-group-append">
+                                             <button id="dropdownEndTime" type="button" class="btn btn-secondary"
+                                                uib-dropdown-toggle>
+                                                <span class="fa fa-calendar"></span>
+                                             </button>
+                                             <span class="dropdown-menu" uib-dropdown-menu>
+                                                <datetimepicker ng-model="action.dueDate" ng-change="updateDueDate(action)"
+                                                   datetimepicker-config="{modelType:'moment', startView:'day', minView:'day'}"
+                                                   on-set-time="action.startTimeIsOpen=!action.startTimeIsOpen" />
+                                             </span>
+                                          </span>
+                                          <span type="text" class="input-group-append form-control" autocomplete="off">
+                                             {{action.dueDate | amDateFormat:'DD-MM-YYYY'}}
+                                          </span>
+                                    </div>
+                                    <div class="input-group mt-2" ng-if="action.setDueDate" >
+                                       <div class="input-group-text input-group-append input-group-prepend">
+                                          <i class="fa fa-repeat"></i>
+                                       </div>
+                                       <div uib-dropdown dropdown-append-to-body>
+                                          <button class="btn btn-secondary" uib-dropdown-toggle>
+                                             {{action.pattern.name}}
+                                             <span class="caret"></span>
+                                          </button>
+                                          <ul class="dropdown-menu" style="max-height: 400px;" uib-dropdown-menu role="menu"
+                                             aria-labelledby="split-button">
+                                             <li role="menuitem" ng-repeat="pattern in options.recurringPaternPeriods">
+                                                <div ng-click="updateActionPattern(action, pattern)" class="ml-2 mr-2 click">
+                                                   <span>{{pattern.name}}</span>
+                                                </div>
+                                             </li>
+                                          </ul>
+                                       </div>
+                                    </div>
+                                    <div class="mt-2" ng-if="action.setDueDate && action.pattern.key!='DOESNOTREPEAT'">
+                                       <span translate="NEXTDUEDATE"></span>: 
+                                       <span class="badge">
+                                          <i class="fa fa-fw fa-repeat"></i>                                       
+                                          {{action.nextDueDate | amDateFormat:'dddd DD MMM YYYY'}}</span>
+                                    </div>
                                  </div>
                               </div>
-                           </div>
-                        </div>
+                           </div> 
+                        </div>                                                  
                         <div class="card mb-2 mt-2" style="border:none">
                            <div class="card-body p-2">
                               <a href="" ng-click="addAction($index)">
