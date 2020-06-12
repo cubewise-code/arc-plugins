@@ -59,6 +59,14 @@ arc.directive("cubewiseToDo", function () {
                { key: 'remove', name: 'Delete Action', icon: 'fa-trash' }],
             icons: ['fa-list-ol', 'fa-server', 'fa-sliders', 'fa-shield', 'fa-star', 'fa-sitemap', 'fa-cubes'],
             iconList: 'fa-list-ol',
+            recurringPaternPeriods: [
+               { key: 'DOESNOTREPEAT', name: 'Does not repeat' },
+               { key: 'WEEKDAYS', name: 'Every Weekday (Mon-Fri)' },
+               { key: 'DAILY', name: 'Daily' },
+               { key: 'WEEKLY', name: 'Weekly' },
+               { key: 'MONTHLY', name: 'Monthly' },
+               { key: 'YEARLY', name: 'Yearly' }
+            ],
             instances: []
          }
 
@@ -181,7 +189,7 @@ arc.directive("cubewiseToDo", function () {
 
          $scope.updateSettings = function (index) {
             $rootScope.uiPrefs.arcBauValues.taskIndex = index;
-            $scope.checkDueDate();
+            $scope.checkAllDueDates();
          }
 
          var getEnableNewHierarchyCreationValue = function (instanceName) {
@@ -285,7 +293,7 @@ arc.directive("cubewiseToDo", function () {
          $scope.clearJson = function () {
             $scope.options.stringList = "";
          }
-         
+
 
          $scope.validateJson = function () {
             $scope.values.showJson = false;
@@ -308,7 +316,11 @@ arc.directive("cubewiseToDo", function () {
                "type": "Process",
                "dueDate": moment(),
                "setDueDate": false,
-               "startTimeIsOpen": false
+               "startTimeIsOpen": false,
+               "pattern": {
+                  key: 'DOESNOTREPEAT',
+                  name: 'Does not repeat'
+               }
             }
             $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].content[parentIndex].actions.push(action);
          }
@@ -359,7 +371,7 @@ arc.directive("cubewiseToDo", function () {
                      nbActionsOpen++;
                      step.nbActionsOpen++;
                   }
-                  if( step.nbActionsOpen == step.nbActionsTotal){
+                  if (step.nbActionsOpen == step.nbActionsTotal) {
                      step.open = false;
                   } else {
                      step.open = true;
@@ -369,22 +381,88 @@ arc.directive("cubewiseToDo", function () {
             $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].stepPercentage = parseInt(nbActionsOpen / nbActionsTotal * 100);
          };
 
-         $scope.checkDueDate = function () {
+         var updateNextDueDate = function (action) {
+            if(action.pattern){
+               if (action.pattern.key == 'DAILY') {
+                  action.nextDueDate = moment(action.dueDate).add(1, 'd');
+               } else if (action.pattern.key == 'WEEKLY') {
+                  action.nextDueDate = moment(action.dueDate).add(1, 'w');
+               } else if (action.pattern.key == 'MONTHLY') {
+                  action.nextDueDate = moment(action.dueDate).add(1, 'months');
+               } else if (action.pattern.key == 'YEARLY') {
+                  action.nextDueDate = moment(action.dueDate).add(1, 'year');
+               } else if (action.pattern.key == 'WEEKDAYS') {
+                  if (moment(action.dueDate).day() === 5 || moment(action.dueDate).day() === 6) {
+                     action.nextDueDate = moment(action.dueDate).weekday(8);
+                  } else {
+                     action.nextDueDate = moment(action.dueDate).add(1, 'd');
+                  }
+               }
+            }
+         }
+
+         $scope.updateDueDate = function (action) {
             var currentDate = moment();
+            action.dueDateBadge = 'badge-default'
+            var deltaDays = moment(action.dueDate).diff(currentDate, 'days');
+            if (deltaDays < 0) {
+               action.dueDateBadge = 'badge-danger'
+            } else if (deltaDays < 7) {
+               action.dueDateBadge = 'badge-warning'
+            }
+            updateNextDueDate(action);
+         };
+
+         $scope.checkDueDate = function (action) {
+            var currentDate = moment();
+            action.dueDateBadge = 'badge-default'
+            var deltaDays = moment(action.dueDate).diff(currentDate, 'days');
+            if (deltaDays < 0) {
+               if(action.pattern){
+                  if(action.pattern.key != 'DOESNOTREPEAT' && action.pattern.key != ''){
+                     action.dueDate = moment(action.nextDueDate);
+                     $timeout(function () {
+                        $scope.updateDueDate(action);
+                     }, 1);
+                  }
+               }
+               action.dueDateBadge = 'badge-danger'
+            } else if (deltaDays < 7) {
+               action.dueDateBadge = 'badge-warning'
+            }
+            updateNextDueDate(action);
+         };
+
+         $scope.checkAllDueDates = function () {
             _.each($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].content, function (step) {
                _.each(step.actions, function (action) {
-                  // check duedate
-                  action.dueDateBadge = 'badge-default'
-                  var deltaDays = moment(action.dueDate).diff(currentDate, 'days');          
-                  if(deltaDays < 0){
-                     action.dueDateBadge = 'badge-danger'
-                  } else if(deltaDays < 7){
-                     action.dueDateBadge = 'badge-warning'
-                  }
+                  $scope.checkDueDate(action);
                });
             });
          };
-         $scope.checkDueDate();
+         $scope.checkAllDueDates();
+
+         $scope.updateActionPattern = function (action, pattern) {
+            var recurringPattern = {
+               key: pattern.key,
+               name: 'Does not repeat'
+            }
+            if (pattern.key == 'DAILY') {
+               recurringPattern.name = 'Occurs every day starting ' + moment(action.dueDate).format("DD MMM");
+            } else if (pattern.key == 'WEEKLY') {
+               recurringPattern.name = 'Occurs every ' + moment(action.dueDate).format("dddd") + ' starting ' + moment(action.dueDate).format("DD/MM");
+            } else if (pattern.key == 'MONTHLY') {
+               recurringPattern.name = 'Occurs every months';
+            } else if (pattern.key == 'YEARLY') {
+               recurringPattern.name = 'Occurs every year on day ' + moment(action.dueDate).format("DD MMM");
+            } else if (pattern.key == 'WEEKDAYS') {
+               recurringPattern.name = 'Occurs every Monday to Friday from ' + moment(action.dueDate).format("DD MMM");
+            }
+            action.pattern = recurringPattern;
+            updateNextDueDate(action);
+         }
+
+
 
          $scope.resetPercentage = function () {
             _.each($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].content, function (step) {
@@ -504,19 +582,19 @@ arc.directive("cubewiseToDo", function () {
             $scope.copied = true;
             /* Get the text field */
             var copyText = document.getElementById("myInput");
-          
+
             /* Select the text field */
             copyText.select();
             copyText.setSelectionRange(0, 999999); /*For mobile devices*/
-          
+
             /* Copy the text inside the text field */
             document.execCommand("copy");
 
             $timeout(function () {
                $scope.copied = false;
             }, 3000)
-          
-          }
+
+         }
 
          $scope.$on("login-reload", function (event, args) {
             $tm1.instance(args.instance).then(function (instance) {
