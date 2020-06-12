@@ -2,7 +2,7 @@
 arc.run(['$rootScope', function($rootScope) {
 
     $rootScope.plugin("cubewiseExecuteProcess", "EXECUTE", "menu/process", {
-        icon: "fa-bolt",
+        icon: "fa fa-bolt",
         description: "This plugin executes a TI process.",
         author: "Cubewise",
         url: "https://github.com/cubewise-code/arc-plugins",
