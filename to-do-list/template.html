@@ -126,6 +126,11 @@
                      <i class="fa fa-fw fa-pencil-square-o"></i>
                      <i class="fa fa-check fa-mark" ng-if="values.showJson"></i>
                   </button>
+                  <button class="btn" ng-click="buildAgenda();values.showCalendar=!values.showCalendar" ng-class="{'btn-secondary':!$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].showBackgroundImage,
+                  'active':values.showCalendar}" title="{{'SHOWCALENDAR' | translate}}">
+                     <i class="fa fa-fw fa-calendar"></i>
+                     <i class="fa fa-check fa-mark" ng-if="values.showCalendar"></i>
+                  </button>
                   <button class="btn" ng-click="resetPercentage()"
                      ng-class="{'btn-secondary':!$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].showBackgroundImage}"
                      title="{{'RESETSTATUS' | translate}}">
@@ -204,6 +209,192 @@
          </div>
       </div>
    </div>
+   <div ng-if="values.showCalendar">
+         <div>
+            <h3>
+               <span class="btn-group"> 
+                  <button class="btn btn-sm btn-secondary"  ng-click="prevMonth(lists.calendar.day)"
+                  title="{{'NEXTMONTH' | translate}}">
+                  <i class="fa fa-fw fa-arrow-left"></i>
+               </button>                                               
+                  <button class="btn btn-sm btn-secondary"  ng-click="nextMonth(lists.calendar.day)"
+                  title="{{'NEXTMONTH' | translate}}">
+                  <i class="fa fa-fw fa-arrow-right"></i>
+               </button>
+               </span>
+               <span class="ml-2">{{lists.calendar.monthYear}}</span>
+            </h3>
+
+         </div>
+            <div ng-if="options.showActiveDay">
+               <h4>{{options.activeDay.momentDay | amDateFormat:'ddd D MMM'}}</h4>
+               <div class="row">
+
+                  <div class="col-md-4" ng-repeat="action in options.activeDay.actions">
+                     <div class="card mb-2 mt-2 wrapper">
+                        <div class="card-header"
+                        ng-if="!action.edit"
+                           style="padding: 5px 10px; cursor: default;">
+                           
+                           <div ng-if="!action.edit">
+                              <span style="padding-left:0px;" ng-if="$root.uiPrefs.arcBauValues.numbers">
+                                 <span class="badge badge-pill click" ng-click="updateCategory(action)"
+                                    ng-class="action.category">
+                                    {{$parent.$parent.$parent.$index+1}}.{{$index+1}}</span>
+                              </span>
+                              <i ng-if="action.info.length>0" class="fa fa-info-circle mr-1"
+                                 title="{{action.info}}"></i>
+                              <span ng-if="!action.edit" class="click" ng-click="action.edit=!action.edit">
+                                 {{action.name}}
+                              </span>
+   
+                              <button class="btn btn-sm btnHidden m-0 p-0" ng-click="action.edit=!action.edit"
+                                 title="{{'EDIT' | translate}}">
+                                 <i class="fa fa-fw fa-pencil"></i>
+                              </button>
+   
+                              <a ng-if="!action.edit" class="pull-right pt-1"
+                                 ng-click="action.open=!action.open;calculatePercentage()"
+                                 title="{{'UPDATESTATUS' | translate}}">
+                                 <i class="fa fa-fw"
+                                    ng-class="{'fa-check-square-o':!action.open,'fa-square-o':action.open }"></i>
+                              </a>
+                           </div>
+                        </div>
+                        <div class="card-body" style="padding:10px">
+                           <div>
+                              <i ng-if="action.type=='Cube View'" class="fa cubes" style="margin-right:5px"></i>
+                              <i ng-if="action.type=='Dimension Editor'" class="fa dimensions"
+                                 style="margin-right:5px"></i>
+                              <i ng-if="action.type=='Subset Editor'" class="fa subset"
+                                 style="margin-right:5px"></i>
+                              <i ng-if="action.type=='Process'" class="fa processes" style="margin-right:5px"></i>
+                              <i ng-if="action.type=='Rules'" class="fa rule" style="margin-right:5px"></i>
+                              <i ng-if="action.type=='Chore'" class="fa chores" style="margin-right:5px"></i>
+                              <i ng-if="action.type=='Link'" class="fa fa-globe" style="margin-right:5px"></i>
+   
+                              <a href="#/process/{{action.instance}}/{{action.process}}?tab=parameters"
+                                 ng-if="action.type=='Process'" ng-class="[row.branch.item_class]" title="{{action.instance}}:{{action.process}}">
+                                 <span
+                                    ng-if="$root.uiPrefs.arcBauValues.showInstances">{{action.instance}}:</span>{{action.process}}
+                              </a>
+   
+                              <a href="#/chore/{{action.instance}}/{{action.chore}}"
+                                 ng-class="[row.branch.item_class]" 
+                                 title="{{action.instance}}:{{action.chore}}"
+                                 ng-if="action.type=='Chore'">
+                                 <span
+                                    ng-if="$root.uiPrefs.arcBauValues.showInstances">{{action.instance}}:</span>{{action.chore}}
+                              </a>
+   
+                              <span ng-if="action.type=='Subset Editor'">
+                                 <a ng-if="!values.enableNewHierarchyCreation[action.instance]"
+                                    href="#/dimension/{{action.instance}}/{{action.dimension}}/{{action.dimension}}/subset/{{action.subset}}"
+                                    ng-class="[row.branch.item_class]" 
+                                    title="{{action.instance}}:{{action.dimension}}:{{action.dimension}}:{{action.subset}}">
+                                    <span
+                                       ng-if="$root.uiPrefs.arcBauValues.showInstances">{{action.instance}}:</span>{{action.dimension}}:{{action.subset}}
+                                 </a>
+                                 <a ng-if="values.enableNewHierarchyCreation[action.instance]"
+                                    href="#/dimension/{{action.instance}}/{{action.dimension}}/{{action.hierarchy}}/subset/{{action.subset}}"
+                                    ng-class="[row.branch.item_class]" 
+                                    title="{{action.instance}}:{{action.dimension}}:{{action.hierarchy}}:{{action.subset}}">
+                                    <span
+                                       ng-if="$root.uiPrefs.arcBauValues.showInstances">{{action.instance}}:</span>{{action.dimension}}:{{action.hierarchy}}:{{action.subset}}
+                                 </a>
+                              </span>
+                              <span ng-if="action.type=='Dimension Editor'">
+                                 <a ng-if="!values.enableNewHierarchyCreation[action.instance]"
+                                    href="#/dimension/{{action.instance}}/{{action.dimension}}/{{action.dimension}}"
+                                    ng-class="[row.branch.item_class]"
+                                    title="{{action.instance}}:{{action.dimension}}">
+                                    <span
+                                       ng-if="$root.uiPrefs.arcBauValues.showInstances">{{action.instance}}:</span>{{action.dimension}}
+                                 </a>
+                                 <a ng-if="values.enableNewHierarchyCreation[action.instance]"
+                                    href="#/dimension/{{action.instance}}/{{action.dimension}}/{{action.hierarchy}}"
+                                    ng-class="[row.branch.item_class]"
+                                    title="{{action.instance}}:{{action.dimension}}:{{action.hierarchy}}:{{action.subset}}">
+                                    <span
+                                       ng-if="$root.uiPrefs.arcBauValues.showInstances">{{action.instance}}:</span>{{action.dimension}}:{{action.hierarchy}}
+                                 </a>
+                              </span>
+                              <a ng-if="action.type=='Cube View'"
+                                 href="#/cube/{{action.instance}}/{{action.cube}}/view/{{action.view}}"
+                                 ng-class="[row.branch.item_class]"
+                                 title="{{action.instance}}:{{action.cube}}:{{action.view}}">
+                                 <span
+                                    ng-if="$root.uiPrefs.arcBauValues.showInstances">{{action.instance}}:</span>{{action.cube}}:{{action.view}}
+                              </a>
+                              <a ng-if="action.type=='Rules'" href="#/cube/{{action.instance}}/{{action.cube}}"
+                                 ng-class="[row.branch.item_class]"
+                                 title="{{action.instance}}:{{action.cube}}">
+                                 <span
+                                    ng-if="$root.uiPrefs.arcBauValues.showInstances">{{action.instance}}:</span>{{action.cube}}
+                              </a>
+   
+                              <a ng-if="action.type=='Link'" href="{{action.link}}" target="_blank"
+                                 title="Go to {{action.link}}">
+                                 {{action.text}}
+                              </a>
+                              <!-- RUN PROCESS -->
+                              <span class="pull-right" ng-if="action.type=='Process' && action.execute">
+                                 <button class="btn btn-secondary btn-sm text-warning"
+                                    title="Execute {{action.instance}}:{{action.process}}"
+                                    ng-click="executeProcess(action)">
+                                    <i class="fa fa-fw fa-bolt"></i>
+                                 </button>
+                              </span>
+                              <!-- RUN CHORE -->
+                              <span class="pull-right" ng-if="action.type=='Chore' && action.execute">
+                                 <button class="btn btn-secondary btn-sm text-warning"
+                                    title="Execute {{action.instance}}:{{action.chore}}"
+                                    ng-click="executeChore(action)">
+                                    <i class="fa fa-fw fa-bolt"></i>
+                                 </button>
+                              </span>
+                              <div class="mt-1" ng-if="action.setDueDate">
+                                 <span class="badge {{action.dueDateBadge}}" title="{{action.dueDate | amDateFormat:'dddd DD MMM YYYY'}}">
+                                    <i class="fa fa-fw fa-clock-o" ng-class="{'fa-repeat':action.pattern.key!='DOESNOTREPEAT'}"></i>
+                                 {{action.dueDate | amDateFormat:'MMM DD'}}</span>
+                              </div>
+                           </div>
+                        </div>
+                     </div> 
+                  </div> 
+               </div>
+            </div>
+            <table class="table table-hover table-sm">
+               <thead>
+                  <tr>
+                     <th class="text-center" ng-repeat="day in lists.weekdays" style="min-width:150px;border-top:none"> {{day}} </th>
+                  </tr>
+               </thead>
+               <tbody>              
+                   <tr ng-repeat="week in lists.calendar" style="height:100px" ng-if="$index>1">
+                      <td class="text-center click" ng-repeat="day in week.days" style="border: 1px solid #dee2e6" ng-click="setActiveDay(day)">
+                        <div class="text-right">
+                           <span class="badge" ng-class="{'text-secondary':day.differentMonth,'badge-info':day.currentDay}">{{day.key}}</span>
+                        </div>
+                        <div ng-repeat="action in day.actions" class="text-left">                           
+                           <span class="badge">
+                              <i ng-if="action.type=='Cube View'" class="fa cubes" style="margin-right:5px"></i>
+                              <i ng-if="action.type=='Dimension Editor'" class="fa dimensions"
+                                 style="margin-right:5px"></i>
+                              <i ng-if="action.type=='Subset Editor'" class="fa subset"
+                                 style="margin-right:5px"></i>
+                              <i ng-if="action.type=='Process'" class="fa processes" style="margin-right:5px"></i>
+                              <i ng-if="action.type=='Rules'" class="fa rule" style="margin-right:5px"></i>
+                              <i ng-if="action.type=='Chore'" class="fa chores" style="margin-right:5px"></i>
+                              <i ng-if="action.type=='Link'" class="fa fa-globe" style="margin-right:5px"></i>                              
+                           <span class="d-inline-block text-truncate" style="max-width: 150px;">{{action.name}}</span>
+                           </span>
+                        </div>
+                      </td>
+                   </tr>
+               </tbody>
+            </table>
+   </div>
    <div class="row pr-2 pl-2" ng-if="values.showJson">
       <div class="col-md-12">
          <auto-height>
@@ -253,7 +444,7 @@
          <div>{{values.missingBgMessage2}}</div>
       </div>
    </div>
-   <div class="row pr-2 pl-2" ng-if="!values.showJson">
+   <div class="row pr-2 pl-2" ng-if="!values.showJson && !values.showCalendar">
       <div class="col-md-12">
          <auto-height>
             <div class="row">
@@ -768,12 +959,27 @@
                                              {{action.dueDate | amDateFormat:'DD-MM-YYYY'}}
                                           </span>
                                     </div>
-                                    <div class="input-group mt-2" ng-if="action.setDueDate" >
-                                       <div class="input-group-text input-group-append input-group-prepend">
+                                    <div class="btn-group mt-2" ng-if="action.setDueDate" >
+                                       <div class="input-group-text btn-group-append btn-group-prepend">
                                           <i class="fa fa-repeat"></i>
                                        </div>
+                                       <div uib-dropdown dropdown-append-to-body ng-if="action.pattern.key=='FIRSTWORKINGDAYS'">
+                                          <button class="btn btn-secondary btn-group-append btn-group-prepend" uib-dropdown-toggle>
+                                             {{action.firstWorkingDay.key}}<sup>{{action.firstWorkingDay.sup}}</sup>
+                                             <span class="caret"></span>
+                                          </button>
+                                          <ul class="dropdown-menu" style="max-height: 400px;" uib-dropdown-menu role="menu"
+                                             aria-labelledby="split-button">
+                                             <li role="menuitem" ng-repeat="day in options.firstDays">
+                                                <div ng-click="action.firstWorkingDay = day;updateNextDueDate(action)" class="ml-2 mr-2 click">
+                                                   {{day.key}}
+                                                   <sup>{{day.sup}}</sup>
+                                                </div>
+                                             </li>
+                                          </ul>
+                                       </div>
                                        <div uib-dropdown dropdown-append-to-body>
-                                          <button class="btn btn-secondary" uib-dropdown-toggle>
+                                          <button class="btn btn-secondary btn-group-append btn-group-prepend" uib-dropdown-toggle>
                                              {{action.pattern.name}}
                                              <span class="caret"></span>
                                           </button>
