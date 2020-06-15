@@ -421,39 +421,58 @@ arc.directive("cubewiseToDo", function () {
             // Return result
             return firstDayOfWeek.add(weekNumber-1, 'weeks');
           }
-         $scope.updateNextDueDate = function (action) {
-            if(action.pattern){
+
+         var getNextDueDate = function (action, date) {
+            var nextDueDate = "";
+            if(action.pattern && action.pattern.key != 'DOESNOTREPEAT'){
                if (action.pattern.key == 'DAILY') {
-                  action.nextDueDate = moment(action.dueDate).add(1, 'd');
+                  nextDueDate = moment(date).add(1, 'd');
                } else if (action.pattern.key == 'WEEKLY') {
-                  action.nextDueDate = moment(action.dueDate).add(1, 'w');
+                  nextDueDate = moment(date).add(1, 'w');
                } else if (action.pattern.key == 'MONTHLY') {
                   // get weekday and week
                   // call getGivenDateOfMonth(date, weekday, week)
-                  action.nextDueDate = moment(action.dueDate).add(1, 'months');
+                  nextDueDate = moment(date).add(1, 'months');
                } else if (action.pattern.key == 'YEARLY') {
-                  action.nextDueDate = moment(action.dueDate).add(1, 'year');
+                  nextDueDate = moment(date).add(1, 'year');
                } else if (action.pattern.key == 'WEEKDAYS') {
-                  if (moment(action.dueDate).day() === 5 || moment(action.dueDate).day() === 6) {
-                     action.nextDueDate = moment(action.dueDate).weekday(8);
+                  if (moment(date).day() === 5 || moment(date).day() === 6) {
+                     nextDueDate = moment(date).weekday(8);
                   } else {
-                     action.nextDueDate = moment(action.dueDate).add(1, 'd');
+                     nextDueDate = moment(date).add(1, 'd');
                   }
                } else if (action.pattern.key == 'FIRSTWORKINGDAYS') {
                   var workingDay = parseInt(action.firstWorkingDay.key);
-                  var first = moment(action.dueDate).startOf('month');
+                  var first = moment(date).startOf('month');
                   action.dueDate = moment(getFirstWorkingDay(first, workingDay));
-                  var nextFirst = moment(action.dueDate).add(1,'month').startOf('month');
-                  action.nextDueDate = moment(getFirstWorkingDay(nextFirst, workingDay));
-               }               
+                  var nextFirst = moment(date).add(1,'month').startOf('month');
+                  nextDueDate = moment(getFirstWorkingDay(nextFirst, workingDay));
+               } 
+               return nextDueDate;              
             }
+         }
+
+         var updateAllNextDueDate = function (action) {
+            var date = moment(action.dueDate);
+            action.allNextDueDates = [];
+            for (i = 1; i <= 24; i++) {
+               var nextDueDate = getNextDueDate(action, date);
+               action.allNextDueDates.push(moment(nextDueDate).format("YYYY-MM-DD"));
+               date = nextDueDate;
+            }
+         }
+
+         $scope.updateNextDueDate = function (action) {
+            if(action.pattern){
+                  action.nextDueDate = getNextDueDate(action, action.dueDate);              
+            }
+            updateAllNextDueDate(action);
          }
 
          $scope.options.showActiveDay = false;
          $scope.setActiveDay = function(day){
             $scope.options.activeDay = day;
             $scope.options.showActiveDay = true;
-            console.log($scope.options.activeDay)
          }
 
          $scope.buildAgenda = function(daySource){
@@ -494,7 +513,7 @@ arc.directive("cubewiseToDo", function () {
                   key: momentDay.format("D"),
                   day: momentDay.day(),
                   dddd: momentDay.format("dddd"),
-                  name: momentDay.format("YYYY-MM-DD"),
+                  name: momentDay.format("ddd D MMM"),
                   differentMonth: differentMonth,
                   momentDay: momentDay,
                   currentDay: currentDay,
@@ -508,16 +527,19 @@ arc.directive("cubewiseToDo", function () {
             _.each($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].content, function (step) {
                _.each(step.actions, function (action) {
                   if(action.dueDate){
-                     var weekInYear = moment(action.dueDate).format("YYYY-WW")
+                     var weekInYear = moment(action.dueDate).format("YYYY") +"-"+ moment(action.dueDate).week();
                      if(!_.isEmpty($scope.lists.calendar[weekInYear])){
                         $scope.lists.calendar[weekInYear].days[moment(action.dueDate).format("YYYY-MM-DD")].actions.push(action);
                      }
                   }
-                  if(action.nextDueDate){
-                     var weekInYear = moment(action.nextDueDate).format("YYYY-WW")
-                     if(!_.isEmpty($scope.lists.calendar[weekInYear])){
-                        $scope.lists.calendar[weekInYear].days[moment(action.nextDueDate).format("YYYY-MM-DD")].actions.push(action);
-                     }
+                  //Loop through all next due dates
+                  if(action.pattern && action.pattern.key != 'DOESNOTREPEAT'){
+                     _.each(action.allNextDueDates, function (nextDueDate) {
+                        var weekInYear = moment(nextDueDate).format("YYYY")+"-"+ moment(nextDueDate).week();
+                        if(!_.isEmpty($scope.lists.calendar[weekInYear])){
+                            $scope.lists.calendar[weekInYear].days[moment(nextDueDate).format("YYYY-MM-DD")].actions.push(action);
+                        }
+                     });
                   }
                });
             });

@@ -226,11 +226,11 @@
             </h3>
 
          </div>
-            <div ng-if="options.showActiveDay">
-               <h4>{{options.activeDay.momentDay | amDateFormat:'ddd D MMM'}}</h4>
+            <div ng-if="options.activeDay.actions.length>0">
+               <h4>{{options.activeDay.name}}</h4>
                <div class="row">
 
-                  <div class="col-md-4" ng-repeat="action in options.activeDay.actions">
+                  <div class="col-md-4" ng-repeat="action in options.activeDay.actions track by $index">
                      <div class="card mb-2 mt-2 wrapper">
                         <div class="card-header"
                         ng-if="!action.edit"
@@ -376,7 +376,7 @@
                         <div class="text-right">
                            <span class="badge" ng-class="{'text-secondary':day.differentMonth,'badge-info':day.currentDay}">{{day.key}}</span>
                         </div>
-                        <div ng-repeat="action in day.actions" class="text-left">                           
+                        <div ng-repeat="action in day.actions track by $index" class="text-left">                           
                            <span class="badge">
                               <i ng-if="action.type=='Cube View'" class="fa cubes" style="margin-right:5px"></i>
                               <i ng-if="action.type=='Dimension Editor'" class="fa dimensions"
