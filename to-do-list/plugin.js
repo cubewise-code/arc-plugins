@@ -41,7 +41,8 @@ arc.directive("cubewiseToDo", function () {
             showJson: false,
             showBackgroundImage: true,
             backgroundImage: "background.jpg",
-            toDoListVersion: "1"
+            toDoListVersion: "1",
+            showCalendar:false
          };
          $scope.options = {
             stringList: "",
@@ -65,8 +66,16 @@ arc.directive("cubewiseToDo", function () {
                { key: 'DAILY', name: 'Daily' },
                { key: 'WEEKLY', name: 'Weekly' },
                { key: 'MONTHLY', name: 'Monthly' },
-               { key: 'YEARLY', name: 'Yearly' }
+               { key: 'YEARLY', name: 'Yearly' },
+               { key: 'FIRSTWORKINGDAYS', name: 'Working days of the month number' }
             ],
+            firstDays:[{key:'1', sup:'st'},{key:'2', sup:'nd'},{key:'3', sup:'rd'},
+            {key:'4', sup:'st'},{key:'5', sup:'th'},{key:'6', sup:'th'},
+            {key:'7', sup:'th'},{key:'8', sup:'th'},{key:'9', sup:'th'},
+            {key:'10', sup:'st'},{key:'11', sup:'th'},{key:'12', sup:'th'},
+            {key:'13', sup:'th'},{key:'14', sup:'th'},{key:'15', sup:'th'},
+            {key:'16', sup:'th'},{key:'17', sup:'th'},{key:'18', sup:'th'},
+            {key:'19', sup:'th'},{key:'20', sup:'th'}],
             instances: []
          }
 
@@ -282,6 +291,7 @@ arc.directive("cubewiseToDo", function () {
          }
 
          $scope.showListInJson = function () {
+            $scope.values.showCalendar = false;
             $scope.values.showJson = true;
             $scope.options.stringList = JSON.stringify($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex], null, 2);
          }
@@ -381,13 +391,45 @@ arc.directive("cubewiseToDo", function () {
             $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].stepPercentage = parseInt(nbActionsOpen / nbActionsTotal * 100);
          };
 
-         var updateNextDueDate = function (action) {
+         var getFirstWorkingDay = function(first, workingDay){
+            if (first.day() == 5) {
+               first.add(3, 'day')
+            } else if (first.day() == 6) {
+               first.add(2, 'day')
+            }
+            for (i = 1; i < workingDay; i++) {
+               if (first.day() == 5) {
+                  first.add(3, 'day')
+               } else if (first.day() == 6) {
+                  first.add(2, 'day')
+               } else {
+                  first.add(1, 'day')
+               }
+             }
+             return first
+         }
+         //https://stackoverflow.com/questions/45056083/moment-js-get-specific-day-of-a-month-by-week-and-day-of-week
+         var getGivenDateOfMonth = function (startDate, dayOfWeek, weekNumber) {
+            // Start of the month of the given startDate
+            var myMonth = moment(startDate).startOf('month');
+            // dayOfWeek of the first week of the month
+            var firstDayOfWeek = myMonth.clone().weekday(dayOfWeek);
+            // Check if first firstDayOfWeek is in the given month
+            if( firstDayOfWeek.month() != myMonth.month() ){
+                weekNumber++;
+            }
+            // Return result
+            return firstDayOfWeek.add(weekNumber-1, 'weeks');
+          }
+         $scope.updateNextDueDate = function (action) {
             if(action.pattern){
                if (action.pattern.key == 'DAILY') {
                   action.nextDueDate = moment(action.dueDate).add(1, 'd');
                } else if (action.pattern.key == 'WEEKLY') {
                   action.nextDueDate = moment(action.dueDate).add(1, 'w');
                } else if (action.pattern.key == 'MONTHLY') {
+                  // get weekday and week
+                  // call getGivenDateOfMonth(date, weekday, week)
                   action.nextDueDate = moment(action.dueDate).add(1, 'months');
                } else if (action.pattern.key == 'YEARLY') {
                   action.nextDueDate = moment(action.dueDate).add(1, 'year');
@@ -397,8 +439,98 @@ arc.directive("cubewiseToDo", function () {
                   } else {
                      action.nextDueDate = moment(action.dueDate).add(1, 'd');
                   }
-               }
+               } else if (action.pattern.key == 'FIRSTWORKINGDAYS') {
+                  var workingDay = parseInt(action.firstWorkingDay.key);
+                  var first = moment(action.dueDate).startOf('month');
+                  action.dueDate = moment(getFirstWorkingDay(first, workingDay));
+                  var nextFirst = moment(action.dueDate).add(1,'month').startOf('month');
+                  action.nextDueDate = moment(getFirstWorkingDay(nextFirst, workingDay));
+               }               
             }
+         }
+
+         $scope.options.showActiveDay = false;
+         $scope.setActiveDay = function(day){
+            $scope.options.activeDay = day;
+            $scope.options.showActiveDay = true;
+            console.log($scope.options.activeDay)
+         }
+
+         $scope.buildAgenda = function(daySource){
+            $scope.lists.weekdays = moment.weekdaysShort();
+            var startOfTheWeek = moment().weekday(0).format("ddd");
+            $scope.lists.calendar = {
+               day: daySource,
+               monthYear: moment(daySource).format("MMMM YYYY")
+            };  
+            // initialise weeks
+            var currentDay = moment();            
+            var momentDay = moment(moment(daySource).format("YYYY-MM")+"-01")
+            for (i = 1; i <= moment(daySource).daysInMonth(); i++) {
+               var weekInYear = momentDay.format("YYYY")+"-"+momentDay.week();
+               $scope.lists.calendar[weekInYear] = {
+                  name: weekInYear,
+                  days:{}
+               };
+               momentDay.add(1,"days");
+            }         
+            //Build calendars
+            var momentDay = moment(moment(daySource).format("YYYY-MM")+"-01")
+            while(momentDay.format("ddd") != startOfTheWeek){
+               momentDay.add(-1,"days");
+            }
+            var weekInYear = momentDay.format("YYYY")+"-"+momentDay.week();
+             while(!_.isEmpty($scope.lists.calendar[weekInYear])){
+               var weekInYear = momentDay.format("YYYY")+"-"+momentDay.week();
+               var currentDay = false;
+               if(moment(momentDay).format("YYYY-MM-DD") == moment().format("YYYY-MM-DD")){
+                  currentDay = true;
+               }
+               var differentMonth = true;
+               if(momentDay.format("MMMM") === moment(daySource).format("MMMM")){
+                  differentMonth = false;
+               }
+                day = {
+                  key: momentDay.format("D"),
+                  day: momentDay.day(),
+                  dddd: momentDay.format("dddd"),
+                  name: momentDay.format("YYYY-MM-DD"),
+                  differentMonth: differentMonth,
+                  momentDay: momentDay,
+                  currentDay: currentDay,
+                  actions: []
+               }
+               $scope.lists.calendar[weekInYear].days[momentDay.format("YYYY-MM-DD")] = day;
+               momentDay.add(1,"days");
+               weekInYear = momentDay.format("YYYY")+"-"+momentDay.week();
+            }
+            //loop through steps
+            _.each($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].content, function (step) {
+               _.each(step.actions, function (action) {
+                  if(action.dueDate){
+                     var weekInYear = moment(action.dueDate).format("YYYY-WW")
+                     if(!_.isEmpty($scope.lists.calendar[weekInYear])){
+                        $scope.lists.calendar[weekInYear].days[moment(action.dueDate).format("YYYY-MM-DD")].actions.push(action);
+                     }
+                  }
+                  if(action.nextDueDate){
+                     var weekInYear = moment(action.nextDueDate).format("YYYY-WW")
+                     if(!_.isEmpty($scope.lists.calendar[weekInYear])){
+                        $scope.lists.calendar[weekInYear].days[moment(action.nextDueDate).format("YYYY-MM-DD")].actions.push(action);
+                     }
+                  }
+               });
+            });
+         }
+
+         $scope.nextMonth = function(day){
+            var newDay = moment(day).add(1,'months');
+            $scope.buildAgenda(newDay);
+         }
+
+         $scope.prevMonth = function(day){
+            var newDay = moment(day).add(-1,'months');
+            $scope.buildAgenda(newDay);
          }
 
          $scope.updateDueDate = function (action) {
@@ -410,7 +542,7 @@ arc.directive("cubewiseToDo", function () {
             } else if (deltaDays < 7) {
                action.dueDateBadge = 'badge-warning'
             }
-            updateNextDueDate(action);
+            $scope.updateNextDueDate(action);
          };
 
          $scope.checkDueDate = function (action) {
@@ -430,7 +562,7 @@ arc.directive("cubewiseToDo", function () {
             } else if (deltaDays < 7) {
                action.dueDateBadge = 'badge-warning'
             }
-            updateNextDueDate(action);
+            $scope.updateNextDueDate(action);
          };
 
          $scope.checkAllDueDates = function () {
@@ -452,14 +584,16 @@ arc.directive("cubewiseToDo", function () {
             } else if (pattern.key == 'WEEKLY') {
                recurringPattern.name = 'Occurs every ' + moment(action.dueDate).format("dddd") + ' starting ' + moment(action.dueDate).format("DD/MM");
             } else if (pattern.key == 'MONTHLY') {
-               recurringPattern.name = 'Occurs every months';
+               recurringPattern.name = 'Occurs every month';
             } else if (pattern.key == 'YEARLY') {
                recurringPattern.name = 'Occurs every year on day ' + moment(action.dueDate).format("DD MMM");
             } else if (pattern.key == 'WEEKDAYS') {
                recurringPattern.name = 'Occurs every Monday to Friday from ' + moment(action.dueDate).format("DD MMM");
+            } else if (pattern.key == 'FIRSTWORKINGDAYS') {
+               recurringPattern.name = ' working day of the month ';
             }
             action.pattern = recurringPattern;
-            updateNextDueDate(action);
+            $scope.updateNextDueDate(action);
          }
 
 
