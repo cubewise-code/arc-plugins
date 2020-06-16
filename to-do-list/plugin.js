@@ -47,12 +47,13 @@ arc.directive("cubewiseToDo", function () {
          $scope.options = {
             stringList: "",
             actionTypes: ['process', 'chore', 'view', 'subset'],
-            actionType: [{ key: 'Process', name: 'Process', icon: 'processes' },
+            actionType: [
+               { key: 'Subset Editor', name: 'Subset', icon: 'subset' },
+               { key: 'Dimension Editor', name: 'Dimension', icon: 'dimensions' },
+               { key: 'Cube View', name: 'Cube View', icon: 'cubes' },
             { key: 'Rules', name: 'Rules', icon: 'rule' },
+            { key: 'Process', name: 'Process', icon: 'processes' },
             { key: 'Chore', name: 'Chore', icon: 'chores' },
-            { key: 'Cube View', name: 'Cube View', icon: 'cubes' },
-            { key: 'Subset Editor', name: 'Subset Editor', icon: 'subset' },
-            { key: 'Dimension Editor', name: 'Dimension Editor', icon: 'dimensions' },
             { key: 'Link', name: 'Link', icon: 'fa-globe' }],
             actionOperations: [
                { key: 'moveUp', name: 'Move Up', icon: 'fa-arrow-circle-o-up' },
@@ -67,7 +68,7 @@ arc.directive("cubewiseToDo", function () {
                { key: 'WEEKLY', name: 'Weekly' },
                { key: 'MONTHLY', name: 'Monthly' },
                { key: 'YEARLY', name: 'Yearly' },
-               { key: 'FIRSTWORKINGDAYS', name: 'Working days of the month number' }
+               { key: 'FIRSTWORKINGDAYS', name: 'Working day of the month' }
             ],
             firstDays:[{key:'1', sup:'st'},{key:'2', sup:'nd'},{key:'3', sup:'rd'},
             {key:'4', sup:'st'},{key:'5', sup:'th'},{key:'6', sup:'th'},
@@ -397,7 +398,7 @@ arc.directive("cubewiseToDo", function () {
             } else if (first.day() == 6) {
                first.add(2, 'day')
             }
-            for (i = 1; i < workingDay; i++) {
+            for (var i = 1; i < workingDay; i++) {
                if (first.day() == 5) {
                   first.add(3, 'day')
                } else if (first.day() == 6) {
@@ -442,11 +443,11 @@ arc.directive("cubewiseToDo", function () {
                      nextDueDate = moment(date).add(1, 'd');
                   }
                } else if (action.pattern.key == 'FIRSTWORKINGDAYS') {
-                  var workingDay = parseInt(action.firstWorkingDay.key);
-                  var first = moment(date).startOf('month');
-                  action.dueDate = moment(getFirstWorkingDay(first, workingDay));
-                  var nextFirst = moment(date).add(1,'month').startOf('month');
-                  nextDueDate = moment(getFirstWorkingDay(nextFirst, workingDay));
+                  if(action.firstWorkingDay){
+                     var workingDay = parseInt(action.firstWorkingDay.key);
+                     var nextFirst = moment(date).add(1,'month').startOf('month');
+                     nextDueDate = moment(getFirstWorkingDay(nextFirst, workingDay));
+                  } 
                } 
                return nextDueDate;              
             }
@@ -455,7 +456,7 @@ arc.directive("cubewiseToDo", function () {
          var updateAllNextDueDate = function (action) {
             var date = moment(action.dueDate);
             action.allNextDueDates = [];
-            for (i = 1; i <= 24; i++) {
+            for (var d = 1; d <= 24; d++) {
                var nextDueDate = getNextDueDate(action, date);
                action.allNextDueDates.push(moment(nextDueDate).format("YYYY-MM-DD"));
                date = nextDueDate;
@@ -485,7 +486,7 @@ arc.directive("cubewiseToDo", function () {
             // initialise weeks
             var currentDay = moment();            
             var momentDay = moment(moment(daySource).format("YYYY-MM")+"-01")
-            for (i = 1; i <= moment(daySource).daysInMonth(); i++) {
+            for (var i = 1; i <= moment(daySource).daysInMonth(); i++) {
                var weekInYear = momentDay.format("YYYY")+"-"+momentDay.week();
                $scope.lists.calendar[weekInYear] = {
                   name: weekInYear,

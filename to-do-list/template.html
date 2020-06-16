@@ -210,190 +210,183 @@
       </div>
    </div>
    <div ng-if="values.showCalendar">
-         <div>
-            <h3>
-               <span class="btn-group"> 
-                  <button class="btn btn-sm btn-secondary"  ng-click="prevMonth(lists.calendar.day)"
+      <div>
+         <h3>
+            <span class="btn-group">
+               <button class="btn btn-sm btn-secondary" ng-click="prevMonth(lists.calendar.day)"
                   title="{{'NEXTMONTH' | translate}}">
                   <i class="fa fa-fw fa-arrow-left"></i>
-               </button>                                               
-                  <button class="btn btn-sm btn-secondary"  ng-click="nextMonth(lists.calendar.day)"
+               </button>
+               <button class="btn btn-sm btn-secondary" ng-click="nextMonth(lists.calendar.day)"
                   title="{{'NEXTMONTH' | translate}}">
                   <i class="fa fa-fw fa-arrow-right"></i>
                </button>
-               </span>
-               <span class="ml-2">{{lists.calendar.monthYear}}</span>
-            </h3>
+            </span>
+            <span class="ml-2">{{lists.calendar.monthYear}}</span>
+         </h3>
 
-         </div>
-            <div ng-if="options.activeDay.actions.length>0">
-               <h4>{{options.activeDay.name}}</h4>
-               <div class="row">
+      </div>
+      <div ng-if="options.activeDay.actions.length>0">
+         <h4>{{options.activeDay.name}}</h4>
+         <div class="row">
 
-                  <div class="col-md-4" ng-repeat="action in options.activeDay.actions track by $index">
-                     <div class="card mb-2 mt-2 wrapper">
-                        <div class="card-header"
-                        ng-if="!action.edit"
-                           style="padding: 5px 10px; cursor: default;">
-                           
-                           <div ng-if="!action.edit">
-                              <span style="padding-left:0px;" ng-if="$root.uiPrefs.arcBauValues.numbers">
-                                 <span class="badge badge-pill click" ng-click="updateCategory(action)"
-                                    ng-class="action.category">
-                                    {{$parent.$parent.$parent.$index+1}}.{{$index+1}}</span>
-                              </span>
-                              <i ng-if="action.info.length>0" class="fa fa-info-circle mr-1"
-                                 title="{{action.info}}"></i>
-                              <span ng-if="!action.edit" class="click" ng-click="action.edit=!action.edit">
-                                 {{action.name}}
-                              </span>
-   
-                              <button class="btn btn-sm btnHidden m-0 p-0" ng-click="action.edit=!action.edit"
-                                 title="{{'EDIT' | translate}}">
-                                 <i class="fa fa-fw fa-pencil"></i>
-                              </button>
-   
-                              <a ng-if="!action.edit" class="pull-right pt-1"
-                                 ng-click="action.open=!action.open;calculatePercentage()"
-                                 title="{{'UPDATESTATUS' | translate}}">
-                                 <i class="fa fa-fw"
-                                    ng-class="{'fa-check-square-o':!action.open,'fa-square-o':action.open }"></i>
-                              </a>
-                           </div>
+            <div class="col-md-4" ng-repeat="action in options.activeDay.actions track by $index">
+               <div class="card mb-2 mt-2 wrapper">
+                  <div class="card-header" ng-if="!action.edit" style="padding: 5px 10px; cursor: default;">
+
+                     <div ng-if="!action.edit">
+                        <span style="padding-left:0px;" ng-if="$root.uiPrefs.arcBauValues.numbers">
+                           <span class="badge badge-pill click" ng-click="updateCategory(action)"
+                              ng-class="action.category">
+                              {{$parent.$parent.$parent.$index+1}}.{{$index+1}}</span>
+                        </span>
+                        <i ng-if="action.info.length>0" class="fa fa-info-circle mr-1" title="{{action.info}}"></i>
+                        <span ng-if="!action.edit" class="click" ng-click="action.edit=!action.edit">
+                           {{action.name}}
+                        </span>
+
+                        <button class="btn btn-sm btnHidden m-0 p-0" ng-click="action.edit=!action.edit"
+                           title="{{'EDIT' | translate}}">
+                           <i class="fa fa-fw fa-pencil"></i>
+                        </button>
+
+                        <a ng-if="!action.edit" class="pull-right pt-1"
+                           ng-click="action.open=!action.open;calculatePercentage()"
+                           title="{{'UPDATESTATUS' | translate}}">
+                           <i class="fa fa-fw"
+                              ng-class="{'fa-check-square-o':!action.open,'fa-square-o':action.open }"></i>
+                        </a>
+                     </div>
+                  </div>
+                  <div class="card-body" style="padding:10px">
+                     <div>
+                        <i ng-if="action.type=='Cube View'" class="fa cubes" style="margin-right:5px"></i>
+                        <i ng-if="action.type=='Dimension Editor'" class="fa dimensions" style="margin-right:5px"></i>
+                        <i ng-if="action.type=='Subset Editor'" class="fa subset" style="margin-right:5px"></i>
+                        <i ng-if="action.type=='Process'" class="fa processes" style="margin-right:5px"></i>
+                        <i ng-if="action.type=='Rules'" class="fa rule" style="margin-right:5px"></i>
+                        <i ng-if="action.type=='Chore'" class="fa chores" style="margin-right:5px"></i>
+                        <i ng-if="action.type=='Link'" class="fa fa-globe" style="margin-right:5px"></i>
+
+                        <a href="#/process/{{action.instance}}/{{action.process}}?tab=parameters"
+                           ng-if="action.type=='Process'" ng-class="[row.branch.item_class]"
+                           title="{{action.instance}}:{{action.process}}">
+                           <span
+                              ng-if="$root.uiPrefs.arcBauValues.showInstances">{{action.instance}}:</span>{{action.process}}
+                        </a>
+
+                        <a href="#/chore/{{action.instance}}/{{action.chore}}" ng-class="[row.branch.item_class]"
+                           title="{{action.instance}}:{{action.chore}}" ng-if="action.type=='Chore'">
+                           <span
+                              ng-if="$root.uiPrefs.arcBauValues.showInstances">{{action.instance}}:</span>{{action.chore}}
+                        </a>
+
+                        <span ng-if="action.type=='Subset Editor'">
+                           <a ng-if="!values.enableNewHierarchyCreation[action.instance]"
+                              href="#/dimension/{{action.instance}}/{{action.dimension}}/{{action.dimension}}/subset/{{action.subset}}"
+                              ng-class="[row.branch.item_class]"
+                              title="{{action.instance}}:{{action.dimension}}:{{action.dimension}}:{{action.subset}}">
+                              <span
+                                 ng-if="$root.uiPrefs.arcBauValues.showInstances">{{action.instance}}:</span>{{action.dimension}}:{{action.subset}}
+                           </a>
+                           <a ng-if="values.enableNewHierarchyCreation[action.instance]"
+                              href="#/dimension/{{action.instance}}/{{action.dimension}}/{{action.hierarchy}}/subset/{{action.subset}}"
+                              ng-class="[row.branch.item_class]"
+                              title="{{action.instance}}:{{action.dimension}}:{{action.hierarchy}}:{{action.subset}}">
+                              <span
+                                 ng-if="$root.uiPrefs.arcBauValues.showInstances">{{action.instance}}:</span>{{action.dimension}}:{{action.hierarchy}}:{{action.subset}}
+                           </a>
+                        </span>
+                        <span ng-if="action.type=='Dimension Editor'">
+                           <a ng-if="!values.enableNewHierarchyCreation[action.instance]"
+                              href="#/dimension/{{action.instance}}/{{action.dimension}}/{{action.dimension}}"
+                              ng-class="[row.branch.item_class]" title="{{action.instance}}:{{action.dimension}}">
+                              <span
+                                 ng-if="$root.uiPrefs.arcBauValues.showInstances">{{action.instance}}:</span>{{action.dimension}}
+                           </a>
+                           <a ng-if="values.enableNewHierarchyCreation[action.instance]"
+                              href="#/dimension/{{action.instance}}/{{action.dimension}}/{{action.hierarchy}}"
+                              ng-class="[row.branch.item_class]"
+                              title="{{action.instance}}:{{action.dimension}}:{{action.hierarchy}}:{{action.subset}}">
+                              <span
+                                 ng-if="$root.uiPrefs.arcBauValues.showInstances">{{action.instance}}:</span>{{action.dimension}}:{{action.hierarchy}}
+                           </a>
+                        </span>
+                        <a ng-if="action.type=='Cube View'"
+                           href="#/cube/{{action.instance}}/{{action.cube}}/view/{{action.view}}"
+                           ng-class="[row.branch.item_class]"
+                           title="{{action.instance}}:{{action.cube}}:{{action.view}}">
+                           <span
+                              ng-if="$root.uiPrefs.arcBauValues.showInstances">{{action.instance}}:</span>{{action.cube}}:{{action.view}}
+                        </a>
+                        <a ng-if="action.type=='Rules'" href="#/cube/{{action.instance}}/{{action.cube}}"
+                           ng-class="[row.branch.item_class]" title="{{action.instance}}:{{action.cube}}">
+                           <span
+                              ng-if="$root.uiPrefs.arcBauValues.showInstances">{{action.instance}}:</span>{{action.cube}}
+                        </a>
+
+                        <a ng-if="action.type=='Link'" href="{{action.link}}" target="_blank"
+                           title="Go to {{action.link}}">
+                           {{action.text}}
+                        </a>
+                        <!-- RUN PROCESS -->
+                        <span class="pull-right" ng-if="action.type=='Process' && action.execute">
+                           <button class="btn btn-secondary btn-sm text-warning"
+                              title="Execute {{action.instance}}:{{action.process}}" ng-click="executeProcess(action)">
+                              <i class="fa fa-fw fa-bolt"></i>
+                           </button>
+                        </span>
+                        <!-- RUN CHORE -->
+                        <span class="pull-right" ng-if="action.type=='Chore' && action.execute">
+                           <button class="btn btn-secondary btn-sm text-warning"
+                              title="Execute {{action.instance}}:{{action.chore}}" ng-click="executeChore(action)">
+                              <i class="fa fa-fw fa-bolt"></i>
+                           </button>
+                        </span>
+                        <div class="mt-1" ng-if="action.setDueDate">
+                           <span class="badge" ng-class="{'{{action.dueDateBadge}}':action.open}"
+                              title="{{action.dueDate | amDateFormat:'dddd DD MMM YYYY'}}">
+                              <i class="fa fa-fw fa-clock-o"
+                                 ng-class="{'fa-repeat':action.pattern.key!='DOESNOTREPEAT'}"></i>
+                              {{action.dueDate | amDateFormat:'MMM DD'}}</span>
                         </div>
-                        <div class="card-body" style="padding:10px">
-                           <div>
-                              <i ng-if="action.type=='Cube View'" class="fa cubes" style="margin-right:5px"></i>
-                              <i ng-if="action.type=='Dimension Editor'" class="fa dimensions"
-                                 style="margin-right:5px"></i>
-                              <i ng-if="action.type=='Subset Editor'" class="fa subset"
-                                 style="margin-right:5px"></i>
-                              <i ng-if="action.type=='Process'" class="fa processes" style="margin-right:5px"></i>
-                              <i ng-if="action.type=='Rules'" class="fa rule" style="margin-right:5px"></i>
-                              <i ng-if="action.type=='Chore'" class="fa chores" style="margin-right:5px"></i>
-                              <i ng-if="action.type=='Link'" class="fa fa-globe" style="margin-right:5px"></i>
-   
-                              <a href="#/process/{{action.instance}}/{{action.process}}?tab=parameters"
-                                 ng-if="action.type=='Process'" ng-class="[row.branch.item_class]" title="{{action.instance}}:{{action.process}}">
-                                 <span
-                                    ng-if="$root.uiPrefs.arcBauValues.showInstances">{{action.instance}}:</span>{{action.process}}
-                              </a>
-   
-                              <a href="#/chore/{{action.instance}}/{{action.chore}}"
-                                 ng-class="[row.branch.item_class]" 
-                                 title="{{action.instance}}:{{action.chore}}"
-                                 ng-if="action.type=='Chore'">
-                                 <span
-                                    ng-if="$root.uiPrefs.arcBauValues.showInstances">{{action.instance}}:</span>{{action.chore}}
-                              </a>
-   
-                              <span ng-if="action.type=='Subset Editor'">
-                                 <a ng-if="!values.enableNewHierarchyCreation[action.instance]"
-                                    href="#/dimension/{{action.instance}}/{{action.dimension}}/{{action.dimension}}/subset/{{action.subset}}"
-                                    ng-class="[row.branch.item_class]" 
-                                    title="{{action.instance}}:{{action.dimension}}:{{action.dimension}}:{{action.subset}}">
-                                    <span
-                                       ng-if="$root.uiPrefs.arcBauValues.showInstances">{{action.instance}}:</span>{{action.dimension}}:{{action.subset}}
-                                 </a>
-                                 <a ng-if="values.enableNewHierarchyCreation[action.instance]"
-                                    href="#/dimension/{{action.instance}}/{{action.dimension}}/{{action.hierarchy}}/subset/{{action.subset}}"
-                                    ng-class="[row.branch.item_class]" 
-                                    title="{{action.instance}}:{{action.dimension}}:{{action.hierarchy}}:{{action.subset}}">
-                                    <span
-                                       ng-if="$root.uiPrefs.arcBauValues.showInstances">{{action.instance}}:</span>{{action.dimension}}:{{action.hierarchy}}:{{action.subset}}
-                                 </a>
-                              </span>
-                              <span ng-if="action.type=='Dimension Editor'">
-                                 <a ng-if="!values.enableNewHierarchyCreation[action.instance]"
-                                    href="#/dimension/{{action.instance}}/{{action.dimension}}/{{action.dimension}}"
-                                    ng-class="[row.branch.item_class]"
-                                    title="{{action.instance}}:{{action.dimension}}">
-                                    <span
-                                       ng-if="$root.uiPrefs.arcBauValues.showInstances">{{action.instance}}:</span>{{action.dimension}}
-                                 </a>
-                                 <a ng-if="values.enableNewHierarchyCreation[action.instance]"
-                                    href="#/dimension/{{action.instance}}/{{action.dimension}}/{{action.hierarchy}}"
-                                    ng-class="[row.branch.item_class]"
-                                    title="{{action.instance}}:{{action.dimension}}:{{action.hierarchy}}:{{action.subset}}">
-                                    <span
-                                       ng-if="$root.uiPrefs.arcBauValues.showInstances">{{action.instance}}:</span>{{action.dimension}}:{{action.hierarchy}}
-                                 </a>
-                              </span>
-                              <a ng-if="action.type=='Cube View'"
-                                 href="#/cube/{{action.instance}}/{{action.cube}}/view/{{action.view}}"
-                                 ng-class="[row.branch.item_class]"
-                                 title="{{action.instance}}:{{action.cube}}:{{action.view}}">
-                                 <span
-                                    ng-if="$root.uiPrefs.arcBauValues.showInstances">{{action.instance}}:</span>{{action.cube}}:{{action.view}}
-                              </a>
-                              <a ng-if="action.type=='Rules'" href="#/cube/{{action.instance}}/{{action.cube}}"
-                                 ng-class="[row.branch.item_class]"
-                                 title="{{action.instance}}:{{action.cube}}">
-                                 <span
-                                    ng-if="$root.uiPrefs.arcBauValues.showInstances">{{action.instance}}:</span>{{action.cube}}
-                              </a>
-   
-                              <a ng-if="action.type=='Link'" href="{{action.link}}" target="_blank"
-                                 title="Go to {{action.link}}">
-                                 {{action.text}}
-                              </a>
-                              <!-- RUN PROCESS -->
-                              <span class="pull-right" ng-if="action.type=='Process' && action.execute">
-                                 <button class="btn btn-secondary btn-sm text-warning"
-                                    title="Execute {{action.instance}}:{{action.process}}"
-                                    ng-click="executeProcess(action)">
-                                    <i class="fa fa-fw fa-bolt"></i>
-                                 </button>
-                              </span>
-                              <!-- RUN CHORE -->
-                              <span class="pull-right" ng-if="action.type=='Chore' && action.execute">
-                                 <button class="btn btn-secondary btn-sm text-warning"
-                                    title="Execute {{action.instance}}:{{action.chore}}"
-                                    ng-click="executeChore(action)">
-                                    <i class="fa fa-fw fa-bolt"></i>
-                                 </button>
-                              </span>
-                              <div class="mt-1" ng-if="action.setDueDate">
-                                 <span class="badge {{action.dueDateBadge}}" title="{{action.dueDate | amDateFormat:'dddd DD MMM YYYY'}}">
-                                    <i class="fa fa-fw fa-clock-o" ng-class="{'fa-repeat':action.pattern.key!='DOESNOTREPEAT'}"></i>
-                                 {{action.dueDate | amDateFormat:'MMM DD'}}</span>
-                              </div>
-                           </div>
-                        </div>
-                     </div> 
-                  </div> 
+                     </div>
+                  </div>
                </div>
             </div>
-            <table class="table table-hover table-sm">
-               <thead>
-                  <tr>
-                     <th class="text-center" ng-repeat="day in lists.weekdays" style="min-width:150px;border-top:none"> {{day}} </th>
-                  </tr>
-               </thead>
-               <tbody>              
-                   <tr ng-repeat="week in lists.calendar" style="height:100px" ng-if="$index>1">
-                      <td class="text-center click" ng-repeat="day in week.days" style="border: 1px solid #dee2e6" ng-click="setActiveDay(day)">
-                        <div class="text-right">
-                           <span class="badge" ng-class="{'text-secondary':day.differentMonth,'badge-info':day.currentDay}">{{day.key}}</span>
-                        </div>
-                        <div ng-repeat="action in day.actions track by $index" class="text-left">                           
-                           <span class="badge">
-                              <i ng-if="action.type=='Cube View'" class="fa cubes" style="margin-right:5px"></i>
-                              <i ng-if="action.type=='Dimension Editor'" class="fa dimensions"
-                                 style="margin-right:5px"></i>
-                              <i ng-if="action.type=='Subset Editor'" class="fa subset"
-                                 style="margin-right:5px"></i>
-                              <i ng-if="action.type=='Process'" class="fa processes" style="margin-right:5px"></i>
-                              <i ng-if="action.type=='Rules'" class="fa rule" style="margin-right:5px"></i>
-                              <i ng-if="action.type=='Chore'" class="fa chores" style="margin-right:5px"></i>
-                              <i ng-if="action.type=='Link'" class="fa fa-globe" style="margin-right:5px"></i>                              
-                           <span class="d-inline-block text-truncate" style="max-width: 150px;">{{action.name}}</span>
-                           </span>
-                        </div>
-                      </td>
-                   </tr>
-               </tbody>
-            </table>
+         </div>
+      </div>
+      <table class="table table-hover table-sm">
+         <thead>
+            <tr>
+               <th class="text-center" ng-repeat="day in lists.weekdays" style="min-width:150px;border-top:none">
+                  {{day}} </th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr ng-repeat="week in lists.calendar" style="height:100px" ng-if="$index>1">
+               <td class="text-center click" ng-repeat="day in week.days" style="border: 1px solid #dee2e6"
+                  ng-click="setActiveDay(day)">
+                  <div class="text-right">
+                     <span class="badge"
+                        ng-class="{'text-secondary':day.differentMonth,'badge-info':day.currentDay}">{{day.key}}</span>
+                  </div>
+                  <div ng-repeat="action in day.actions track by $index" class="text-left">
+                     <span class="badge">
+                        <i ng-if="action.type=='Cube View'" class="fa cubes" style="margin-right:5px"></i>
+                        <i ng-if="action.type=='Dimension Editor'" class="fa dimensions" style="margin-right:5px"></i>
+                        <i ng-if="action.type=='Subset Editor'" class="fa subset" style="margin-right:5px"></i>
+                        <i ng-if="action.type=='Process'" class="fa processes" style="margin-right:5px"></i>
+                        <i ng-if="action.type=='Rules'" class="fa rule" style="margin-right:5px"></i>
+                        <i ng-if="action.type=='Chore'" class="fa chores" style="margin-right:5px"></i>
+                        <i ng-if="action.type=='Link'" class="fa fa-globe" style="margin-right:5px"></i>
+                        <span class="d-inline-block text-truncate" style="max-width: 150px;">{{action.name}}</span>
+                     </span>
+                  </div>
+               </td>
+            </tr>
+         </tbody>
+      </table>
    </div>
    <div class="row pr-2 pl-2" ng-if="values.showJson">
       <div class="col-md-12">
@@ -458,15 +451,10 @@
                     'bg-info':step.nbActionsOpen>0 && step.nbActionsOpen!=step.nbActionsTotal}">
                      <div class="card-header text-white wrapper" style="padding: 5px 10px; cursor: default;">
                         <div class="card-text">
-                           <div ng-if="step.edit" class="mb-2">
-                              <button class="btn btn-sm btn-secondary" ng-click="step.edit=!step.edit"
-                              title="{{'CLOSEEDITMODE' | translate}}">
-                              <i class="fa fa-fw fa-close"></i>
-                           </button>
-                                                        
-                           <span class="btn-group pull-right">    
+                           <div ng-if="step.edit" class="mb-2">                                                        
+                           <span class="btn-group pull-left mb-2">    
                               <div uib-dropdown dropdown-append-to-body class="input-group-prepend">
-                                 <button class="btn btn-sm btn-secondary" uib-dropdown-toggle title="{{'OPTIONS' | translate}}">
+                                 <button class="btn btn-secondary" uib-dropdown-toggle title="{{'OPTIONS' | translate}}">
                                     <i class="fa fa-ellipsis-v"></i>
                                  </button>
                                  <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="split-button">
@@ -483,12 +471,18 @@
                                        </span>
                                     </li>
                                  </ul>
-                              </div>                                                                    
-                              <button class="btn btn-sm btn-secondary"  ng-click="cloneStep($index, step)"
+                              </div>       
+                              
+                              <button class="btn btn-secondary" ng-click="step.edit=!step.edit"
+                              title="{{'CLOSEEDITMODE' | translate}}">
+                              <i class="fa fa-fw fa-pencil"></i>                              
+                     <i class="fa fa-check fa-mark"></i>
+                           </button>                                                             
+                              <button class="btn btn-secondary"  ng-click="cloneStep($index, step)"
                                  title="{{'CLONESTEP' | translate}}">
                                  <i class="fa fa-fw fa-clone"></i>
                               </button>                                 
-                              <button class="btn btn-sm btn-secondary"  ng-click="removeStep($index)"
+                              <button class="btn btn-secondary"  ng-click="removeStep($index)"
                                  title="{{'REMOVESTEP' | translate}}">
                                  <i class="fa fa-fw fa-trash"></i>
                               </button>
@@ -522,13 +516,13 @@
                                  ng-click="updateCategory(action)" ng-if="$root.uiPrefs.arcBauValues.numbers">
                                  {{$index+1}}
                               </div>
-                              <div class="input-group-text input-group-append input-group-prepend">
+                              <div title="{{'SETTITLE' | translate}}" class="input-group-text input-group-append input-group-prepend">
                                  <i class="fa fa-header"></i>
                               </div>
                               <input spellcheck="false" spellcheck="false" type="text" class="form-control"
                                  placeholder="Enter Title..." ng-model="step.title" />                              
                               <div class="input-group mt-2">
-                                 <div class="input-group-text input-group-append input-group-prepend">
+                                 <div title="{{'SETDESCRIPTION' | translate}}" class="input-group-text input-group-append input-group-prepend">
                                     <i class="fa fa-info-circle"></i>
                                  </div>
                                  <input spellcheck="false" type="text" class="form-control"
@@ -570,14 +564,10 @@
                                  </div>
                               </div>
                               <div class="card-body" style="padding:10px">
-                                 <div ng-if="action.edit" class="mb-2">
-                                    <button class="btn btn-sm btn-secondary" ng-click="action.edit=!action.edit"
-                                    title="{{'CLOSEEDITMODE' | translate}}">
-                                    <i class="fa fa-fw fa-close"></i>   
-                                 </button>                                 
-                                 <span class="btn-group pull-right">   
+                                 <div ng-if="action.edit" class="mb-2">                                
+                                 <span class="btn-group pull-left mb-2">
                                     <div uib-dropdown dropdown-append-to-body class="input-group-prepend">
-                                       <button class="btn btn-sm btn-secondary" uib-dropdown-toggle title="{{'OPTIONS' | translate}}">
+                                       <button class="btn btn-secondary" uib-dropdown-toggle title="{{'OPTIONS' | translate}}">
                                           <i class="fa fa-ellipsis-v"></i>
                                        </button>
                                        <ul class="dropdown-menu" uib-dropdown-menu role="menu"
@@ -611,15 +601,21 @@
                                              </span>
                                           </li>
                                        </ul>
-                                    </div>                                                                  
-                                    <button class="btn btn-sm btn-secondary"  ng-click="cloneAction($parent.$parent.$index, $index, action)"
+                                    </div>      
+                                                                         
+                                    <button class="btn btn-secondary" ng-click="action.edit=!action.edit"
+                                    title="{{'CLOSEEDITMODE' | translate}}">
+                                    <i class="fa fa-fw fa-pencil"></i>                              
+                                    <i class="fa fa-check fa-mark"></i>  
+                                 </button>                                                             
+                                    <button class="btn btn-secondary"  ng-click="cloneAction($parent.$parent.$index, $index, action)"
                                        title="{{'CLONEACTION' | translate}}">
                                        <i class="fa fa-fw fa-clone"></i>
                                     </button>                                 
-                                    <button class="btn btn-sm btn-secondary"  ng-click="removeAction($parent.$parent.$index, $index)"
+                                    <button class="btn btn-secondary"  ng-click="removeAction($parent.$parent.$index, $index)"
                                        title="{{'REMOVEACTION' | translate}}">
                                        <i class="fa fa-fw fa-trash"></i>
-                                    </button>
+                                    </button> 
                                  </span>  
 
                                  </div>
@@ -629,7 +625,7 @@
                                        ng-if="$root.uiPrefs.arcBauValues.numbers">
                                        {{$parent.$parent.$parent.$index+1}}.{{$index+1}}
                                     </div>
-                                    <div class="input-group-text input-group-append input-group-prepend">
+                                    <div title="{{'SETTITLE' | translate}}" class="input-group-text input-group-append input-group-prepend">
                                        <i class="fa fa-header"></i>
                                     </div>
                                     <input spellcheck="false" spellcheck="false" type="text"
@@ -728,17 +724,17 @@
                                        </button>
                                     </span>
                                     <div class="mt-1" ng-if="action.setDueDate">
-                                       <span class="badge {{action.dueDateBadge}}" title="{{action.dueDate | amDateFormat:'dddd DD MMM YYYY'}}">
+                                       <span class="badge" ng-class="{'{{action.dueDateBadge}}':action.open}" title="{{action.dueDate | amDateFormat:'dddd DD MMM YYYY'}}">
                                           <i class="fa fa-fw fa-clock-o" ng-class="{'fa-repeat':action.pattern.key!='DOESNOTREPEAT'}"></i>
                                        {{action.dueDate | amDateFormat:'MMM DD'}}</span>
                                     </div>
                                  </div>
                                  <div ng-if="action.edit">
-                                    <div class="input-group">
-                                       <div class="input-group-text input-group-append input-group-prepend">
+                                    <div class="btn-group">
+                                       <div title="{{'CHOOSEACTION' | translate}}" class="input-group-text input-group-append input-group-prepend">
                                           <i class="fa fa-list"></i>
                                        </div>
-                                       <div uib-dropdown dropdown-append-to-body>
+                                       <div uib-dropdown dropdown-append-to-body class="input-group-append input-group-prepend">
                                           <button class="btn btn-secondary" uib-dropdown-toggle>
                                              {{action.type}}
                                              <span class="caret"></span>
@@ -753,35 +749,33 @@
                                              </li>
                                           </ul>
                                        </div>
-                                       <span class="btn btn-secondary pull-right" 
+                                       <button class="btn btn-secondary" 
                                        ng-click="action.execute=!action.execute"
-                                       ng-if="action.type=='Process' || action.type == 'Chore'">
-                                          <span translate="EXECUTE"></span>
-                                          <a href class="ml-1 mr-1 pt-2">
-                                             <i class="fa fa-toggle-on" ng-if="action.execute"
-                                                ></i>
-                                             <i class="fa fa-toggle-off" ng-if="!action.execute"
-                                                ></i>
-                                          </a>
-                                       </span>
+                                       ng-if="action.type=='Process' || action.type == 'Chore'"
+                                       title="{{'EXECUTEORREADONLY' | translate}}">
+                                       <i class="fa fa-fw fa-bolt"></i>                      
+                                           <i class="fa fa-check fa-mark" ng-if="action.execute"></i>
+                                       </button>
                                     </div>
-                                    <div class="input-group mt-2" ng-if="action.type!='Link'">
-                                       <div class="input-group-text input-group-append input-group-prepend">
-                                          <i class="fa Instance"></i>
-                                       </div>
-                                       <div uib-dropdown dropdown-append-to-body>
-                                          <button class="btn btn-secondary" uib-dropdown-toggle>
-                                             {{action.instance}}
-                                             <span class="caret"></span>
-                                          </button>
-                                          <ul class="dropdown-menu" uib-dropdown-menu role="menu"
-                                             aria-labelledby="split-button">
-                                             <li role="menuitem" ng-repeat="instance in options.instances">
-                                                <div ng-click="action.instance = instance" class="ml-2 mr-2 click">
-                                                   <span>{{instance}}</span>
-                                                </div>
-                                             </li>
-                                          </ul>
+                                    <div class="mt-2">
+                                       <div class="btn-group" ng-if="action.type!='Link'">
+                                          <div title="{{'CHOOSEINSTANCE' | translate}}" class="input-group-text input-group-append input-group-prepend">
+                                             <i class="fa Instance"></i>
+                                          </div>
+                                          <div uib-dropdown dropdown-append-to-body class="input-group-append input-group-prepend dropdown">
+                                             <button class="btn btn-secondary" uib-dropdown-toggle>
+                                                {{action.instance}}
+                                                <span class="caret"></span>
+                                             </button>
+                                             <ul class="dropdown-menu" uib-dropdown-menu role="menu"
+                                                aria-labelledby="split-button">
+                                                <li role="menuitem" ng-repeat="instance in options.instances">
+                                                   <div ng-click="action.instance = instance" class="ml-2 mr-2 click">
+                                                      <span>{{instance}}</span>
+                                                   </div>
+                                                </li>
+                                             </ul>
+                                          </div>
                                        </div>
                                     </div>
                                     <div class="input-group mt-2"
@@ -881,10 +875,8 @@
                                     </div>
 
                                     <div class="input-group mt-2" ng-if="action.type=='Process'">
-                                       <div class="input-group-append input-group-prepend">
-
-                                          <span class="input-group-text input-group-append input-group-prepend"><i
-                                                class="fa process"></i></span>
+                                       <div class="input-group-text input-group-append input-group-prepend">
+                                          <i class="fa process"></i>
                                        </div>
 
                                        <input spellcheck="false" type="text"
@@ -910,9 +902,8 @@
                                           placeholder="Enter Address..." ng-model="action.link" />
                                     </div>
                                     <div class="input-group mt-2" ng-if="action.type=='Chore'">
-                                       <div class="input-group-append input-group-prepend">
-                                          <span class="input-group-text input-group-append input-group-prepend"><i
-                                                class="fa chores"></i></span>
+                                       <div class="input-group-text input-group-append input-group-prepend">
+                                          <i class="fa chores"></i>
                                        </div>
 
                                        <input spellcheck="false" type="text"
@@ -922,17 +913,17 @@
                                           typeahead-append-to-body="true" spellcheck="false" autofocus />
                                     </div>
                                     <div class="input-group mt-2">
-                                       <div class="input-group-text input-group-append input-group-prepend">
+                                       <div title="{{'SETDESCRIPTION' | translate}}" class="input-group-text input-group-append input-group-prepend">
                                           <i class="fa fa-info-circle"></i>
                                        </div>
                                        <input spellcheck="false" type="text" class="form-control"
                                           placeholder="Enter Description..." ng-model="action.info" />
                                     </div>
-                                    <div class="input-group mt-2">
+                                    <div class="btn-group mt-2">
                                        <div class="input-group-text input-group-append input-group-prepend">
                                           <i class="fa fa-calendar-o" ng-class="{'fa-calendar-check-o':action.setDueDate}"></i>
                                        </div>
-                                       <span class="btn btn-secondary pull-right" 
+                                       <div class="btn btn-secondary pull-right" 
                                        ng-click="action.setDueDate=!action.setDueDate">
                                           <span translate="DUEDATE"></span>
                                           <a href class="ml-1 mr-1 pt-2">
@@ -941,11 +932,11 @@
                                              <i class="fa fa-toggle-off" ng-if="!action.setDueDate"
                                                 ></i>
                                           </a>
-                                       </span>
+                                       </div>
                                     </div>
                                     <div class="input-group mt-2" ng-if="action.setDueDate" uib-dropdown is-open="action.startTimeIsOpen">
-                                          <span class="input-group-append">
-                                             <button id="dropdownEndTime" type="button" class="btn btn-secondary"
+                                          <span class="input-group-prepend">
+                                             <button title="{{'SETDUEDATE' | translate}}" id="dropdownEndTime" type="button" class="btn btn-secondary"
                                                 uib-dropdown-toggle>
                                                 <span class="fa fa-calendar"></span>
                                              </button>
@@ -960,11 +951,12 @@
                                           </span>
                                     </div>
                                     <div class="btn-group mt-2" ng-if="action.setDueDate" >
-                                       <div class="input-group-text btn-group-append btn-group-prepend">
+                                       <div class="input-group-text input-group-prepend" title="{{'SETPATTERN' | translate}}">
                                           <i class="fa fa-repeat"></i>
                                        </div>
-                                       <div uib-dropdown dropdown-append-to-body ng-if="action.pattern.key=='FIRSTWORKINGDAYS'">
-                                          <button class="btn btn-secondary btn-group-append btn-group-prepend" uib-dropdown-toggle>
+                                       <div uib-dropdown dropdown-append-to-body ng-if="action.pattern.key=='FIRSTWORKINGDAYS'"
+                                          class="input-group-prepend input-group-append">
+                                          <button class="btn btn-secondary" uib-dropdown-toggle>
                                              {{action.firstWorkingDay.key}}<sup>{{action.firstWorkingDay.sup}}</sup>
                                              <span class="caret"></span>
                                           </button>
@@ -978,8 +970,8 @@
                                              </li>
                                           </ul>
                                        </div>
-                                       <div uib-dropdown dropdown-append-to-body>
-                                          <button class="btn btn-secondary btn-group-append btn-group-prepend" uib-dropdown-toggle>
+                                       <div uib-dropdown dropdown-append-to-body class="input-group-prepend input-group-append">
+                                          <button class="btn btn-secondary" uib-dropdown-toggle>
                                              {{action.pattern.name}}
                                              <span class="caret"></span>
                                           </button>
