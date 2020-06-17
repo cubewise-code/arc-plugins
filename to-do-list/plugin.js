@@ -313,6 +313,7 @@ arc.directive("cubewiseToDo", function () {
 
 
          $scope.addAction = function (parentIndex) {
+            $scope.getInstancesInfo()
             var action = {
                "edit": true,
                "open": true,
@@ -589,11 +590,13 @@ arc.directive("cubewiseToDo", function () {
          };
 
          $scope.checkAllDueDates = function () {
-            _.each($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].content, function (step) {
-               _.each(step.actions, function (action) {
-                  $scope.checkDueDate(action);
+            if($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex]){
+               _.each($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].content, function (step) {
+                  _.each(step.actions, function (action) {
+                     $scope.checkDueDate(action);
+                  });
                });
-            });
+            }
          };
          $scope.checkAllDueDates();
 
