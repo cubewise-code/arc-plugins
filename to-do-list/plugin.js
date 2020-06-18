@@ -314,6 +314,9 @@ arc.directive("cubewiseToDo", function () {
 
 
          $scope.addAction = function (parentIndex) {
+            if($scope.options.instances.length==0){
+               $scope.getInstancesInfo();
+            }
             var action = {
                "edit": true,
                "open": true,
