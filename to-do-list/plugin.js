@@ -23,7 +23,7 @@ arc.directive("cubewiseToDo", function () {
       link: function ($scope, element, attrs) {
 
       },
-      controller: ["$scope", "$rootScope", "$http", "$tm1", "$translate", "$timeout", "ngDialog", function ($scope, $rootScope, $http, $tm1, $translate, $timeout, ngDialog) {
+      controller: ["$scope", "$rootScope", "$http", "$tm1", "$translate", "$timeout", "ngDialog", "$helper", function ($scope, $rootScope, $http, $tm1, $translate, $timeout, ngDialog, $helper) {
 
          // Store the active tab index
          $scope.selections = {
@@ -118,7 +118,7 @@ arc.directive("cubewiseToDo", function () {
                name: listName,
                icon: listIcon,
                showBackgroundImage: true,
-               stepPercentage: 0, editing: false, numbers: true,
+               stepPercentage: 0, editing: false, numbers: false,
                content: _.cloneDeep($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].content)
             }
             $rootScope.uiPrefs.arcBauSettings.push(newTask)
@@ -130,8 +130,8 @@ arc.directive("cubewiseToDo", function () {
             var newTask = {
                name: listName,
                icon: listIcon,
-               showBackgroundImage: true,
-               stepPercentage: 0, editing: false, numbers: true, content: []
+               showBackgroundImage: false,
+               stepPercentage: 0, editing: false, numbers: false, content: []
             }
             $rootScope.uiPrefs.arcBauSettings.push(newTask)
             $rootScope.uiPrefs.arcBauValues.taskIndex = $rootScope.uiPrefs.arcBauSettings.length - 1;
@@ -221,6 +221,7 @@ arc.directive("cubewiseToDo", function () {
          $scope.addStep = function () {
             var subTask = {
                "edit": true,
+               "open": true,
                "title": "",
                "actions": []
             }
@@ -313,7 +314,6 @@ arc.directive("cubewiseToDo", function () {
 
 
          $scope.addAction = function (parentIndex) {
-            $scope.getInstancesInfo()
             var action = {
                "edit": true,
                "open": true,
@@ -528,14 +528,14 @@ arc.directive("cubewiseToDo", function () {
             //loop through steps
             _.each($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].content, function (step) {
                _.each(step.actions, function (action) {
-                  if(action.dueDate){
+                  if(action.setDueDate){
                      var weekInYear = moment(action.dueDate).format("YYYY") +"-"+ moment(action.dueDate).week();
                      if(!_.isEmpty($scope.lists.calendar[weekInYear])){
                         $scope.lists.calendar[weekInYear].days[moment(action.dueDate).format("YYYY-MM-DD")].actions.push(action);
                      }
                   }
                   //Loop through all next due dates
-                  if(action.pattern && action.pattern.key != 'DOESNOTREPEAT'){
+                  if(action.setDueDate && action.pattern && action.pattern.key != 'DOESNOTREPEAT'){
                      _.each(action.allNextDueDates, function (nextDueDate) {
                         var weekInYear = moment(nextDueDate).format("YYYY")+"-"+ moment(nextDueDate).week();
                         if(!_.isEmpty($scope.lists.calendar[weekInYear])){
@@ -690,11 +690,11 @@ arc.directive("cubewiseToDo", function () {
                $scope.lists.dimensionsInfo[instanceName].dimensions = dimension.data.value;
                _.each(dimension.data.value, function (dimension) {
                   $scope.lists.dimensionsInfo[instanceName].dimensions[dimension.Name] = {};
-                  $http.get(encodeURIComponent(instanceName) + "/Dimensions('" + dimension.Name + "')/Hierarchies?$select=Name").then(function (hierarchies) {
+                  $http.get(encodeURIComponent(instanceName) + "/Dimensions('" + $helper.encodeName(dimension.Name) + "')/Hierarchies?$select=Name").then(function (hierarchies) {
                      $scope.lists.dimensionsInfo[instanceName].dimensions[dimension.Name].hierarchies = hierarchies.data.value;
                      _.each(hierarchies.data.value, function (hierarchy) {
                         $scope.lists.dimensionsInfo[instanceName].dimensions[dimension.Name].hierarchies[hierarchy.Name] = {};
-                        $http.get(encodeURIComponent(instanceName) + "/Dimensions('" + dimension.Name + "')/Hierarchies('" + hierarchy.Name + "')/Subsets?$select=Name").then(function (subsets) {
+                        $http.get(encodeURIComponent(instanceName) + "/Dimensions('" + $helper.encodeName(dimension.Name) + "')/Hierarchies('" + $helper.encodeName(hierarchy.Name) + "')/Subsets?$select=Name").then(function (subsets) {
                            $scope.lists.dimensionsInfo[instanceName].dimensions[dimension.Name].hierarchies[hierarchy.Name].subsets = subsets.data.value;
                         });
                      });
@@ -720,7 +720,7 @@ arc.directive("cubewiseToDo", function () {
                //Cubes('Balance Sheet')/Views?select=Name
                _.each($scope.lists.cubes[instanceName], function (cube) {
                   $scope.lists.cubes[instanceName].views = {};
-                  $http.get(encodeURIComponent(instanceName) + "/Cubes('" + cube.Name + "')/Views?$select=Name").then(function (views) {
+                  $http.get(encodeURIComponent(instanceName) + "/Cubes('" + $helper.encodeName(cube.Name) + "')/Views?$select=Name").then(function (views) {
                      $scope.lists.cubes[instanceName].views[cube.Name] = views.data.value;
                   });
                });
