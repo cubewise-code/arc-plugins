@@ -68,7 +68,7 @@
                   <input spellcheck="false" spellcheck="false" type="text"
                      class="input-group-append input-group-prepend"
                      ng-class="{'todo-opacity':$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].showBackgroundImage}"
-                     placeholder="Enter list Name..." title="{{'EDITLISTNAME' | translate}}"
+                     placeholder="{{'ENTERLISTNAME' | translate}}"
                      ng-model="$root.uiPrefs.arcBauSettings[$root.uiPrefs.arcBauValues.taskIndex].name" />
                   <div uib-dropdown dropdown-append-to-body class="input-group-prepend">
                      <button class="btn" uib-dropdown-toggle title="{{'OPTIONS' | translate}}"
@@ -512,21 +512,17 @@
                               </span> 
                            </div>
                            <div class="input-group" ng-if="step.edit">
-                              <div class="input-group-text input-group-append input-group-prepend click"
-                                 ng-click="updateCategory(action)" ng-if="$root.uiPrefs.arcBauValues.numbers">
-                                 {{$index+1}}
-                              </div>
                               <div title="{{'SETTITLE' | translate}}" class="input-group-text input-group-append input-group-prepend">
                                  <i class="fa fa-header"></i>
                               </div>
                               <input spellcheck="false" spellcheck="false" type="text" class="form-control"
-                                 placeholder="Enter Title..." ng-model="step.title" />                              
+                              placeholder="{{'ENTERTITLE' | translate}}" ng-model="step.title" />                              
                               <div class="input-group mt-2">
                                  <div title="{{'SETDESCRIPTION' | translate}}" class="input-group-text input-group-append input-group-prepend">
                                     <i class="fa fa-info-circle"></i>
                                  </div>
                                  <input spellcheck="false" type="text" class="form-control"
-                                    placeholder="Enter Description..." ng-model="step.info" />
+                                 placeholder="{{'ENTERDESCRIPTION' | translate}}" ng-model="step.info" />
                               </div>
                            </div>
                         </div>
@@ -622,7 +618,8 @@
                                  <div class="input-group mb-2" ng-if="action.edit">
                                     <div class="input-group-text input-group-append input-group-prepend click"
                                        ng-click="updateCategory(action)" ng-class="action.category"
-                                       ng-if="$root.uiPrefs.arcBauValues.numbers">
+                                       ng-if="$root.uiPrefs.arcBauValues.numbers"
+                                       title="{{'SETCOLOR' | translate}}">
                                        {{$parent.$parent.$parent.$index+1}}.{{$index+1}}
                                     </div>
                                     <div title="{{'SETTITLE' | translate}}" class="input-group-text input-group-append input-group-prepend">
@@ -630,7 +627,7 @@
                                     </div>
                                     <input spellcheck="false" spellcheck="false" type="text"
                                        class="form-control input-group-append input-group-prepend"
-                                       placeholder="Enter Title..." ng-model="action.name" />
+                                       placeholder="{{'ENTERTITLE' | translate}}" ng-model="action.name" />
                                  </div>
                                  <div ng-if="!action.edit">
                                     <i ng-if="action.type=='Cube View'" class="fa cubes" style="margin-right:5px"></i>
@@ -786,7 +783,7 @@
                                        </div>
                                        <input spellcheck="false" type="text"
                                           class="input-group-append input-group-prepend form-control"
-                                          placeholder="Enter cube name..." ng-model="action.cube"
+                                          placeholder="{{'ENTERCUBENAME' | translate}}" ng-model="action.cube"
                                           uib-typeahead="cube.Name for cube in lists.cubes[action.instance] | filter:$viewValue | limitTo:20"
                                           typeahead-append-to-body="true" spellcheck="false" autofocus />
                                     </div>
@@ -798,7 +795,7 @@
 
                                        <input spellcheck="false" type="text"
                                           class="input-group-append input-group-prepend form-control"
-                                          ng-model="action.view" placeholder="Enter view name..."
+                                          ng-model="action.view" placeholder="{{'ENTERVIEWNAME' | translate}}"
                                           uib-typeahead="view.Name for view in lists.cubes[action.instance].views[action.cube] | filter:$viewValue | limitTo:20"
                                           typeahead-append-to-body="true" spellcheck="false" autofocus />
                                     </div>
@@ -809,7 +806,7 @@
                                        </div>
                                        <input spellcheck="false" type="text"
                                           class="input-group-append input-group-prepend form-control"
-                                          ng-model="action.dimension" placeholder="Enter dimension name..."
+                                          ng-model="action.dimension" placeholder="{{'ENTERDIMENSIONNAME' | translate}}"
                                           uib-typeahead="dim.Name for dim in lists.dimensionsInfo[action.instance].dimensions | filter:$viewValue | limitTo:20"
                                           typeahead-append-to-body="true" spellcheck="false" autofocus />
                                     </div>
@@ -822,7 +819,7 @@
 
                                        <input spellcheck="false" type="text"
                                           class="input-group-append input-group-prepend form-control"
-                                          ng-model="action.hierarchy" placeholder="Enter hierarchy name..."
+                                          ng-model="action.hierarchy" placeholder="{{'ENTERHIERARCHYNAME' | translate}}"
                                           uib-typeahead="hierarchy.Name for hierarchy in lists.dimensionsInfo[action.instance].dimensions[action.dimension].hierarchies | filter:$viewValue | limitTo:20"
                                           typeahead-append-to-body="true" spellcheck="false" autofocus />
                                     </div>
@@ -832,7 +829,7 @@
                                        </div>
                                        <input spellcheck="false" type="text"
                                           class="input-group-append input-group-prepend form-control"
-                                          ng-model="action.dimension" placeholder="Enter dimension name..."
+                                          ng-model="action.dimension" placeholder="{{'ENTERDIMENSIONNAME' | translate}}"
                                           uib-typeahead="dim.Name for dim in lists.dimensionsInfo[action.instance].dimensions | filter:$viewValue | limitTo:20"
                                           typeahead-append-to-body="true" spellcheck="false" autofocus />
                                     </div>
@@ -844,7 +841,7 @@
 
                                        <input spellcheck="false" type="text"
                                           class="input-group-append input-group-prepend form-control"
-                                          ng-model="action.hierarchy" placeholder="Enter hierarchy name..."
+                                          ng-model="action.hierarchy" placeholder="{{'ENTERHIERARCHYNAME' | translate}}"
                                           uib-typeahead="hierarchy.Name for hierarchy in lists.dimensionsInfo[action.instance].dimensions[action.dimension].hierarchies | filter:$viewValue | limitTo:20"
                                           typeahead-append-to-body="true" spellcheck="false" autofocus />
                                     </div>
@@ -856,7 +853,7 @@
                                        </div>
                                        <input spellcheck="false" type="text"
                                           class="input-group-append input-group-prepend form-control"
-                                          ng-model="action.subset" placeholder="Enter subset name..."
+                                          ng-model="action.subset" placeholder="{{'ENTERSUBSETNAME' | translate}}"
                                           uib-typeahead="subset.Name for subset in lists.dimensionsInfo[action.instance].dimensions[action.dimension].hierarchies[action.hierarchy].subsets | filter:$viewValue | limitTo:20"
                                           typeahead-append-to-body="true" spellcheck="false" autofocus />
                                     </div>
@@ -869,7 +866,7 @@
 
                                        <input spellcheck="false" type="text"
                                           class="input-group-append input-group-prepend form-control"
-                                          placeholder="Enter subset name..." ng-model="action.subset"
+                                          placeholder="{{'ENTERSUBSETNAME' | translate}}" ng-model="action.subset"
                                           uib-typeahead="subset.Name for subset in lists.dimensionsInfo[action.instance].dimensions[action.dimension].hierarchies[action.dimension].subsets | filter:$viewValue | limitTo:20"
                                           typeahead-append-to-body="true" spellcheck="false" autofocus />
                                     </div>
@@ -881,7 +878,7 @@
 
                                        <input spellcheck="false" type="text"
                                           class="input-group-append input-group-prepend form-control"
-                                          placeholder="Enter process name..." ng-model="action.process"
+                                          placeholder="{{'ENTERPROCESSNAME' | translate}}" ng-model="action.process"
                                           uib-typeahead="pro.Name for pro in lists.processes[action.instance] | filter:$viewValue | limitTo:20"
                                           typeahead-append-to-body="true" spellcheck="false" autofocus />
                                     </div>
@@ -891,7 +888,7 @@
                                           <i class="fa fa-font"></i>
                                        </div>
                                        <input spellcheck="false" type="text" class="form-control"
-                                          placeholder="Enter Text..." ng-model="action.text" />
+                                       placeholder="{{'ENTERTEXT' | translate}}" ng-model="action.text" />
                                     </div>
 
                                     <div class="input-group mt-2" ng-if="action.type=='Link'">
@@ -899,7 +896,7 @@
                                           <i class="fa fa-globe"></i>
                                        </div>
                                        <input spellcheck="false" type="text" class="form-control"
-                                          placeholder="Enter Address..." ng-model="action.link" />
+                                       placeholder="{{'ENTERADDRESS' | translate}}" ng-model="action.link" />
                                     </div>
                                     <div class="input-group mt-2" ng-if="action.type=='Chore'">
                                        <div class="input-group-text input-group-append input-group-prepend">
@@ -908,7 +905,7 @@
 
                                        <input spellcheck="false" type="text"
                                           class="input-group-append input-group-prepend form-control"
-                                          placeholder="Enter chore name..." ng-model="action.chore"
+                                          placeholder="{{'ENTERCHORENAME' | translate}}" ng-model="action.chore"
                                           uib-typeahead="cho.Name for cho in lists.chores[action.instance] | filter:$viewValue | limitTo:20"
                                           typeahead-append-to-body="true" spellcheck="false" autofocus />
                                     </div>
@@ -917,7 +914,7 @@
                                           <i class="fa fa-info-circle"></i>
                                        </div>
                                        <input spellcheck="false" type="text" class="form-control"
-                                          placeholder="Enter Description..." ng-model="action.info" />
+                                       placeholder="{{'ENTERDESCRIPTION' | translate}}" ng-model="action.info" />
                                     </div>
                                     <div class="btn-group mt-2">
                                        <div class="input-group-text input-group-append input-group-prepend">
