@@ -1,0 +1,24 @@
+{
+   "CANCEL":"Cancel",
+   "DELETE":"Delete",
+   "DELETETHEFOLLOWINGSUBSETSANDVIEWS":"Delete the following subsets and views",
+   "DELETETHEFOLLOWINGVIEWS":"Delete the following views",
+   "DIMENSION":"Dimension",
+   "HASBEENDELETED":"has been deleted",
+   "HASBEENREPLACEDWITH":"has been replaced with",
+   "HIERARCHY":"Hierarchy",
+   "IN":"in",
+   "INVIEW":"in view",
+   "PICKASUBSET":"Pick a subset",
+   "REFRESH":"Refresh",
+   "REPLACE":"Replace",
+   "REPLACESUBSET":"Replace Subset",
+   "SUBSET":"Subset",
+   "SUBSETS":"Subsets",
+   "SUBSETSDELETED":"Subsets Deleted",
+   "VIEW":"view",
+   "VIEWS":"views",
+   "VIEWSDELETED":"Views Deleted",
+   "WITH":"with"
+
+}
