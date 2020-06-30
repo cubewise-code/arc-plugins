@@ -23,8 +23,8 @@ arc.directive("cubewiseMdx", function () {
       link: function ($scope, element, attrs) {
 
       },
-      controller: ["$scope", "$rootScope", "$http", "$tm1", "$translate", "$timeout", "$q",
-         function ($scope, $rootScope, $http, $tm1, $translate, $timeout, $q) {
+      controller: ["$scope", "$rootScope", "$tm1",
+         function ($scope, $rootScope, $tm1) {
 
          // Store the active tab index
          $scope.selections = {
@@ -37,16 +37,16 @@ arc.directive("cubewiseMdx", function () {
 
          $scope.clearMDXHistory = function () {
             $rootScope.uiPrefs.mdxHistory = [];
-         }
+         };
 
          $scope.clearMDXChecked = function () {
             $rootScope.uiPrefs.mdxChecked = [];
-         }
+         };
 
          $scope.clearAllHistory = function () {
             $scope.clearMDXHistory();
-            $scope.clearMDXChecked();         
-         }
+            $scope.clearMDXChecked();
+         };
 
          if (!$rootScope.uiPrefs.mdxHistory || $rootScope.uiPrefs.mdxHistory.length === 0) {
             $scope.clearMDXHistory();
@@ -115,7 +115,7 @@ arc.directive("cubewiseMdx", function () {
             _editor.$blockScrolling = Infinity;
             _editor.setFontSize($rootScope.uiPrefs.fontSize);
             _editor.setShowPrintMargin(false);
-                _editor.getSession().setUseWrapMode($rootScope.uiPrefs.editorWrapLongLines);
+            _editor.getSession().setUseWrapMode($rootScope.uiPrefs.editorWrapLongLines);
          };
 
          $scope.executing = false;
@@ -126,7 +126,7 @@ arc.directive("cubewiseMdx", function () {
             //If dimension execute
             var n = $scope.options.mdx.indexOf("WHERE");
             if ($scope.options.queryType == "ExecuteMDX") {
-               var args = "$expand=Axes($expand=Hierarchies($select=Name;$expand=Dimension($select=Name)),Tuples($expand=Members($select=Name,UniqueName,Ordinal,Attributes))),Cells($select=Ordinal,Status,Value,FormatString,FormattedValue,Updateable,RuleDerived,Annotated,Consolidated,Language,HasDrillthrough)"
+               var args = "$expand=Axes($expand=Hierarchies($select=Name;$expand=Dimension($select=Name)),Tuples($expand=Members($select=Name,UniqueName,Ordinal,Attributes))),Cells($select=Ordinal,Status,Value,FormatString,FormattedValue,Updateable,RuleDerived,Annotated,Consolidated,Language,HasDrillthrough)";
             } else {
                var args = "$expand=Hierarchies($select=Name;$expand=Dimension($select=Name)),Tuples($expand=Members($select=Name,UniqueName,Ordinal,Attributes))";
             }
@@ -157,7 +157,7 @@ arc.directive("cubewiseMdx", function () {
                         mdx: 'cube',
                         json: success.data,
                         table: $tm1.resultsetTransform($scope.instance, cube, success.data)
-                     }
+                     };
                   } else {
                      // Get attributes for each member
                      var table = _.cloneDeep(success.data.Tuples);
@@ -196,13 +196,13 @@ arc.directive("cubewiseMdx", function () {
                   responseTimeMs: $scope.options.responseTimeMs,
                   name: $scope.options.name,
                   uniqueID: Math.random().toString(36).slice(2)
-               }
+               };
                $rootScope.uiPrefs.mdxHistory.splice(0, 0, newQuery);
             });
             // If more than 10 remove the last one
-               if($rootScope.uiPrefs.mdxHistory.length>99){
-                  $rootScope.uiPrefs.mdxHistory.splice($rootScope.uiPrefs.mdxHistory.length-1, 1);
-               }
+            if($rootScope.uiPrefs.mdxHistory.length>99){
+               $rootScope.uiPrefs.mdxHistory.splice($rootScope.uiPrefs.mdxHistory.length-1, 1);
+            }
          };
 
          $scope.removeOneQuery = function(queryToBeRemoved,index){
@@ -212,18 +212,18 @@ arc.directive("cubewiseMdx", function () {
                   $rootScope.uiPrefs.mdxChecked.splice(key, 1);
                }
             });
-         }
+         };
 
          $scope.removeOneQueryFromChecked = function(list, index, uniqueID){
             if(list == 'mdxChecked'){
-            //Remove from checked
-            $rootScope.uiPrefs.mdxChecked.splice(index, 1);
-            //Remove Bookmark from History
-            _.each($rootScope.uiPrefs.mdxHistory, function (query, key) {
-               if(query.uniqueID == uniqueID){
-                  query.bookmark = false;
-               }
-            });
+               //Remove from checked
+               $rootScope.uiPrefs.mdxChecked.splice(index, 1);
+               //Remove Bookmark from History
+               _.each($rootScope.uiPrefs.mdxHistory, function (query, key) {
+                  if(query.uniqueID == uniqueID){
+                     query.bookmark = false;
+                  }
+               });
             } else{
                $rootScope.uiPrefs.mdxHistory[index].bookmark = false;
                _.each($rootScope.uiPrefs.mdxChecked, function (query, key) {
@@ -232,28 +232,28 @@ arc.directive("cubewiseMdx", function () {
                   }
                });
             }
-         }
+         };
 
          $scope.moveOneQuery = function(query, index, move){
             if(move == 'top'){
                query.bookmark = true;
                $rootScope.uiPrefs.mdxChecked.push(query);
             } else if(move == 'up'){
-               $rootScope.uiPrefs.mdxChecked.splice(index, 1);  
+               $rootScope.uiPrefs.mdxChecked.splice(index, 1);
                if(index == 0){
-                  $rootScope.uiPrefs.mdxChecked.push(query); 
+                  $rootScope.uiPrefs.mdxChecked.push(query);
                } else {
-               $rootScope.uiPrefs.mdxChecked.splice(index-1, 0, query); 
+                  $rootScope.uiPrefs.mdxChecked.splice(index-1, 0, query);
                }
             } else {
                $rootScope.uiPrefs.mdxChecked.splice(index, 1); 
                if(index == $rootScope.uiPrefs.mdxChecked.length){
-               $rootScope.uiPrefs.mdxChecked.splice(0, 0, query);  
+                  $rootScope.uiPrefs.mdxChecked.splice(0, 0, query);
                } else {
-                  $rootScope.uiPrefs.mdxChecked.splice(index+1, 0, query);    
-               }             
+                  $rootScope.uiPrefs.mdxChecked.splice(index+1, 0, query);
+               }
             }
-         }
+         };
 
          $scope.indexTiFunctions = $rootScope.uiPrefs.mdxHistory.length - 1;
 
@@ -263,7 +263,7 @@ arc.directive("cubewiseMdx", function () {
             $scope.options.name = item.name;
             $scope.options.queryType = item.queryType;
 
-         }
+         };
 
          $scope.updateindexTiFunctions = function (string) {
             if (string == "reset") {
