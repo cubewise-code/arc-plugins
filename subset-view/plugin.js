@@ -51,6 +51,12 @@ arc.directive("cubewiseSubsetAndView", function () {
             allViewsPerSubset: [],
             allSubsets: []
          };
+
+         $scope.subsetsToDelete = [];
+         $scope.subsetsViewsToDelete = [];
+
+         $scope.viewsToDelete = [];
+
          //Add Scroll bar when changing tabs
          $scope.tabSelected = function ($event) {
             $scope.$broadcast("auto-height-resize");
@@ -66,8 +72,7 @@ arc.directive("cubewiseSubsetAndView", function () {
                };
             });
          };
-         // Execute checkTM1Version
-         $scope.checkTM1Version();
+
          //Reset the lists and refresh the subsets
          $scope.refresh = function () {
             $scope.subsetsToDelete = [];
@@ -79,8 +84,6 @@ arc.directive("cubewiseSubsetAndView", function () {
             $scope.getallViewsPerSubset();
          };
          // TOGGLE DELETE SUBSETS
-         $scope.subsetsToDelete = [];
-         $scope.subsetsViewsToDelete = [];
          $scope.toggleDeleteSubset = function (item) {
             if (_.includes($scope.subsetsToDelete, item)) {
                //REMOVE SUBSET
@@ -207,7 +210,6 @@ arc.directive("cubewiseSubsetAndView", function () {
             });
          };
          // TOGGLE DELETE VIEWS
-         $scope.viewsToDelete = [];
          $scope.toggleDeleteView = function (item) {
             if (_.includes($scope.viewsToDelete, item)) {
                _.remove($scope.viewsToDelete, function (i) {
@@ -534,9 +536,6 @@ arc.directive("cubewiseSubsetAndView", function () {
             });
          };
 
-         //start the initialization
-         $scope.refresh();
-
          //Manage color:
          $scope.generateHSLColour = function (string) {
             //HSL refers to hue, saturation, lightness
@@ -556,7 +555,19 @@ arc.directive("cubewiseSubsetAndView", function () {
             return styleObject;
          };
 
+         var load = function(){
+
+            $scope.checkTM1Version();
+            $scope.refresh();
+
+         };
+         load();
+
          $scope.$on("login-reload", function (event, args) {
+
+            if (args.instance == $scope.instance) {
+               load();
+            }
 
          });
 
@@ -571,7 +582,6 @@ arc.directive("cubewiseSubsetAndView", function () {
          $scope.$on("$destroy", function (event) {
 
          });
-
 
       }]
    };
