@@ -4,12 +4,12 @@
       <div class="card" style="margin-bottom: 5px;">
          <div class="card-header" style="padding: 5px 10px;">
             <a href>
-               <i class="fa fa-toggle-on" ng-if="options.queryType=='ExecuteMDXSetExpression'" ng-click="options.queryType='ExecuteMDX'"></i>
-               <i class="fa fa-toggle-off" ng-if="options.queryType=='ExecuteMDX'" ng-click="options.queryType='ExecuteMDXSetExpression'"></i>
+               <i class="fa fa-toggle-on" ng-if="options.queryType=='ExecuteMDXSetExpression'" ng-click="options.queryType='ExecuteMDX'" title="Deactivate"></i>
+               <i class="fa fa-toggle-off" ng-if="options.queryType=='ExecuteMDX'" ng-click="options.queryType='ExecuteMDXSetExpression'" title="Activate"></i>
             </a>
             <span>Execute MDX Set Expressions</span>
             <div class="pull-right">
-               <a href ng-click="hideQuery = !hideQuery">
+               <a href ng-click="hideQuery = !hideQuery" title="Hide Query">
                   <i class="fa fa-toggle-on" ng-if="!hideQuery"></i>
                   <i class="fa fa-toggle-off" ng-if="hideQuery"></i>
                </a>
@@ -18,12 +18,12 @@
          <div class="card-body" style="padding: 5px;" ng-if="!hideQuery">
             <div class="input-group mb-1">
                <span class="input-group-prepend" uib-dropdown dropdown-append-to-body>
-                  <button class="btn btn-primary" ng-class="{'active':options.queryType!='ExecuteMDX'}" uib-dropdown-toggle>
+                  <button class="btn btn-primary" ng-class="{'active':options.queryType!='ExecuteMDX'}" title="Select Example Query" uib-dropdown-toggle>
                      <span class="caret"></span>
                   </button>
                   <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="split-button">
                      <li role="menuitem" ng-repeat="item in lists[options.queryType]">
-                        <div ng-click="options.mdx = item.query" style="margin-left:10px;cursor:pointer">
+                        <div ng-click="options.mdx = item.query" class="px-1" style="cursor:pointer">
                            <span class="badge {{item.badge}}">{{item.name}} </span> {{item.query}}</div>
                      </li>
                   </ul>
