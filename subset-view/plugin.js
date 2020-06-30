@@ -23,7 +23,8 @@ arc.directive("cubewiseSubsetAndView", function () {
       link: function ($scope, element, attrs) {
 
       },
-      controller: ["$scope", "$rootScope", "$http", "$tm1", "$translate", "$timeout", "ngDialog", "$helper", function ($scope, $rootScope, $http, $tm1, $translate, $timeout, ngDialog, $helper) {
+      controller: ["$scope", "$rootScope", "$http", "$tm1", "ngDialog", "$helper",
+         function ($scope, $rootScope, $http, $tm1, ngDialog, $helper) {
 
          // Store the active tab index
          $scope.selections = {
@@ -37,7 +38,7 @@ arc.directive("cubewiseSubsetAndView", function () {
             seeViewsPerSubset: false,
             seeAllSubsets: false,
             searchBySubset: true
-         }
+         };
 
          $scope.lists = {
             dimensions: [],
@@ -49,7 +50,7 @@ arc.directive("cubewiseSubsetAndView", function () {
             allSubsetsPerView: [],
             allViewsPerSubset: [],
             allSubsets: []
-         }
+         };
          //Add Scroll bar when changing tabs
          $scope.tabSelected = function ($event) {
             $scope.$broadcast("auto-height-resize");
@@ -76,7 +77,7 @@ arc.directive("cubewiseSubsetAndView", function () {
             $scope.viewsToDelete = [];
             $scope.viewsDeleted = [];
             $scope.getallViewsPerSubset();
-         }
+         };
          // TOGGLE DELETE SUBSETS
          $scope.subsetsToDelete = [];
          $scope.subsetsViewsToDelete = [];
@@ -92,13 +93,13 @@ arc.directive("cubewiseSubsetAndView", function () {
                   viewObject = {
                      subset: item.name,
                      view: viewName
-                  }
+                  };
                   if (_.some($scope.subsetsViewsToDelete, viewObject)) {
                      _.remove($scope.subsetsViewsToDelete, function (i) {
                         return i.subset === viewObject.subset && i.view === viewObject.view;
                      });
                   }
-               }
+               };
             } else {
                $scope.subsetsToDelete.push(item);
                //ADD ALL THE VIEWS TO BE DELETED
@@ -160,7 +161,7 @@ arc.directive("cubewiseSubsetAndView", function () {
                      for (var v in $scope.subsetsViewsToDelete) {
                         var viewFullName = $scope.subsetsViewsToDelete[v].view.fullName;
                         $scope.deleteView(viewFullName);
-                     }
+                     };
                   };
                   //DELETE ONE SUBSET
                   $scope.deleteSubset = function(subsetFullName){
@@ -192,8 +193,8 @@ arc.directive("cubewiseSubsetAndView", function () {
                      $scope.subsetsDeleted = [];
                      for (var s in $scope.subsetsToDelete) {
                         $scope.deleteSubset($scope.subsetsToDelete[s].name);
-                     }
-                  }
+                     };
+                  };
                }],
                data: {
                   subsets: $scope.subsetsToDelete,
@@ -341,7 +342,7 @@ arc.directive("cubewiseSubsetAndView", function () {
                            var cubeName = viewFullName.substr(0, semiColumn);
                            var viewName = viewFullName.substr(semiColumn + 1, viewFullName.length - semiColumn + 1);
                            $scope.replaceSubset(cubeName, viewName);
-                        }
+                        };
                      } else {
                         $scope.replaceSubset($scope.targetCube, $scope.targetView);
                      }
@@ -396,7 +397,7 @@ arc.directive("cubewiseSubsetAndView", function () {
                            }
                            $scope.lists.viewsAndSubsetsStructured.push(subsetInfo);
                         }
-                     }
+                     };
                      //Loop through subsets on rows
                      viewRows = allViews[view].Rows;
                      for (var currentView in viewRows) {
@@ -415,7 +416,7 @@ arc.directive("cubewiseSubsetAndView", function () {
                            }
                            $scope.lists.viewsAndSubsetsStructured.push(subsetInfo);
                         }
-                     }
+                     };
                      //Loop through subsets on Titles
                      viewsTitles = allViews[view].Titles;
                      for (var currentView in viewsTitles) {
@@ -434,9 +435,9 @@ arc.directive("cubewiseSubsetAndView", function () {
                            }
                            $scope.lists.viewsAndSubsetsStructured.push(subsetInfo);
                         }
-                     }
-                  }
-               }
+                     };
+                  };
+               };
                // LOOP THROUGH lists.viewsAndSubsetsStructured TO CREATE lists.allSubsetsPerView AND lists.allViewsPerSubset
                var subsetKeys = {};
                var viewKeys = {};
@@ -505,7 +506,7 @@ arc.directive("cubewiseSubsetAndView", function () {
                         name:subsetNameTitle};
                      viewKeys[viewFullName].subsetsTitle.push(subsetFullNameTitleInfo);
                   }
-               }
+               };
                //Create lists.allViewsPerSubset array
                $scope.lists.allViewsPerSubset = [];
                _.forEach(subsetKeys, function (value, key) {
@@ -549,7 +550,7 @@ arc.directive("cubewiseSubsetAndView", function () {
             var lightness = "50";
             for (var i = 0; i < string.length; i++) {
                hash = string.charCodeAt(i) + ((hash << 5) - hash);
-            }
+            };
             var h = hash % 360;
             styleObject["background-color"] = 'hsl(' + h + ', ' + saturation + '%, ' + lightness + '%)';
             return styleObject;
