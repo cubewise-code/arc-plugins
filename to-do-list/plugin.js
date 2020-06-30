@@ -81,6 +81,13 @@ arc.directive("cubewiseToDo", function () {
             instances: []
          };
 
+         $scope.lists = [];
+         $scope.lists.cubes = [];
+
+         $scope.options.showActiveDay = false;
+
+         $scope.copied = false;
+
          $scope.getInstancesInfo = function () {
             $scope.options.instances = [];
             $tm1.instances().then(function (instancesData) {
@@ -92,17 +99,6 @@ arc.directive("cubewiseToDo", function () {
                });
             });
          };
-
-         // Watch broadcast logging-reload
-
-         if (!$rootScope.uiPrefs.arcBauValues || $rootScope.uiPrefs.arcBauValues.length == 0) {
-            $rootScope.uiPrefs.arcBauValues = [];
-            $rootScope.uiPrefs.arcBauValues = _.cloneDeep($scope.values);
-         }
-
-         if (!$rootScope.uiPrefs.arcBauSettings) {
-            $rootScope.uiPrefs.arcBauSettings = [];
-         }
 
          $scope.changeView = function () {
             if ($rootScope.uiPrefs.arcBauValues.view == 'fa-trello') {
@@ -212,7 +208,6 @@ arc.directive("cubewiseToDo", function () {
 
          //==========
          // Populate $scope.lists from settings-en.json file
-         $scope.lists = [];
 
          $scope.removeTask = function (taskIndex) {
             $rootScope.uiPrefs.arcBauSettings.splice(taskIndex, 1);
@@ -473,7 +468,6 @@ arc.directive("cubewiseToDo", function () {
             updateAllNextDueDate(action);
          };
 
-         $scope.options.showActiveDay = false;
          $scope.setActiveDay = function(day){
             $scope.options.activeDay = day;
             $scope.options.showActiveDay = true;
@@ -600,7 +594,6 @@ arc.directive("cubewiseToDo", function () {
                });
             }
          };
-         $scope.checkAllDueDates();
 
          $scope.updateActionPattern = function (action, pattern) {
             var recurringPattern = {
@@ -710,7 +703,6 @@ arc.directive("cubewiseToDo", function () {
             });
          };
 
-         $scope.lists.cubes = [];
          var getCubeInfo = function (instanceName) {
             $scope.lists.cubes = {};
             $http.get(encodeURIComponent(instanceName) + "/Cubes?$select=Name").then(function (result) {
@@ -734,9 +726,6 @@ arc.directive("cubewiseToDo", function () {
             getCubeInfo(instanceName);
          };
 
-         $scope.getInstancesInfo();
-
-         $scope.copied = false;
          $scope.copyToClipboard = function () {
             $scope.copied = true;
             /* Get the text field */
@@ -755,10 +744,30 @@ arc.directive("cubewiseToDo", function () {
 
          };
 
-         $scope.$on("login-reload", function (event, args) {
-            $tm1.instance(args.instance).then(function (instance) {
+         var load = function(){
+
+            if (!$rootScope.uiPrefs.arcBauValues || $rootScope.uiPrefs.arcBauValues.length == 0) {
+               $rootScope.uiPrefs.arcBauValues = [];
+               $rootScope.uiPrefs.arcBauValues = _.cloneDeep($scope.values);
+            }
+            if (!$rootScope.uiPrefs.arcBauSettings) {
+               $rootScope.uiPrefs.arcBauSettings = [];
+            }
+            $scope.checkAllDueDates();
+
+            $tm1.instance($scope.instance).then(function (instance) {
                $scope.getInstancesInfo();
             });
+
+         };
+         load();
+
+         $scope.$on("login-reload", function (event, args) {
+
+            if (args.instance == $scope.instance) {
+               load();
+            }
+
          });
 
          $scope.$on("close-tab", function (event, args) {
@@ -772,7 +781,6 @@ arc.directive("cubewiseToDo", function () {
          $scope.$on("$destroy", function (event) {
 
          });
-
 
       }]
    };
