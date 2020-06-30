@@ -22,7 +22,7 @@
             <div class="card-header" style="padding: 5px 10px;" ng-click="toggleQuery(tab)">
                <span translate="QUERY"></span>
                <div class="pull-right">
-                  <a href ng-click="options.hideQuery = !options.hideQuery">
+                  <a href ng-click="options.hideQuery = !options.hideQuery" title="{{'HIDEQUERY' | translate}}">
                      <i class="fa fa-toggle-on" ng-if="!options.hideQuery"></i>
                      <i class="fa fa-toggle-off" ng-if="options.hideQuery"></i>
                   </a>
@@ -31,7 +31,7 @@
             <div class="card-body" style="padding: 5px;" ng-if="!options.hideQuery">
                <div class="input-group">
                   <div class="input-group-prepend" uib-dropdown dropdown-append-to-body>
-                     <button class="btn btn-secondary" uib-dropdown-toggle>
+                     <button class="btn btn-secondary" title="{{'SELECTQUERYTYPE' | translate}}" uib-dropdown-toggle>
                         <span class="caret"></span>
                      </button>
                      <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="split-button">
@@ -48,7 +48,8 @@
 
                   <div class="input-group-append" uib-dropdown dropdown-append-to-body>
                      <button uib-dropdown-toggle class="btn"
-                        ng-class="{'btn-info':options.method=='GET','btn-primary':options.method=='POST','btn-warning':options.method=='PATCH','btn-warning':options.method=='PUT','btn-danger':options.method=='DELETE'}">
+                        ng-class="{'btn-info':options.method=='GET','btn-primary':options.method=='POST','btn-warning':options.method=='PATCH','btn-warning':options.method=='PUT','btn-danger':options.method=='DELETE'}"
+                        title="{{'SELECTQUERYPARAMETERS' | translate}}">
                         <span class="caret"></span>
                      </button>
                      <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="split-button">
@@ -69,7 +70,7 @@
                      typeahead-append-to-body="true" autocomplete="off">
 
                   <div class="input-group-append">
-                     <button ng-disabled="!options.restApiQuery" class="btn btn-secondary" title="Execute"
+                     <button ng-disabled="!options.restApiQuery" class="btn btn-secondary" title="{{'EXECUTE' | translate}}"
                         ng-click="executeQuery()" disabled="disabled">
                         <i ng-if="!options.executing" class="fa fa-fw fa-bolt"></i>
                         <i ng-if="options.executing" class="fa fa-refresh fa-spin"></i>
@@ -149,18 +150,18 @@
                         <i class="click fa"
                            ng-class="{'fa-minus-square-o':$root.uiPrefs.showRESTChecked,'fa-plus-square-o':!$root.uiPrefs.showRESTChecked}"
                            ng-click="$root.uiPrefs.showRESTChecked=!$root.uiPrefs.showRESTChecked"></i>
-                        Pinned ({{$root.uiPrefs.restChecked.length}})
+                           <span translate="PINNED"></span> ({{$root.uiPrefs.restChecked.length}})
                      </span>
                      <div ng-repeat="item in $root.uiPrefs.restChecked" ng-if="$root.uiPrefs.showRESTChecked">
                         <div class="mt-1 mb-1 ml-2" ng-click="updateCurrentQuery(item)" style="white-space:nowrap;">
                            <span ng-click="removeOneQueryFromChecked('restChecked',$index,item.uniqueID)">
-                              <i class="click fa fa-check-square text-info" title="Move to the top"></i>
+                              <i class="click fa fa-check-square text-info" title="{{'UNPIN' | translate}}"></i>
                            </span>
                            <span ng-click="moveOneQuery(item, $index, 'up')">
-                              <i class="click fa fa-chevron-circle-up text-info" title="Remove from history"></i>
+                              <i class="click fa fa-chevron-circle-up text-info" title="{{'MOVEUP' | translate}}"></i>
                            </span>
                            <span ng-click="moveOneQuery(item, $index, 'down')">
-                              <i class="click fa fa-chevron-circle-down text-info" title="Remove from history"></i>
+                              <i class="click fa fa-chevron-circle-down text-info" title="{{'MOVEDOWN' | translate}}"></i>
                            </span>
                            <span class="badge ml-1"
                               ng-class="{'badge-info':item.method=='GET','badge-primary':item.method=='POST','badge-warning':item.method=='PATCH','badge-danger':item.method=='DELETE'}">
@@ -179,8 +180,8 @@
                         <i class="click fa"
                            ng-class="{'fa-minus-square-o':$root.uiPrefs.showRESTHistory,'fa-plus-square-o':!$root.uiPrefs.showRESTHistory}"
                            ng-click="$root.uiPrefs.showRESTHistory=!$root.uiPrefs.showRESTHistory"></i>
-                        All ({{$root.uiPrefs.restHistory.length}})
-                        <a href="" ng-if="$root.uiPrefs.restHistory.length>0" title="{{'CLEAR' | translate}}"
+                           <span translate="ALL"></span> ({{$root.uiPrefs.restHistory.length}})
+                        <a href="" ng-if="$root.uiPrefs.restHistory.length>0" title="{{'REMOVEALL' | translate}}"
                            ng-click="clearRestHistory()" ng-disabled="!$root.uiPrefs.restHistory.length">
                            <i class="fa fa-fw fa-trash text-danger"></i>
                         </a>
@@ -189,14 +190,14 @@
                         ng-class="{'func-active': indexTiFunctions+1 === $index}">
                         <div class="mt-1 mb-1 ml-2" ng-click="updateCurrentQuery(item)" style="white-space:nowrap;">
                            <span ng-click="removeOneQuery(item, $index)">
-                              <i class="click fa fa-fw fa-trash text-danger" title="Remove from history"></i>
+                              <i class="click fa fa-fw fa-trash text-danger" title="{{'REMOVE' | translate}}"></i>
                            </span>
                            <span ng-if="!item.bookmark" ng-click="moveOneQuery(item, $index, 'top')">
-                              <i class="click fa fa-square-o text-info" title="Move to the top"></i>
+                              <i class="click fa fa-square-o text-info" title="{{'PIN' | translate}}"></i>
                            </span>
                            <span ng-if="item.bookmark"
                               ng-click="removeOneQueryFromChecked('restHistory',$index,item.uniqueID)">
-                              <i class="click fa fa-check-square text-info" title="Remove from checked list"></i>
+                              <i class="click fa fa-check-square text-info" title="{{'UNPIN' | translate}}"></i>
                            </span>
                            <span class="badge ml-1"
                               ng-class="{'badge-info':item.method=='GET','badge-primary':item.method=='POST','badge-warning':item.method=='PATCH','badge-danger':item.method=='DELETE'}">
