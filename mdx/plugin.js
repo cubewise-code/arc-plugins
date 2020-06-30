@@ -35,27 +35,6 @@ arc.directive("cubewiseMdx", function () {
          $rootScope.uiPrefs.showMDXChecked = true;
          $rootScope.uiPrefs.showMDXHistory = true;
 
-         $scope.clearMDXHistory = function () {
-            $rootScope.uiPrefs.mdxHistory = [];
-         };
-
-         $scope.clearMDXChecked = function () {
-            $rootScope.uiPrefs.mdxChecked = [];
-         };
-
-         $scope.clearAllHistory = function () {
-            $scope.clearMDXHistory();
-            $scope.clearMDXChecked();
-         };
-
-         if (!$rootScope.uiPrefs.mdxHistory || $rootScope.uiPrefs.mdxHistory.length === 0) {
-            $scope.clearMDXHistory();
-         }
-         
-         if (!$rootScope.uiPrefs.mdxChecked || $rootScope.uiPrefs.mdxChecked.length === 0) {
-            $scope.clearMDXChecked();
-         }
-
          $scope.currentTabIndex = 1;
 
          $scope.options = {
@@ -73,6 +52,8 @@ arc.directive("cubewiseMdx", function () {
             resultType: "table"
          };
 
+         $scope.executing = false;
+
          $scope.lists = {
             ExecuteMDX: [
                {
@@ -89,6 +70,19 @@ arc.directive("cubewiseMdx", function () {
                { badge: 'badge-info', name: 'Dimension Filter by Attribute', query: "{\n" + "\tFILTER(\n" + "\t {TM1SUBSETALL( [Employee] )}\n" + "\t, \n" + "\t[Employee].[Region] = 'England'\n" + ")}" },
                { badge: 'badge-info', name: 'Dimension Filter by Windcard', query: "{\n" + "\tTM1FILTERBYPATTERN(\n" + "\t {\n" + "\tTM1SUBSETALL( [Employee] )}\n" + "\t, \n" + "\t'*Da*'\n)}" }
             ]
+         };
+
+         $scope.clearMDXHistory = function () {
+            $rootScope.uiPrefs.mdxHistory = [];
+         };
+
+         $scope.clearMDXChecked = function () {
+            $rootScope.uiPrefs.mdxChecked = [];
+         };
+
+         $scope.clearAllHistory = function () {
+            $scope.clearMDXHistory();
+            $scope.clearMDXChecked();
          };
 
          $scope.closeTab = function (index) {
@@ -118,7 +112,6 @@ arc.directive("cubewiseMdx", function () {
             _editor.getSession().setUseWrapMode($rootScope.uiPrefs.editorWrapLongLines);
          };
 
-         $scope.executing = false;
          $scope.execute = function () {
             $scope.executing = true;
             $scope.options.message = null;
@@ -255,8 +248,6 @@ arc.directive("cubewiseMdx", function () {
             }
          };
 
-         $scope.indexTiFunctions = $rootScope.uiPrefs.mdxHistory.length - 1;
-
          $scope.updateCurrentQuery = function (item) {
             $scope.options.mdx = item.mdx;
             $scope.options.message = item.message;
@@ -285,7 +276,26 @@ arc.directive("cubewiseMdx", function () {
             }
          };
 
+         var load = function(){
+
+            if (!$rootScope.uiPrefs.mdxHistory || $rootScope.uiPrefs.mdxHistory.length === 0) {
+               $scope.clearMDXHistory();
+            }
+            
+            if (!$rootScope.uiPrefs.mdxChecked || $rootScope.uiPrefs.mdxChecked.length === 0) {
+               $scope.clearMDXChecked();
+            }
+
+            $scope.indexTiFunctions = $rootScope.uiPrefs.mdxHistory.length - 1;
+
+         };
+         load();
+
          $scope.$on("login-reload", function (event, args) {
+
+            if (args.instance == $scope.instance) {
+               load();
+            }
 
          });
 
@@ -300,7 +310,6 @@ arc.directive("cubewiseMdx", function () {
          $scope.$on("$destroy", function (event) {
 
          });
-
 
       }]
    };
