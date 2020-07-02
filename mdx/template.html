@@ -222,14 +222,14 @@
                   <span translate="ALL"></span> ({{$root.uiPrefs.mdxHistory.length}})
                   <a href="" ng-if="$root.uiPrefs.mdxHistory.length>0" title="{{'REMOVEALL' | translate}}"
                      ng-click="clearMDXHistory()" ng-disabled="!$root.uiPrefs.mdxHistory.length">
-                     <i class="fa fa-fw fa-trash text-danger"></i>
+                     <i class="fa fa-fw fa-trash text-delete"></i>
                   </a>
                </span>
                <div ng-repeat="item in $root.uiPrefs.mdxHistory" ng-if="$root.uiPrefs.showMDXHistory"
                   ng-class="{'func-active': indexTiFunctions === $index}">
                   <div class="click mt-1 mb-1 ml-2" ng-click="updateCurrentQuery(item)" style="white-space:nowrap;">
                      <span ng-click="removeOneQuery(item, $index)">
-                        <i class="fa fa-fw fa-trash text-danger"
+                        <i class="fa fa-fw fa-trash text-delete"
                                        title="{{'REMOVE' | translate}}"></i>
                      </span>
                      <span ng-if="!item.bookmark" ng-click="moveOneQuery(item, $index, 'top')">
