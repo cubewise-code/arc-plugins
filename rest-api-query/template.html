@@ -36,7 +36,7 @@
                      </button>
                      <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="split-button">
                         <li role="menuitem" ng-repeat="method in lists.methods">
-                           <div ng-click="options.method = method" style="margin-left:10px;cursor:pointer">{{method}}
+                           <div ng-click="options.method = method" class="click" style="margin-left:10px;">{{method}}
                            </div>
                         </li>
                      </ul>
@@ -55,7 +55,8 @@
                      <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="split-button">
                         <li role="menuitem" ng-repeat="item in lists[options.method]">
                            <div ng-click="options.restApiQuery = item.restApiQuery"
-                              style="margin-left:10px;cursor:pointer">
+                              class="click"
+                              style="margin-left:10px;">
                               <i class="fa {{item.icon}}"> </i> {{item.restApiQuery}}</div>
                         </li>
                      </ul>
@@ -183,14 +184,14 @@
                            <span translate="ALL"></span> ({{$root.uiPrefs.restHistory.length}})
                         <a href="" ng-if="$root.uiPrefs.restHistory.length>0" title="{{'REMOVEALL' | translate}}"
                            ng-click="clearRestHistory()" ng-disabled="!$root.uiPrefs.restHistory.length">
-                           <i class="fa fa-fw fa-trash text-danger"></i>
+                           <i class="fa fa-fw fa-trash text-delete"></i>
                         </a>
                      </span>
                      <div ng-repeat="item in $root.uiPrefs.restHistory" ng-if="$root.uiPrefs.showRESTHistory"
                         ng-class="{'func-active': indexTiFunctions+1 === $index}">
                         <div class="mt-1 mb-1 ml-2" ng-click="updateCurrentQuery(item)" style="white-space:nowrap;">
                            <span ng-click="removeOneQuery(item, $index)">
-                              <i class="click fa fa-fw fa-trash text-danger" title="{{'REMOVE' | translate}}"></i>
+                              <i class="click fa fa-fw fa-trash text-delete" title="{{'REMOVE' | translate}}"></i>
                            </span>
                            <span ng-if="!item.bookmark" ng-click="moveOneQuery(item, $index, 'top')">
                               <i class="click fa fa-square-o text-info" title="{{'PIN' | translate}}"></i>
