@@ -23,8 +23,9 @@
                   </button>
                   <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="split-button">
                      <li role="menuitem" ng-repeat="item in lists[options.queryType]">
-                        <div ng-click="options.mdx = item.query" class="px-1" style="cursor:pointer">
-                           <span class="badge {{item.badge}}">{{item.name}} </span> {{item.query}}</div>
+                        <div ng-click="options.mdx = item.query" class="click px-1">
+                           <span class="badge {{item.badge}}">{{item.name}} </span> {{item.query}}
+                        </div>
                      </li>
                   </ul>
                </span>
