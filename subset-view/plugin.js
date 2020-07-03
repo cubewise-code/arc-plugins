@@ -75,7 +75,7 @@ arc.directive("cubewiseSubsetAndView", function () {
             $scope.subsetsToDelete = [];
             $scope.viewsToDelete = [];
             $scope.viewsDeleted = [];
-            $scope.getallViewsPerSubset();
+            getAllViewsPerSubset();
          }
          // TOGGLE DELETE SUBSETS
          $scope.subsetsToDelete = [];
@@ -181,7 +181,6 @@ arc.directive("cubewiseSubsetAndView", function () {
                         }else{
                            //Can't delete subset
                            $scope.errorMessage = "Delete "+subsetFullName+" failed because "+result.data.error.message;
-                           console.log($scope.errorMessage);
                         }
                      });
                   }
@@ -280,14 +279,11 @@ arc.directive("cubewiseSubsetAndView", function () {
          };
          //OPEN MODAL REPLACE SUBSET
          //OPEN MODAL WITH VIEWS TO BE DELETED
-         $scope.openModalReplaceSubset = function (view, subsetFullName) {
-            var semiColumn = subsetFullName.indexOf(":");
-            $scope.selections.dimension = subsetFullName.substr(0, semiColumn);
-            var hierarchyAndSubset = subsetFullName.substr(semiColumn + 1, subsetFullName.length - semiColumn + 1);
-            var semiColumn2 = hierarchyAndSubset.indexOf(":");
-            var hierarchy = hierarchyAndSubset.substr(0, semiColumn2);
-            var subset = hierarchyAndSubset.substr(semiColumn2 + 1, hierarchyAndSubset.length - semiColumn2 + 1);
-            $scope.subsetToBeReplaced = subsetFullName;
+         $scope.openModalReplaceSubset = function (view, subsetInfo) {
+            $scope.selections.dimension = subsetInfo.dimension;
+            $scope.selections.hierarchy = subsetInfo.hierarchy;
+            $scope.selections.subset = subsetInfo.name;
+            $scope.subsetToBeReplaced = subsetInfo.fullName;
             if (view.length > 0) {
                //Multiple views
                $scope.targetViews = view;
@@ -358,7 +354,7 @@ arc.directive("cubewiseSubsetAndView", function () {
             });
          };
          // GET ALL VIEWS AND SUBSETS
-         $scope.getallViewsPerSubset = function () {
+         var getAllViewsPerSubset = function () {
             $scope.lists.viewsAndSubsetsStructured = [];
             var query = "";
             var queryAll = "/Cubes?$select=Name&$expand=Views($select=Name;$expand=tm1.NativeView/Columns/Subset($select=Name;$expand=Hierarchy($select=Name;$expand=Dimension($select=Name))),tm1.NativeView/Rows/Subset($select=Name;$expand=Hierarchy($select=Name;$expand=Dimension($select=Name))),tm1.NativeView/Titles/Subset($select=Name;$expand=Hierarchy($select=Name;$expand=Dimension($select=Name))))";
@@ -513,7 +509,7 @@ arc.directive("cubewiseSubsetAndView", function () {
                      name: key,
                      dimension: value.dimension,
                      hierarchy: value.hierarchy,
-                     subsetName: subsetName,
+                     subsetName: value.subsetName,
                      views: value.views
                   });
                });
