@@ -20,7 +20,13 @@
    <div class="row">
       <div class="col-md-12">
          <uib-tabset active="active">
-            <uib-tab index="0" heading="Subsets per Views" select="tabSelected($event)">
+            <uib-tab index="0" select="tabSelected($event)">
+               <uib-tab-heading>
+                  <span translate="{{'VIEWS' | translate}}"></span>
+                  <span class="badge badge-pill badge-info cursor-default">
+                     {{lists.allSubsetsPerView.length}}
+                  </span>
+               </uib-tab-heading>
                <div class="toolbar">            
                   <div class="btn-toolbar pull-left">
                      <div class="input-group">
@@ -50,7 +56,7 @@
                            <thead>
                               <tr>
                                  <th> # </th>
-                                 <th colspan="2"> <i class="fa view mr-1"></i> {{lists.allSubsetsPerView.length}} <span translate="VIEWS"></span> </th>
+                                 <th colspan="2"> <i class="fa view mr-1"></i> <span translate="NAME"></span> </th>
                                  <th> <i class="fa cubes mr-1"></i><span translate="CUBES"></span> </th>
                                  <th> <img src="__/images/table-col-black.svg" class="cube-viewer-icon" style="width:15px;height:15px"> <span translate="SUBSETSONROWS"></span></th>
                                  <th> <img src="__/images/table-row-black.svg" class="cube-viewer-icon" style="width:15px;height:15px"> <span translate="SUBSETSONCOLUMNS"></span></th>
@@ -130,7 +136,13 @@
                   </div>
                </div>
             </uib-tab>
-            <uib-tab index="1" heading="Views per Subsets" select="tabSelected($event)">
+            <uib-tab index="1" select="tabSelected($event)">
+               <uib-tab-heading>
+                  <span translate="{{'SUBSETS' | translate}}"></span>
+                  <span class="badge badge-pill badge-info cursor-default">
+                     {{lists.allViewsPerSubset.length}}
+                  </span>
+               </uib-tab-heading>
                <div class="toolbar">
             
                   <div class="btn-toolbar pull-left">
@@ -161,7 +173,7 @@
                            <thead>
                               <tr>
                                  <th> # </th>
-                                 <th colspan="3"> <i class="fa subset mr-1"></i> {{lists.allViewsPerSubset.length}} <span translate="SUBSETS"></span> </th>                                 
+                                 <th colspan="3"> <i class="fa subset mr-1"></i> <span translate="NAME"></span> </th>                                 
                                  <th style="min-width:110px"> <i class="fa dimension mr-1"></i> <span translate="DIMENSIONS"></span> </th> 
                                  <th> <i class="fa view mr-1"></i> <span translate="VIEWS"></span> </th>
                               </tr>
