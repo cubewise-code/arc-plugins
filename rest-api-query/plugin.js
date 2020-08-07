@@ -22,7 +22,8 @@ arc.directive("tm1RestApiQuery", function () {
         link: function ($scope, element, attrs) {
 
         },
-        controller: ["$scope", "$rootScope", "$http", "$tm1", "$translate", "$timeout", "$helper", function ($scope, $rootScope, $http, $tm1, $translate, $timeout, $helper) {
+        controller: ["$scope", "$rootScope", "$tm1", "$translate",
+         function ($scope, $rootScope, $tm1, $translate) {
 
             $scope.options = {
                 activeTab: 0,
@@ -43,73 +44,62 @@ arc.directive("tm1RestApiQuery", function () {
                resultType: "json-tree"
             };
 
-            $rootScope.uiPrefs.showRESTChecked = true;
-            $rootScope.uiPrefs.showRESTHistory = true;
+            $scope.lists = {
+               methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
+               resultQuery: [],
+               GET: [
+                   { icon: 'cubes', name: 'Get list', restApiQuery: 'Cubes' },
+                   { icon: 'cubes', name: 'Get list only names', restApiQuery: 'Cubes?$select=Name' },
+                   { icon: 'cubes', name: 'Count All', restApiQuery: 'Cubes/$count' },
+                   { icon: 'cubes', name: 'Get Dimensions', restApiQuery: "Cubes('cubeName')/Dimensions" },
+                   { icon: 'cubes', name: 'Get only model cubes', restApiQuery: 'ModelCubes()' },
+                   { icon: 'dimensions', name: 'Get list', restApiQuery: 'Dimensions' },
+                   { icon: 'dimensions', name: 'Get one dimension', restApiQuery: "Dimensions('dimensionName')" },
+                   { icon: 'dimensions', name: 'Get hierarchies', restApiQuery: "Dimensions('dimensionName')/Hierarchies" },
+                   { icon: 'dimensions', name: 'Get list of attributes', restApiQuery: "Dimensions('dimensionName')/Hierarchies('dimensionName')/ElementAttributes" },
+                   { icon: 'processes', name: 'Get list', restApiQuery: 'Processes' },
+                   { icon: 'processes', name: 'Get only Model TI', restApiQuery: "Processes?$filter=substringof('}',Name) eq false&$select=Name" },
+                   { icon: 'processes', name: 'Get hierarchies', restApiQuery: "Processes('processName')" },
+                   { icon: 'fa-server', name: 'Metadata', restApiQuery: "$metadata" },
+                   { icon: 'fa-server', name: 'Get Configuration', restApiQuery: "Configuration" },
+                   { icon: 'fa-server', name: 'Get TM1 Version', restApiQuery: "Configuration/ProductVersion/$value" },
+                   { icon: 'fa-server', name: 'Get Sessions', restApiQuery: "Threads?$expand=Session" }
+               ],
+               POST: [
+                   { icon: 'cubes', name: 'Execute MDX', restApiQuery: 'ExecuteMDX?' },
+                   { icon: 'cubes', name: 'Execute MDX with Cells', restApiQuery: 'ExecuteMDX?$expand=Cells' },
+                   { icon: 'cubes', name: 'Execute MDX with Axes', restApiQuery: 'ExecuteMDX?$expand=Axes($expand=Hierarchies($select=Name;$expand=Dimension($select=Name)))' }
+               ],
+               PATCH: [
+                   { icon: 'chores', name: 'Update Chore', restApiQuery: "Chores('choreName')" }
+               ],
+               PUT: [
+               ],
+               DELETE: [
+                   { icon: 'cubes', name: 'Delete a view', restApiQuery: "Cubes('cubeName')/Views('viewName')" },
+                   { icon: 'dimensions', name: 'Delete a dimension', restApiQuery: "Dimensions('dimensionName')" },
+                   { icon: 'subset', name: 'Delete a subset', restApiQuery: "Dimensions('dimensionName')/Hierarchies('hierarchyName')/Subsets('subsetName')"}
+               ]
+            };
 
             $scope.clearRestHistory = function () {
                $rootScope.uiPrefs.restHistory = [];
-            }
+            };
    
-            if(!$rootScope.uiPrefs.restHistory || $rootScope.uiPrefs.restHistory.length === 0){
-               $scope.clearRestHistory();
-            }
-
             $scope.clearRestChecked = function () {
                $rootScope.uiPrefs.restChecked = [];
-            }
+            };
    
-            if(!$rootScope.uiPrefs.restChecked || $rootScope.uiPrefs.restChecked.length === 0){
-               $scope.clearRestChecked();
-            }
-
             $scope.clearAllHistory = function () {
                $scope.clearRestHistory();
                $scope.clearRestChecked();
-            }
-
-            $scope.lists = {
-                methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
-                resultQuery: [],
-                GET: [
-                    { icon: 'cubes', name: 'Get list', restApiQuery: 'Cubes' },
-                    { icon: 'cubes', name: 'Get list only names', restApiQuery: 'Cubes?$select=Name' },
-                    { icon: 'cubes', name: 'Count All', restApiQuery: 'Cubes/$count' },
-                    { icon: 'cubes', name: 'Get Dimensions', restApiQuery: "Cubes('cubeName')/Dimensions" },
-                    { icon: 'cubes', name: 'Get only model cubes', restApiQuery: 'ModelCubes()' },
-                    { icon: 'dimensions', name: 'Get list', restApiQuery: 'Dimensions' },
-                    { icon: 'dimensions', name: 'Get one dimension', restApiQuery: "Dimensions('dimensionName')" },
-                    { icon: 'dimensions', name: 'Get hierarchies', restApiQuery: "Dimensions('dimensionName')/Hierarchies" },
-                    { icon: 'dimensions', name: 'Get list of attributes', restApiQuery: "Dimensions('dimensionName')/Hierarchies('dimensionName')/ElementAttributes" },
-                    { icon: 'processes', name: 'Get list', restApiQuery: 'Processes' },
-                    { icon: 'processes', name: 'Get only Model TI', restApiQuery: "Processes?$filter=substringof('}',Name) eq false&$select=Name" },
-                    { icon: 'processes', name: 'Get hierarchies', restApiQuery: "Processes('processName')" },
-                    { icon: 'fa-server', name: 'Metadata', restApiQuery: "$metadata" },
-                    { icon: 'fa-server', name: 'Get Configuration', restApiQuery: "Configuration" },
-                    { icon: 'fa-server', name: 'Get TM1 Version', restApiQuery: "Configuration/ProductVersion/$value" },
-                    { icon: 'fa-server', name: 'Get Sessions', restApiQuery: "Threads?$expand=Session" }
-                ],
-                POST: [
-                    { icon: 'cubes', name: 'Execute MDX', restApiQuery: 'ExecuteMDX?' },
-                    { icon: 'cubes', name: 'Execute MDX with Cells', restApiQuery: 'ExecuteMDX?$expand=Cells' },
-                    { icon: 'cubes', name: 'Execute MDX with Axes', restApiQuery: 'ExecuteMDX?$expand=Axes($expand=Hierarchies($select=Name;$expand=Dimension($select=Name)))' }
-                ],
-                PATCH: [
-                    { icon: 'chores', name: 'Update Chore', restApiQuery: "Chores('choreName')" }
-                ],
-                PUT: [
-                ],
-                DELETE: [
-                    { icon: 'cubes', name: 'Delete a view', restApiQuery: "Cubes('cubeName')/Views('viewName')" },
-                    { icon: 'dimensions', name: 'Delete a dimension', restApiQuery: "Dimensions('dimensionName')" },
-                    { icon: 'subset', name: 'Delete a subset', restApiQuery: "Dimensions('dimensionName')/Hierarchies('hierarchyName')/Subsets('subsetName')"}
-                ]
-            }
+            };
 
             $scope.updateCurrentQuery = function(item){
                $scope.options.restApiQuery = item.restApiQuery;
                $scope.options.method = item.method;
                $scope.options.body = item.body;
-            }
+            };
 
             //Execute Query
             $scope.executeQuery = function () {
@@ -147,7 +137,7 @@ arc.directive("tm1RestApiQuery", function () {
                if($rootScope.uiPrefs.restHistory.length>99){
                   $rootScope.uiPrefs.restHistory.splice($rootScope.uiPrefs.restHistory.length-1, 1);
                }
-            }
+            };
 
             $scope.removeOneQuery = function(queryToBeRemoved,index){
                $rootScope.uiPrefs.restHistory.splice(index, 1);
@@ -156,18 +146,18 @@ arc.directive("tm1RestApiQuery", function () {
                      $rootScope.uiPrefs.restChecked.splice(key, 1);
                   }
                });
-            }
+            };
    
             $scope.removeOneQueryFromChecked = function(list, index, uniqueID){
                if(list == 'restChecked'){
-               //Remove from checked
-               $rootScope.uiPrefs.restChecked.splice(index, 1);
-               //Remove Bookmark from History
-               _.each($rootScope.uiPrefs.restHistory, function (query, key) {
-                  if(query.uniqueID == uniqueID){
-                     query.bookmark = false;
-                  }
-               });
+                  //Remove from checked
+                  $rootScope.uiPrefs.restChecked.splice(index, 1);
+                  //Remove Bookmark from History
+                  _.each($rootScope.uiPrefs.restHistory, function (query, key) {
+                     if(query.uniqueID == uniqueID){
+                        query.bookmark = false;
+                     }
+                  });
                } else{
                   $rootScope.uiPrefs.restHistory[index].bookmark = false;
                   _.each($rootScope.uiPrefs.restChecked, function (query, key) {
@@ -176,7 +166,7 @@ arc.directive("tm1RestApiQuery", function () {
                      }
                   });
                }
-            }
+            };
    
             $scope.moveOneQuery = function(query, index, move){
                if(move == 'top'){
@@ -195,11 +185,9 @@ arc.directive("tm1RestApiQuery", function () {
                   $rootScope.uiPrefs.restChecked.splice(0, 0, query);  
                   } else {
                      $rootScope.uiPrefs.restChecked.splice(index+1, 0, query);    
-                  }             
+                  }
                }
-            }
-
-            $scope.indexTiFunctions = $rootScope.uiPrefs.restHistory.length - 1;
+            };
 
             $scope.key = function ($event) {
                if($scope.indexTiFunctions == -1){
@@ -207,7 +195,7 @@ arc.directive("tm1RestApiQuery", function () {
                }
                var query = $scope.options.restApiQuery;
                var body = $scope.options.body;
-               var currentQuery = $rootScope.uiPrefs.restHistory[$scope.indexTiFunctions]
+               var currentQuery = $rootScope.uiPrefs.restHistory[$scope.indexTiFunctions];
                //Arrow up
                if ($event.keyCode == 38) {
                   $scope.updateCurrentQuery(currentQuery);
@@ -222,7 +210,7 @@ arc.directive("tm1RestApiQuery", function () {
                else if ($event.keyCode == 13) {
                   $scope.executeQuery();
                }
-            }
+            };
 
             $scope.updateindexTiFunctions = function (string) {
                if (string == "reset") {
@@ -244,7 +232,26 @@ arc.directive("tm1RestApiQuery", function () {
                }
             };
             
+            var load = function(){
+
+               $rootScope.uiPrefs.showRESTChecked = true;
+               $rootScope.uiPrefs.showRESTHistory = true;
+               if(!$rootScope.uiPrefs.restHistory || $rootScope.uiPrefs.restHistory.length === 0){
+                  $scope.clearRestHistory();
+               }
+               if(!$rootScope.uiPrefs.restChecked || $rootScope.uiPrefs.restChecked.length === 0){
+                  $scope.clearRestChecked();
+               }
+               $scope.indexTiFunctions = $rootScope.uiPrefs.restHistory.length - 1;
+
+            };
+            load();
+
             $scope.$on("login-reload", function (event, args) {
+
+               if (args.instance == $scope.instance) {
+                  load();
+               }
 
             });
 
@@ -259,7 +266,6 @@ arc.directive("tm1RestApiQuery", function () {
             $scope.$on("$destroy", function (event) {
 
             });
-
 
         }]
     };

@@ -2,8 +2,7 @@
    <div class="modal-header text-white bg-danger">
       <span>
          <i class="fa fa-trash"></i>
-         <span>Delete the following views
-         </span>
+         <span translate="DELETETHEFOLLOWINGVIEWS"></span>
       </span>
    </div>
    <div class="modal-body">
@@ -13,13 +12,13 @@
          </div>
          <div ng-if="viewsDeleted.length>0" ng-repeat="view in viewsDeleted">
             <div class="alert alert-success" role="alert" style="padding: 5px 10px">
-                  <i class="fa fa-w fa-check-square-o"></i> {{view}} has been deleted
+                  <i class="fa fa-w fa-check-square-o"></i> {{view}} <span translate="HASBEENDELETED"></span>
             </div>
          </div>
       </div>
    </div>
    <div class="modal-footer">
-      <button type="button" ng-if="viewsDeleted.length==0" class="btn btn-danger action ng-scope" ng-click="deleteViews()" translate="DELETE">Delete</button>
+      <button type="button" ng-if="viewsDeleted.length==0" class="btn btn-danger action ng-scope" ng-click="deleteViews()" translate="DELETE"></button>
       <button type="button" class="btn action ng-scope" ng-click="closeThisDialog(0);refresh()" translate="CANCEL">Cancel</button>
    </div>
 </div>

@@ -23,7 +23,8 @@ arc.directive("cubewiseToDo", function () {
       link: function ($scope, element, attrs) {
 
       },
-      controller: ["$scope", "$rootScope", "$http", "$tm1", "$translate", "$timeout", "ngDialog", "$helper", function ($scope, $rootScope, $http, $tm1, $translate, $timeout, ngDialog, $helper) {
+      controller: ["$scope", "$rootScope", "$http", "$tm1", "$timeout", "ngDialog", "$helper",
+         function ($scope, $rootScope, $http, $tm1, $timeout, ngDialog, $helper) {
 
          // Store the active tab index
          $scope.selections = {
@@ -78,7 +79,14 @@ arc.directive("cubewiseToDo", function () {
             {key:'16', sup:'th'},{key:'17', sup:'th'},{key:'18', sup:'th'},
             {key:'19', sup:'th'},{key:'20', sup:'th'}],
             instances: []
-         }
+         };
+
+         $scope.lists = [];
+         $scope.lists.cubes = [];
+
+         $scope.options.showActiveDay = false;
+
+         $scope.copied = false;
 
          $scope.getInstancesInfo = function () {
             $scope.options.instances = [];
@@ -92,17 +100,6 @@ arc.directive("cubewiseToDo", function () {
             });
          };
 
-         // Watch broadcast logging-reload
-
-         if (!$rootScope.uiPrefs.arcBauValues || $rootScope.uiPrefs.arcBauValues.length == 0) {
-            $rootScope.uiPrefs.arcBauValues = [];
-            $rootScope.uiPrefs.arcBauValues = _.cloneDeep($scope.values);
-         }
-
-         if (!$rootScope.uiPrefs.arcBauSettings) {
-            $rootScope.uiPrefs.arcBauSettings = [];
-         }
-
          $scope.changeView = function () {
             if ($rootScope.uiPrefs.arcBauValues.view == 'fa-trello') {
                $rootScope.uiPrefs.arcBauValues.view = 'fa-table';
@@ -111,7 +108,7 @@ arc.directive("cubewiseToDo", function () {
             } else {
                $rootScope.uiPrefs.arcBauValues.view = 'fa-trello';
             }
-         }
+         };
 
          $scope.saveAsLists = function (listName, listIcon) {
             var newTask = {
@@ -120,11 +117,11 @@ arc.directive("cubewiseToDo", function () {
                showBackgroundImage: true,
                stepPercentage: 0, editing: false, numbers: false,
                content: _.cloneDeep($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].content)
-            }
+            };
             $rootScope.uiPrefs.arcBauSettings.push(newTask)
             $rootScope.uiPrefs.arcBauValues.taskIndex = $rootScope.uiPrefs.arcBauSettings.length - 1;
             $scope.calculatePercentage();
-         }
+         };
 
          $scope.addLists = function (listName, listIcon) {
             var newTask = {
@@ -132,17 +129,17 @@ arc.directive("cubewiseToDo", function () {
                icon: listIcon,
                showBackgroundImage: false,
                stepPercentage: 0, editing: false, numbers: false, content: []
-            }
+            };
             $rootScope.uiPrefs.arcBauSettings.push(newTask)
             $rootScope.uiPrefs.arcBauValues.taskIndex = $rootScope.uiPrefs.arcBauSettings.length - 1;
             //$scope.addStep();
             $scope.calculatePercentage();
-         }
+         };
 
          $scope.removeLists = function (index) {
             $rootScope.uiPrefs.arcBauSettings.splice(index, 1);
             $rootScope.uiPrefs.arcBauValues.taskIndex = $rootScope.uiPrefs.arcBauSettings.length - 1;
-         }
+         };
 
          $scope.openModalRemoveList = function () {
             var dialog = ngDialog.open({
@@ -187,7 +184,7 @@ arc.directive("cubewiseToDo", function () {
 
                   $scope.updateNewIcon = function (icon) {
                      $scope.newIcon = icon;
-                  }
+                  };
                }],
                data: {
                   nameList: $scope.nameList,
@@ -200,7 +197,7 @@ arc.directive("cubewiseToDo", function () {
          $scope.updateSettings = function (index) {
             $rootScope.uiPrefs.arcBauValues.taskIndex = index;
             $scope.checkAllDueDates();
-         }
+         };
 
          var getEnableNewHierarchyCreationValue = function (instanceName) {
             $scope.values.enableNewHierarchyCreation = {};
@@ -211,12 +208,11 @@ arc.directive("cubewiseToDo", function () {
 
          //==========
          // Populate $scope.lists from settings-en.json file
-         $scope.lists = [];
 
          $scope.removeTask = function (taskIndex) {
             $rootScope.uiPrefs.arcBauSettings.splice(taskIndex, 1);
             $rootScope.uiPrefs.arcBauValues.taskIndex = $rootScope.uiPrefs.arcBauSettings.length - 1;
-         }
+         };
 
          $scope.addStep = function () {
             var subTask = {
@@ -224,63 +220,63 @@ arc.directive("cubewiseToDo", function () {
                "open": true,
                "title": "",
                "actions": []
-            }
+            };
             $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].content.push(subTask);
-         }
+         };
 
          $scope.updateActionType = function (action) {
             if (action.type == 'view') {
-               action.type = 'subset'
+               action.type = 'subset';
             } else if (action.type == 'subset') {
-               action.type = 'process'
+               action.type = 'process';
             } else if (action.type == 'process') {
-               action.type = 'chore'
+               action.type = 'chore';
             } else if (action.type == 'chore') {
-               action.type = 'view'
+               action.type = 'view';
             }
-         }
+         };
 
          $scope.updateIcon = function () {
             if ($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].icon == 'fa-server') {
-               $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].icon = 'fa-sliders'
+               $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].icon = 'fa-sliders';
             } else if ($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].icon == 'fa-sliders') {
-               $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].icon = 'fa-shield'
+               $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].icon = 'fa-shield';
             } else if ($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].icon == 'fa-shield') {
-               $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].icon = 'fa-star'
+               $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].icon = 'fa-star';
             } else if ($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].icon == 'fa-star') {
-               $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].icon = 'fa-sitemap'
+               $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].icon = 'fa-sitemap';
             } else if ($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].icon == 'fa-sitemap') {
-               $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].icon = 'fa-cubes'
+               $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].icon = 'fa-cubes';
             } else if ($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].icon == 'fa-cubes') {
-               $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].icon = 'fa-list-ol'
+               $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].icon = 'fa-list-ol';
             } else if ($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].icon == 'fa-list-ol') {
-               $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].icon = 'fa-server'
+               $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].icon = 'fa-server';
             } else {
-               $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].icon = 'fa-server'
+               $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].icon = 'fa-server';
             }
-         }
+         };
 
          $scope.updateCategory = function (action) {
             if (action.category == 'badge-info') {
-               action.category = 'badge-secondary'
+               action.category = 'badge-secondary';
             } else if (action.category == 'badge-secondary') {
-               action.category = 'badge-warning'
+               action.category = 'badge-warning';
             } else if (action.category == 'badge-warning') {
-               action.category = 'badge-danger'
+               action.category = 'badge-danger';
             } else if (action.category == 'badge-danger') {
-               action.category = 'badge-info'
+               action.category = 'badge-info';
             }
-         }
+         };
 
          $scope.cloneStep = function (index, step) {
             var stepNew = _.cloneDeep(step);
             $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].content.splice(index + 1, 0, stepNew);
             $scope.calculatePercentage();
-         }
+         };
 
          $scope.removeStep = function (index) {
             $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].content.splice(index, 1);
-         }
+         };
 
          $scope.moveStep = function (indexOld, indexNew) {
             var step = _.cloneDeep($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].content[indexOld]);
@@ -290,28 +286,26 @@ arc.directive("cubewiseToDo", function () {
             } else {
                $scope.removeStep(indexOld + 1);
             }
-         }
+         };
 
          $scope.showListInJson = function () {
             $scope.values.showCalendar = false;
             $scope.values.showJson = true;
             $scope.options.stringList = JSON.stringify($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex], null, 2);
-         }
+         };
 
          $scope.cancelJson = function () {
             $scope.values.showJson = false;
-         }
+         };
 
          $scope.clearJson = function () {
             $scope.options.stringList = "";
-         }
-
+         };
 
          $scope.validateJson = function () {
             $scope.values.showJson = false;
             $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex] = JSON.parse($scope.options.stringList);
-         }
-
+         };
 
          $scope.addAction = function (parentIndex) {
             if($scope.options.instances.length==0){
@@ -336,19 +330,19 @@ arc.directive("cubewiseToDo", function () {
                   key: 'DOESNOTREPEAT',
                   name: 'Does not repeat'
                }
-            }
+            };
             $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].content[parentIndex].actions.push(action);
-         }
+         };
 
          $scope.cloneAction = function (parentIndex, index, action) {
             var actionNew = _.cloneDeep(action);
             $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].content[parentIndex].actions.splice(index + 1, 0, actionNew);
             $scope.calculatePercentage();
-         }
+         };
 
          $scope.removeAction = function (parentIndex, index) {
             $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].content[parentIndex].actions.splice(index, 1);
-         }
+         };
 
          $scope.moveAction = function (parentIndex, indexOld, indexNew) {
             var action = _.cloneDeep($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].content[parentIndex].actions[indexOld]);
@@ -358,7 +352,7 @@ arc.directive("cubewiseToDo", function () {
             } else {
                $scope.removeAction(parentIndex, indexOld + 1);
             }
-         }
+         };
 
          $scope.moveActionToStep = function (stepIndexOld, stepIndexNew, indexAction) {
             var action = _.cloneDeep($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].content[stepIndexOld].actions[indexAction]);
@@ -367,11 +361,11 @@ arc.directive("cubewiseToDo", function () {
             $rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].content[stepIndexNew].actions.splice(numberAction, 0, action);
             //Remove Action from old step
             $scope.removeAction(stepIndexOld, indexAction);
-         }
+         };
 
          $scope.edit = function (taskIndex) {
             $rootScope.uiPrefs.arcBauSettings[taskIndex].editing = !$rootScope.uiPrefs.arcBauSettings[taskIndex].editing;
-         }
+         };
 
          $scope.calculatePercentage = function () {
             var nbActionsOpen = 0;
@@ -398,22 +392,22 @@ arc.directive("cubewiseToDo", function () {
 
          var getFirstWorkingDay = function(first, workingDay){
             if (first.day() == 5) {
-               first.add(3, 'day')
+               first.add(3, 'day');
             } else if (first.day() == 6) {
-               first.add(2, 'day')
+               first.add(2, 'day');
             }
             for (var i = 1; i < workingDay; i++) {
                if (first.day() == 5) {
-                  first.add(3, 'day')
+                  first.add(3, 'day');
                } else if (first.day() == 6) {
-                  first.add(2, 'day')
+                  first.add(2, 'day');
                } else {
-                  first.add(1, 'day')
+                  first.add(1, 'day');
                }
              }
-             return first
-         }
-         //https://stackoverflow.com/questions/45056083/moment-js-get-specific-day-of-a-month-by-week-and-day-of-week
+             return first;
+         };
+
          var getGivenDateOfMonth = function (startDate, dayOfWeek, weekNumber) {
             // Start of the month of the given startDate
             var myMonth = moment(startDate).startOf('month');
@@ -425,7 +419,7 @@ arc.directive("cubewiseToDo", function () {
             }
             // Return result
             return firstDayOfWeek.add(weekNumber-1, 'weeks');
-          }
+         };
 
          var getNextDueDate = function (action, date) {
             var nextDueDate = "";
@@ -453,9 +447,9 @@ arc.directive("cubewiseToDo", function () {
                      nextDueDate = moment(getFirstWorkingDay(nextFirst, workingDay));
                   } 
                } 
-               return nextDueDate;              
+               return nextDueDate;
             }
-         }
+         };
 
          var updateAllNextDueDate = function (action) {
             var date = moment(action.dueDate);
@@ -464,21 +458,20 @@ arc.directive("cubewiseToDo", function () {
                var nextDueDate = getNextDueDate(action, date);
                action.allNextDueDates.push(moment(nextDueDate).format("YYYY-MM-DD"));
                date = nextDueDate;
-            }
-         }
+            };
+         };
 
          $scope.updateNextDueDate = function (action) {
             if(action.pattern){
-                  action.nextDueDate = getNextDueDate(action, action.dueDate);              
+                  action.nextDueDate = getNextDueDate(action, action.dueDate);
             }
             updateAllNextDueDate(action);
-         }
+         };
 
-         $scope.options.showActiveDay = false;
          $scope.setActiveDay = function(day){
             $scope.options.activeDay = day;
             $scope.options.showActiveDay = true;
-         }
+         };
 
          $scope.buildAgenda = function(daySource){
             $scope.lists.weekdays = moment.weekdaysShort();
@@ -488,7 +481,7 @@ arc.directive("cubewiseToDo", function () {
                monthYear: moment(daySource).format("MMMM YYYY")
             };  
             // initialise weeks
-            var currentDay = moment();            
+            var currentDay = moment();
             var momentDay = moment(moment(daySource).format("YYYY-MM")+"-01")
             for (var i = 1; i <= moment(daySource).daysInMonth(); i++) {
                var weekInYear = momentDay.format("YYYY")+"-"+momentDay.week();
@@ -497,12 +490,12 @@ arc.directive("cubewiseToDo", function () {
                   days:{}
                };
                momentDay.add(1,"days");
-            }         
+            };
             //Build calendars
-            var momentDay = moment(moment(daySource).format("YYYY-MM")+"-01")
+            var momentDay = moment(moment(daySource).format("YYYY-MM")+"-01");
             while(momentDay.format("ddd") != startOfTheWeek){
                momentDay.add(-1,"days");
-            }
+            };
             var weekInYear = momentDay.format("YYYY")+"-"+momentDay.week();
              while(!_.isEmpty($scope.lists.calendar[weekInYear])){
                var weekInYear = momentDay.format("YYYY")+"-"+momentDay.week();
@@ -523,11 +516,11 @@ arc.directive("cubewiseToDo", function () {
                   momentDay: momentDay,
                   currentDay: currentDay,
                   actions: []
-               }
+               };
                $scope.lists.calendar[weekInYear].days[momentDay.format("YYYY-MM-DD")] = day;
                momentDay.add(1,"days");
                weekInYear = momentDay.format("YYYY")+"-"+momentDay.week();
-            }
+            };
             //loop through steps
             _.each($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].content, function (step) {
                _.each(step.actions, function (action) {
@@ -548,26 +541,26 @@ arc.directive("cubewiseToDo", function () {
                   }
                });
             });
-         }
+         };
 
          $scope.nextMonth = function(day){
             var newDay = moment(day).add(1,'months');
             $scope.buildAgenda(newDay);
-         }
+         };
 
          $scope.prevMonth = function(day){
             var newDay = moment(day).add(-1,'months');
             $scope.buildAgenda(newDay);
-         }
+         };
 
          $scope.updateDueDate = function (action) {
             var currentDate = moment();
-            action.dueDateBadge = 'badge-default'
+            action.dueDateBadge = 'badge-default';
             var deltaDays = moment(action.dueDate).diff(currentDate, 'days');
             if (deltaDays < 0) {
-               action.dueDateBadge = 'badge-danger'
+               action.dueDateBadge = 'badge-danger';
             } else if (deltaDays < 7) {
-               action.dueDateBadge = 'badge-warning'
+               action.dueDateBadge = 'badge-warning';
             }
             $scope.updateNextDueDate(action);
          };
@@ -585,9 +578,9 @@ arc.directive("cubewiseToDo", function () {
                      }, 1);
                   }
                }
-               action.dueDateBadge = 'badge-danger'
+               action.dueDateBadge = 'badge-danger';
             } else if (deltaDays < 7) {
-               action.dueDateBadge = 'badge-warning'
+               action.dueDateBadge = 'badge-warning';
             }
             $scope.updateNextDueDate(action);
          };
@@ -601,13 +594,12 @@ arc.directive("cubewiseToDo", function () {
                });
             }
          };
-         $scope.checkAllDueDates();
 
          $scope.updateActionPattern = function (action, pattern) {
             var recurringPattern = {
                key: pattern.key,
                name: 'Does not repeat'
-            }
+            };
             if (pattern.key == 'DAILY') {
                recurringPattern.name = 'Occurs every day starting ' + moment(action.dueDate).format("DD MMM");
             } else if (pattern.key == 'WEEKLY') {
@@ -623,9 +615,7 @@ arc.directive("cubewiseToDo", function () {
             }
             action.pattern = recurringPattern;
             $scope.updateNextDueDate(action);
-         }
-
-
+         };
 
          $scope.resetPercentage = function () {
             _.each($rootScope.uiPrefs.arcBauSettings[$rootScope.uiPrefs.arcBauValues.taskIndex].content, function (step) {
@@ -639,7 +629,7 @@ arc.directive("cubewiseToDo", function () {
          $scope.updatePercentageOneStep = function (step) {
             step.open = !step.open;
             _.each(step.actions, function (action) {
-               action.open = step.open
+               action.open = step.open;
             });
             $scope.calculatePercentage();
          };
@@ -658,7 +648,7 @@ arc.directive("cubewiseToDo", function () {
                   };
                });
             }
-         }
+         };
 
          $scope.executeChore = function (action) {
             $tm1.choreExecute(action.instance, action.chore).then(function (result) {
@@ -706,7 +696,6 @@ arc.directive("cubewiseToDo", function () {
             })
          };
 
-
          var getChoresInfo = function (instanceName) {
             $scope.lists.chores = {};
             $http.get(encodeURIComponent(instanceName) + "/Chores?$select=Name").then(function (result) {
@@ -714,7 +703,6 @@ arc.directive("cubewiseToDo", function () {
             });
          };
 
-         $scope.lists.cubes = [];
          var getCubeInfo = function (instanceName) {
             $scope.lists.cubes = {};
             $http.get(encodeURIComponent(instanceName) + "/Cubes?$select=Name").then(function (result) {
@@ -736,11 +724,8 @@ arc.directive("cubewiseToDo", function () {
             getDimensionInfo(instanceName);
             getEnableNewHierarchyCreationValue(instanceName);
             getCubeInfo(instanceName);
-         }
+         };
 
-         $scope.getInstancesInfo();
-
-         $scope.copied = false;
          $scope.copyToClipboard = function () {
             $scope.copied = true;
             /* Get the text field */
@@ -755,14 +740,34 @@ arc.directive("cubewiseToDo", function () {
 
             $timeout(function () {
                $scope.copied = false;
-            }, 3000)
+            }, 3000);
 
-         }
+         };
 
-         $scope.$on("login-reload", function (event, args) {
-            $tm1.instance(args.instance).then(function (instance) {
+         var load = function(){
+
+            if (!$rootScope.uiPrefs.arcBauValues || $rootScope.uiPrefs.arcBauValues.length == 0) {
+               $rootScope.uiPrefs.arcBauValues = [];
+               $rootScope.uiPrefs.arcBauValues = _.cloneDeep($scope.values);
+            }
+            if (!$rootScope.uiPrefs.arcBauSettings) {
+               $rootScope.uiPrefs.arcBauSettings = [];
+            }
+            $scope.checkAllDueDates();
+
+            $tm1.instance($scope.instance).then(function (instance) {
                $scope.getInstancesInfo();
             });
+
+         };
+         load();
+
+         $scope.$on("login-reload", function (event, args) {
+
+            if (args.instance == $scope.instance) {
+               load();
+            }
+
          });
 
          $scope.$on("close-tab", function (event, args) {
@@ -776,7 +781,6 @@ arc.directive("cubewiseToDo", function () {
          $scope.$on("$destroy", function (event) {
 
          });
-
 
       }]
    };

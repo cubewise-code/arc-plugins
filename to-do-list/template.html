@@ -53,7 +53,7 @@
                               'badge-info':$root.uiPrefs.arcBauSettings[$index].stepPercentage>1 && $root.uiPrefs.arcBauSettings[$index].stepPercentage<100}">
                                  {{$root.uiPrefs.arcBauSettings[$index].stepPercentage}} %
                               </span>
-                              <i class="fa fa-fw {{settings.icon}}" title="Delete Settings"></i>
+                              <i class="fa fa-fw {{settings.icon}}" title="{{'DELETESETTINGS' | translate}}"></i>
                               <span class="mr-2">{{settings.name}}</span>
                            </div>
                         </li>
@@ -326,20 +326,20 @@
                         </a>
 
                         <a ng-if="action.type=='Link'" href="{{action.link}}" target="_blank"
-                           title="Go to {{action.link}}">
+                           title="{{'GOTO' | translate}} {{action.link}}">
                            {{action.text}}
                         </a>
                         <!-- RUN PROCESS -->
                         <span class="pull-right" ng-if="action.type=='Process' && action.execute">
                            <button class="btn btn-secondary btn-sm text-warning"
-                              title="Execute {{action.instance}}:{{action.process}}" ng-click="executeProcess(action)">
+                              title="{{'EXECUTE' | translate}} {{action.instance}}:{{action.process}}" ng-click="executeProcess(action)">
                               <i class="fa fa-fw fa-bolt"></i>
                            </button>
                         </span>
                         <!-- RUN CHORE -->
                         <span class="pull-right" ng-if="action.type=='Chore' && action.execute">
                            <button class="btn btn-secondary btn-sm text-warning"
-                              title="Execute {{action.instance}}:{{action.chore}}" ng-click="executeChore(action)">
+                              title="{{'EXECUTE' | translate}} {{action.instance}}:{{action.chore}}" ng-click="executeChore(action)">
                               <i class="fa fa-fw fa-bolt"></i>
                            </button>
                         </span>
@@ -701,13 +701,13 @@
                                     </a>
 
                                     <a ng-if="action.type=='Link'" href="{{action.link}}" target="_blank"
-                                       title="Go to {{action.link}}">
+                                       title="{{'GOTO' | translate}} {{action.link}}">
                                        {{action.text}}
                                     </a>
                                     <!-- RUN PROCESS -->
                                     <span class="pull-right" ng-if="action.type=='Process' && action.execute">
                                        <button class="btn btn-secondary btn-sm text-warning"
-                                          title="Execute {{action.instance}}:{{action.process}}"
+                                          title="{{'EXECUTE' | translate}} {{action.instance}}:{{action.process}}"
                                           ng-click="executeProcess(action)">
                                           <i class="fa fa-fw fa-bolt"></i>
                                        </button>
@@ -715,7 +715,7 @@
                                     <!-- RUN CHORE -->
                                     <span class="pull-right" ng-if="action.type=='Chore' && action.execute">
                                        <button class="btn btn-secondary btn-sm text-warning"
-                                          title="Execute {{action.instance}}:{{action.chore}}"
+                                          title="{{'EXECUTE' | translate}} {{action.instance}}:{{action.chore}}"
                                           ng-click="executeChore(action)">
                                           <i class="fa fa-fw fa-bolt"></i>
                                        </button>

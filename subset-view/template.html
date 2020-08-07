@@ -36,14 +36,13 @@
                               style="display:inline; width:200px;" autocomplete="off">
                         </div>
                         <div class="input-group-append input-group-prepend">
-                           <button class="btn btn-secondary" title="Refresh" ng-click="refresh()">
+                              <button class="btn btn-primary" title="{{'REFRESH' | translate}}" ng-click="refresh()">
                               <i class="fa fa-fw fa-refresh"></i>
                            </button>
                         </div>
                         <div class="input-group-append">
-                           <button ng-disabled="saving || !viewsToDelete.length" class="btn btn-secondary"
-                              title="Delete" ng-click="openModalView()" disabled="disabled">
-                              <i class="fa fa-fw fa-trash"></i>
+                              <button ng-disabled="saving || !viewsToDelete.length" class="btn btn-danger" title="{{'DELETE' | translate}}" ng-click="openModalView()" disabled="disabled">
+                                 <i class="fa fa-fw fa-trash text-white"></i>
                            </button>
                         </div>
                      </div>
@@ -153,14 +152,14 @@
                               style="display:inline; width: 200px;" autocomplete="off">
                         </div>
                         <div class="input-group-append input-group-prepend">
-                           <button class="btn btn-secondary" title="Refresh" ng-click="refresh()">
+                              <button class="btn btn-primary" title="{{'REFRESH' | translate}}" ng-click="refresh()">
                               <i class="fa fa-fw fa-refresh"></i>
                            </button>
                         </div>
                         <div class="input-group-append">
-                           <button ng-disabled="saving || !subsetsToDelete.length" class="btn btn-secondary"
+                              <button ng-disabled="saving || !subsetsToDelete.length" class="btn btn-danger" title="{{'DELETE' | translate}}" ng-click="openModalSubset()"
                               title="Delete" ng-click="openModalSubset()" disabled="disabled">
-                              <i class="fa fa-fw fa-trash"></i>
+                                 <i class="fa fa-fw fa-trash text-white"></i>
                            </button>
                         </div>
                      </div>

@@ -1,0 +1,15 @@
+{
+   "ALL": "All",
+   "EXECUTE":"Execute",
+   "HIDEQUERY":"Hide Query",
+   "MOVEDOWN": "Move Down",
+   "MOVEUP": "Move Up",
+   "PIN": "Pin",
+   "PINNED": "Pinned",
+   "QUERY": "Query",
+   "REMOVE": "Remove",
+   "REMOVEALL": "Remove All",
+   "SELECTQUERYTYPE":"Select Query Type",
+   "SELECTQUERYPARAMETERS":"Select Query Parameters",
+   "UNPIN":"Unpin"
+}
