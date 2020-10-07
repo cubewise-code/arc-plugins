@@ -6,7 +6,7 @@
       </span>
    </div>
    <div class="modal-body">
-      <div class="row">
+      <div class="row" ng-if="views.length>0">
          <div class="col-md-12">
             <div class="card">
                <div class="card-header" style="padding: 5px 10px;">
@@ -66,7 +66,7 @@
       </div>
    </div>
    <div class="modal-footer">
-      <button ng-if="views.length>0" type="button" class="btn btn-danger action ng-scope"
+      <button ng-if="subsets.length>0" type="button" class="btn btn-danger action ng-scope"
          ng-click="deleteViewsAndSubsets()" translate="DELETE"></button>
       <button type="button" class="btn action ng-scope" ng-click="closeThisDialog(0);refresh()"
          translate="CANCEL"></button>
