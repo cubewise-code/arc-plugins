@@ -4,12 +4,12 @@
       <div class="card" style="margin-bottom: 5px;">
          <div class="card-header" style="padding: 5px 10px;">
             <a href>
-               <i class="fa fa-toggle-on" ng-if="options.queryType=='ExecuteMDXSetExpression'" ng-click="options.queryType='ExecuteMDX'" title="{{'DEACTIVATE' | translate}}"></i>
-               <i class="fa fa-toggle-off" ng-if="options.queryType=='ExecuteMDX'" ng-click="options.queryType='ExecuteMDXSetExpression'" title="{{'ACTIVATE' | translate}}"></i>
+               <i class="fa fa-toggle-on" ng-if="options.queryType=='ExecuteMDXSetExpression'" ng-click="options.queryType='ExecuteMDX'"></i>
+               <i class="fa fa-toggle-off" ng-if="options.queryType=='ExecuteMDX'" ng-click="options.queryType='ExecuteMDXSetExpression'"></i>
             </a>
-            <span translate="EXECUTEMDXSETEXPRESSIONS"></span>
+            <span>Execute MDX Set Expressions</span>
             <div class="pull-right">
-               <a href ng-click="hideQuery = !hideQuery" title="{{'HIDEQUERY' | translate}}">
+               <a href ng-click="hideQuery = !hideQuery">
                   <i class="fa fa-toggle-on" ng-if="!hideQuery"></i>
                   <i class="fa fa-toggle-off" ng-if="hideQuery"></i>
                </a>
@@ -18,14 +18,13 @@
          <div class="card-body" style="padding: 5px;" ng-if="!hideQuery">
             <div class="input-group mb-1">
                <span class="input-group-prepend" uib-dropdown dropdown-append-to-body>
-                  <button class="btn btn-primary" ng-class="{'active':options.queryType!='ExecuteMDX'}" title="{{'SELECTEXAMPLEQUERY' | translate}}" uib-dropdown-toggle>
+                  <button class="btn btn-primary" ng-class="{'active':options.queryType!='ExecuteMDX'}" uib-dropdown-toggle>
                      <span class="caret"></span>
                   </button>
                   <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="split-button">
                      <li role="menuitem" ng-repeat="item in lists[options.queryType]">
-                        <div ng-click="options.mdx = item.query" class="click px-1">
-                           <span class="badge {{item.badge}}">{{item.name}} </span> {{item.query}}
-                        </div>
+                        <div ng-click="options.mdx = item.query" style="margin-left:10px;cursor:pointer">
+                           <span class="badge {{item.badge}}">{{item.name}} </span> {{item.query}}</div>
                      </li>
                   </ul>
                </span>
@@ -33,12 +32,12 @@
                   <span class="input-group-text" translate="NAME"></span>
                </span>
                <input type="text" class="form-control" ng-model="options.name" 
-               placeholder="{{'QUERYNAME' | translate}}" style="width:60%" autocomplete="off">
+               placeholder="Query name..." style="width:60%" autocomplete="off">
                <span class="input-group-prepend">
-                  <span class="input-group-text ng-scope" translate="MAXROWS"></span>
+                  <span class="input-group-text ng-scope" translate="MAXROWS">Max. Rows</span>
                </span>
                <input type="number" class="form-control ng-pristine ng-untouched ng-valid ng-not-empty input-group-append" ng-model="maxRows"
-                  placeholder="{{'MAXROWS' | translate}}" style="width: 70px">
+                  placeholder="Max. Rows" style="width: 70px">
                <span class="input-group-append">
                   <button ng-click="execute()" class="btn btn-secondary" title="{{'EXECUTE' | translate}}">
                      <i ng-if="!executing" class="fa fa-fw fa-bolt"></i>
@@ -46,218 +45,222 @@
                   </button>
                </span>
             </div>
-            <pre ui-ace="{ onLoad : editorLoaded }" ng-model="options.mdx" style="height: 200px;"></pre>
-         </div>
-      </div>
-      <uib-tabset active="currentTabIndex">
-         <uib-tab index="0">
-            <uib-tab-heading>
-               <span translate="RESULT"></span>
-            </uib-tab-heading>
-            <div class="row">
-               <div class="col-md-12 text-center">
-                     <i ng-if="executing" class="fa fa-refresh fa-3x fa-spin"></i>
-               </div>
-            </div>
-            <div class="card-body" ng-if="options.message">
-               <div>
-                  <button class="btn btn-warning">
-                     <span class="fa fa-warning" aria-hidden="true"></span>
-                     <span>{{options.message}}</span>
-                  </button>
-               </div>
-            </div>
-            <div class="card" ng-if="result">
-               <div class="card-header" style="padding: 5px 10px;">
-                  <span>
-                     <i class="fa fa-table"></i>
-                     <span translate="RESULT"></span>
-                     - <span translate="RUNIN"></span> {{options.responseTimeMs | num:0}} ms
-                  </span>
-                  <div class="pull-right">
-                     <span>
-                        <input type="radio" ng-model="options.resultType" value="table" />
-                        <span>Table</span>
-                     </span>
-                     <span>
-                        <input type="radio" ng-model="options.resultType" value="json-tree" />
-                        <span>JSON Tree</span>
-                     </span>
-                     <span>
-                        <input type="radio" ng-model="options.resultType" value="json" />
-                        <span>JSON</span>
-                     </span>
-                     <span>
-                        <input type="radio" ng-model="options.resultType" value="hjson" />
-                        <span>HJSON</span>
-                     </span>
+            <pre ui-ace="{ onLoad : editorLoaded }" ng-model="options.mdx" ng-style="{'max-height': $root.uiPrefs.mdxSplitter}" auto-height auto-height-options="{noScroll: true, watchTab: true}"></pre>
+            <div ng-bind-html="mdx.mdx" style="overflow-y: auto;"></div>
+            <div class="horizontal-splitter" ng-mousedown="splitDown($event)"></div>
+            <uib-tabset active="currentTabIndex">
+               <uib-tab index="0">
+                  <uib-tab-heading>
+                     Result
+                  </uib-tab-heading>
+                  <div class="row">
+                     <div class="col-md-12 text-center">
+                           <i ng-if="executing" class="fa fa-refresh fa-3x fa-spin"></i>
+                     </div>
                   </div>
-                  <div ng-if="options.queryType=='ExecuteMDXSetExpression'" class="pull-right">
-                     <a href class="click" ng-click="options.showUniqueName = !options.showUniqueName">
-                        <i class="fa fa-toggle-on" ng-if="options.showUniqueName"></i>
-                        <i class="fa fa-toggle-off" ng-if="!options.showUniqueName"></i>
-                        <span translate="UNIQUENAME"></span>
-                     </a>
-                     <a href class="click" ng-click="options.showAttributes = !options.showAttributes">
-                        <i class="fa fa-toggle-on" ng-if="options.showAttributes"></i>
-                        <i class="fa fa-toggle-off" ng-if="!options.showAttributes"></i>
-                        <span class="text-info" translate="Attributes"> </span>
-                     </a>
-                     <span style="padding-right:5px;padding-left:5px"> | </span>
+                  <div class="card-body" ng-if="options.message">
+                     <div>
+                        <button class="btn btn-warning">
+                           <span class="fa fa-warning" aria-hidden="true"></span>
+                           <span>{{options.message}}</span>
+                        </button>
+                     </div>
                   </div>
-               </div>
-               <div class="card-body" style="padding: 5px 0px 0px 5px;" ng-if="!options.message">
+                  <div class="card" ng-if="result">
+                     <div class="card-header" style="padding: 5px 10px;">
+                        <span>
+                           <i class="fa fa-table"></i>
+                           <span translate="RESULT"></span>
+                           - Run in {{options.responseTimeMs | num:0}} ms
+                        </span>
+                        <div class="pull-right">
+                           <span>
+                              <input type="radio" ng-model="options.resultType" value="table" />
+                              <span>Table</span>
+                           </span>
+                           <span>
+                              <input type="radio" ng-model="options.resultType" value="json-tree" />
+                              <span>JSON Tree</span>
+                           </span>
+                           <span>
+                              <input type="radio" ng-model="options.resultType" value="json" />
+                              <span>JSON</span>
+                           </span>
+                           <span>
+                              <input type="radio" ng-model="options.resultType" value="hjson" />
+                              <span>HJSON</span>
+                           </span>
+                        </div>
+                        <div ng-if="options.queryType=='ExecuteMDXSetExpression'" class="pull-right">
+                           <a href class="click" ng-click="options.showUniqueName = !options.showUniqueName">
+                              <i class="fa fa-toggle-on" ng-if="options.showUniqueName"></i>
+                              <i class="fa fa-toggle-off" ng-if="!options.showUniqueName"></i>
+                              <span translate=""> UniqueName </span>
+                           </a>
+                           <a href class="click" ng-click="options.showAttributes = !options.showAttributes">
+                              <i class="fa fa-toggle-on" ng-if="options.showAttributes"></i>
+                              <i class="fa fa-toggle-off" ng-if="!options.showAttributes"></i>
+                              <span class="text-info" translate="Attributes"> </span>
+                           </a>
+                           <span style="padding-right:5px;padding-left:5px"> | </span>
+                        </div>
+                     </div>
+                     <div class="card-body" style="padding: 5px 0px 0px 5px;" ng-if="!options.message">
+                        <auto-height>
+                           <json-formatter ng-if="options.resultType == 'json-tree'" json="result.json" open="1"></json-formatter>
+                           <pre ng-if="options.resultType == 'json'" >{{result.json | json}}</pre>
+                           <pre ng-if="options.resultType == 'hjson'" >{{result.json | hjson}}</pre>
+                           <div ng-if="options.resultType == 'table'">
+                              <!-- =======================-->
+                              <!-- Table for cube query-->
+                              <table class="table table-sm" ng-if="result.mdx!='dimension'">
+                                 <thead>
+                                    <tr ng-repeat="row in result.table.headers">
+                                       <th ng-repeat="col in row.rows" ng-if="col.visible" colspan="{{col.colspan}}" rowspan="{{col.rowspan}}" class="text-left">
+                                          {{col.dimension}}
+                                       </th>
+                                       <th ng-repeat="col in row.columns" ng-if="col.visible" colspan="{{col.colspan}}" rowspan="{{col.rowspan}}" class="text-right">
+                                          {{col.name}}
+                                       </th>
+                                    </tr>
+                                 </thead>
+                                 <tbody>
+                                    <tr ng-repeat="row in result.table.rows | limitTo : maxRows">
+                                       <td ng-repeat="el in row.elements" class="text-left" style="margin-right:5px;">
+                                          </i>
+                                          {{el.name}}
+                                       </td>
+                                       <td ng-repeat="cell in row.cells" class="text-right">
+                                          <input ng-if="!cell.isReadOnly" type="text" class="form-control text-right" style="padding: 1px 5px;" ng-model="cell.value"
+                                             ng-blur="cell.update(query);" autocomplete="off"/>
+                                          <span ng-if="cell.isReadOnly">{{cell.value | num:2}}</span>
+                                       </td>
+                                    </tr>
+                                 </tbody>
+                              </table>
+                              <!-- =======================-->
+                              <!-- Table for dimension query-->
+                              <table class="table table-sm" ng-if="result.mdx=='dimension'">
+                                 <thead>
+                                    <th style="width: 50px;">Tuple</th>
+                                    <th>Id</th>
+                                    <th ng-repeat="member in result.table[0].Members track by $index">
+                                       Member{{$index+1}}
+                                    </th>
+                                 </thead>
+                                 <tbody >
+                                    <tr ng-repeat-start="tuple in result.table track by $index | limitTo : maxRows" style="border-bottom-width: 2px !important;">
+                                       <td><strong>{{$index+1}}</strong></td>
+                                       <td class="text-primary">Name</td>
+                                       <td class="text-primary" ng-repeat="member in tuple.Members">
+                                          {{member.Name}}
+                                       </td>
+                                    </tr>
+                                    <tr ng-if="options.showUniqueName">
+                                       <td></td>
+                                       <td >UniqueName</td>
+                                       <td ng-repeat="member in tuple.Members">
+                                          {{member.UniqueName}}
+                                        </td>
+                                    </tr>
+                                    <tr ng-repeat-end="" ng-if="options.showAttributes" ng-repeat="attributeName in tuple.attributeList">
+                                       <td ></td>
+                                       <td class="text-info">{{attributeName}}</td>
+                                       <td class="text-info" ng-repeat="member in tuple.Members">
+                                          {{member.Attributes[attributeName]}}
+                                       </td>
+                                    </tr>
+                                 </tbodyng-repeat-end="">
+                              </table>
+                           </div>
+                        </auto-height>
+                     </div>
+                  </div>
+               </uib-tab>
+               <uib-tab index="1">
+                  <uib-tab-heading >
+                     History <span
+                        ng-if="$root.uiPrefs.mdxHistory.length>0">({{$root.uiPrefs.mdxHistory.length}})</span>
+                  </uib-tab-heading>
                   <auto-height>
-                     <json-formatter ng-if="options.resultType == 'json-tree'" json="result.json" open="1"></json-formatter>
-                     <pre ng-if="options.resultType == 'json'" >{{result.json | json}}</pre>
-                     <pre ng-if="options.resultType == 'hjson'" >{{result.json | hjson}}</pre>
-                     <div ng-if="options.resultType == 'table'">
-                        <!-- =======================-->
-                        <!-- Table for cube query-->
-                        <table class="table table-sm" ng-if="result.mdx!='dimension'">
-                           <thead>
-                              <tr ng-repeat="row in result.table.headers">
-                                 <th ng-repeat="col in row.rows" ng-if="col.visible" colspan="{{col.colspan}}" rowspan="{{col.rowspan}}" class="text-left">
-                                    {{col.dimension}}
-                                 </th>
-                                 <th ng-repeat="col in row.columns" ng-if="col.visible" colspan="{{col.colspan}}" rowspan="{{col.rowspan}}" class="text-right">
-                                    {{col.name}}
-                                 </th>
-                              </tr>
-                           </thead>
-                           <tbody>
-                              <tr ng-repeat="row in result.table.rows | limitTo : maxRows">
-                                 <td ng-repeat="el in row.elements" class="text-left" style="margin-right:5px;">
-                                    </i>
-                                    {{el.name}}
-                                 </td>
-                                 <td ng-repeat="cell in row.cells" class="text-right">
-                                    <input ng-if="!cell.isReadOnly" type="text" class="form-control text-right" style="padding: 1px 5px;" ng-model="cell.value"
-                                       ng-blur="cell.update(query);" autocomplete="off"/>
-                                    <span ng-if="cell.isReadOnly">{{cell.value | num:2}}</span>
-                                 </td>
-                              </tr>
-                           </tbody>
-                        </table>
-                        <!-- =======================-->
-                        <!-- Table for dimension query-->
-                        <table class="table table-sm" ng-if="result.mdx=='dimension'">
-                           <thead>
-                              <th style="width: 50px;" translate="TUPLE"></th>
-                              <th translate="ID"></th>
-                              <th ng-repeat="member in result.table[0].Members track by $index">
-                                 Member{{$index+1}}
-                              </th>
-                           </thead>
-                           <tbody >
-                              <tr ng-repeat-start="tuple in result.table track by $index | limitTo : maxRows" style="border-bottom-width: 2px !important;">
-                                 <td><strong>{{$index+1}}</strong></td>
-                                 <td class="text-primary">Name</td>
-                                 <td class="text-primary" ng-repeat="member in tuple.Members">
-                                    {{member.Name}}
-                                 </td>
-                              </tr>
-                              <tr ng-if="options.showUniqueName">
-                                 <td></td>
-                                 <td translate="UNIQUENAME"></td>
-                                 <td ng-repeat="member in tuple.Members">
-                                    {{member.UniqueName}}
-                                  </td>
-                              </tr>
-                              <tr ng-repeat-end="" ng-if="options.showAttributes" ng-repeat="attributeName in tuple.attributeList">
-                                 <td ></td>
-                                 <td class="text-info">{{attributeName}}</td>
-                                 <td class="text-info" ng-repeat="member in tuple.Members">
-                                    {{member.Attributes[attributeName]}}
-                                 </td>
-                              </tr>
-                           </tbodyng-repeat-end="">
-                        </table>
+                        <span ng-if="$root.uiPrefs.mdxChecked.length>0">
+                              <i class="click fa" ng-class="{'fa-minus-square-o':$root.uiPrefs.showMDXChecked,'fa-plus-square-o':!$root.uiPrefs.showMDXChecked}" ng-click="$root.uiPrefs.showMDXChecked=!$root.uiPrefs.showMDXChecked"></i>
+                              Pinned ({{$root.uiPrefs.mdxChecked.length}})
+                           </span>
+                     <div ng-repeat="item in $root.uiPrefs.mdxChecked" ng-if="$root.uiPrefs.showMDXChecked"
+                     ng-class="{'func-active': indexTiFunctions === $index}">
+                     <div class="mt-1 mb-1 ml-2" style="white-space:nowrap;">
+                        <span ng-if="item.bookmark" ng-click="removeOneQueryFromChecked('mdxChecked',$index,item.uniqueID)">
+                           <i class="click fa fa-check-square text-info"
+                                          title="Move to the top"></i>
+                        </span>
+                        <span ng-click="moveOneQuery(item, $index, 'up')">
+                           <i class="click fa fa-chevron-circle-up text-info"
+                                          title="Remove from history"></i>
+                        </span>
+                        <span ng-click="moveOneQuery(item, $index, 'down')">
+                           <i class="click fa fa-chevron-circle-down text-info"
+                                          title="Remove from history"></i>
+                        </span>
+                        <span ng-if="item.queryStatus == 'success'" class="badge ml-1 badge-success"
+                        style="font-size:0.9em">
+                        {{item.responseTimeMs | num:0}} ms
+                     </span>
+                        <span>
+                           <label ng-if="item.name.length>0"
+                                          >{{item.name}}</label>
+                        </span>
+                     <span ng-if="item.message.length>0" class="badge ml-1 badge-warning"
+                        style="font-size:0.9em">
+                        {{item.message}}
+                     </span>
+                        <span ng-click="updateCurrentQuery(item)" class="click">{{item.mdx}}</span>
+                     </div>
+                  </div>
+                  <span ng-if="$root.uiPrefs.mdxHistory.length>0">
+                        <i class="click fa" ng-class="{'fa-minus-square-o':$root.uiPrefs.showMDXHistory,'fa-plus-square-o':!$root.uiPrefs.showMDXHistory}" ng-click="$root.uiPrefs.showMDXHistory=!$root.uiPrefs.showMDXHistory"></i>
+                        All ({{$root.uiPrefs.mdxHistory.length}})
+                        <a href="" ng-if="$root.uiPrefs.mdxHistory.length>0" title="{{'CLEAR' | translate}}"
+                           ng-click="clearMDXHistory()" ng-disabled="!$root.uiPrefs.mdxHistory.length">
+                           <i class="fa fa-fw fa-trash text-danger"></i>
+                        </a>
+                     </span>
+                     <div ng-repeat="item in $root.uiPrefs.mdxHistory" ng-if="$root.uiPrefs.showMDXHistory"
+                        ng-class="{'func-active': indexTiFunctions === $index}">
+                        <div class="click mt-1 mb-1 ml-2" ng-click="updateCurrentQuery(item)" style="white-space:nowrap;">
+                           <span ng-click="removeOneQuery(item, $index)">
+                              <i class="fa fa-fw fa-trash text-danger"
+                                             title="Remove from history"></i>
+                           </span>
+                           <span ng-if="!item.bookmark" ng-click="moveOneQuery(item, $index, 'top')">
+                              <i class="fa fa-square-o text-info"
+                                             title="Move to the top"></i>
+                           </span>
+                           <span ng-if="item.bookmark" ng-click="removeOneQueryFromChecked('mdxHistory',$index,item.uniqueID)">
+                              <i class="fa fa-check-square text-info"
+                                             title="Remove from checked list"></i>
+                           </span>
+                           <span ng-if="item.queryStatus == 'success'" class="badge ml-1 badge-success"
+                           style="font-size:0.9em">
+                           {{item.responseTimeMs | num:0}} ms
+                        </span>
+                           <span>
+                              <label ng-if="item.name.length>0"
+                                             >{{item.name}}</label>
+                           </span>
+                        <span ng-if="item.message.length>0" class="badge ml-1 badge-warning"
+                           style="font-size:0.9em">
+                           {{item.message}}
+                        </span>
+                           <span>{{item.mdx}}</span>
+                        </div>
                      </div>
                   </auto-height>
-               </div>
-            </div>
-         </uib-tab>
-         <uib-tab index="1">
-            <uib-tab-heading >
-               <span translate="HISTORY"></span> <span ng-if="$root.uiPrefs.mdxHistory.length>0">({{$root.uiPrefs.mdxHistory.length}})</span>
-            </uib-tab-heading>
-            <auto-height>
-                  <span ng-if="$root.uiPrefs.mdxChecked.length>0">
-                        <i class="click fa" ng-class="{'fa-minus-square-o':$root.uiPrefs.showMDXChecked,'fa-plus-square-o':!$root.uiPrefs.showMDXChecked}" ng-click="$root.uiPrefs.showMDXChecked=!$root.uiPrefs.showMDXChecked"></i>
-                        <span translate="PINNED"></span> ({{$root.uiPrefs.mdxChecked.length}})
-                     </span>
-               <div ng-repeat="item in $root.uiPrefs.mdxChecked" ng-if="$root.uiPrefs.showMDXChecked"
-               ng-class="{'func-active': indexTiFunctions === $index}">
-               <div class="mt-1 mb-1 ml-2" style="white-space:nowrap;">
-                  <span ng-if="item.bookmark" ng-click="removeOneQueryFromChecked('mdxChecked',$index,item.uniqueID)">
-                     <i class="click fa fa-check-square text-info"
-                                    title="{{'UNPIN' | translate}}"></i>
-                  </span>
-                  <span ng-click="moveOneQuery(item, $index, 'up')">
-                     <i class="click fa fa-chevron-circle-up text-info"
-                                    title="{{'MOVEUP' | translate}}"></i>
-                  </span>
-                  <span ng-click="moveOneQuery(item, $index, 'down')">
-                     <i class="click fa fa-chevron-circle-down text-info"
-                                    title="{{'MOVEDOWN' | translate}}"></i>
-                  </span>
-                  <span ng-if="item.queryStatus == 'success'" class="badge ml-1 badge-success"
-                  style="font-size:0.9em">
-                  {{item.responseTimeMs | num:0}} ms
-               </span>
-                  <span>
-                     <label ng-if="item.name.length>0"
-                                    >{{item.name}}</label>
-                  </span>
-               <span ng-if="item.message.length>0" class="badge ml-1 badge-warning"
-                  style="font-size:0.9em">
-                  {{item.message}}
-               </span>
-                  <span ng-click="updateCurrentQuery(item)" class="click">{{item.mdx}}</span>
-               </div>
-            </div>
-            <span ng-if="$root.uiPrefs.mdxHistory.length>0">
-                  <i class="click fa" ng-class="{'fa-minus-square-o':$root.uiPrefs.showMDXHistory,'fa-plus-square-o':!$root.uiPrefs.showMDXHistory}" ng-click="$root.uiPrefs.showMDXHistory=!$root.uiPrefs.showMDXHistory"></i>
-                  <span translate="ALL"></span> ({{$root.uiPrefs.mdxHistory.length}})
-                  <a href="" ng-if="$root.uiPrefs.mdxHistory.length>0" title="{{'REMOVEALL' | translate}}"
-                     ng-click="clearMDXHistory()" ng-disabled="!$root.uiPrefs.mdxHistory.length">
-                     <i class="fa fa-fw fa-trash text-delete"></i>
-                  </a>
-               </span>
-               <div ng-repeat="item in $root.uiPrefs.mdxHistory" ng-if="$root.uiPrefs.showMDXHistory"
-                  ng-class="{'func-active': indexTiFunctions === $index}">
-                  <div class="click mt-1 mb-1 ml-2" ng-click="updateCurrentQuery(item)" style="white-space:nowrap;">
-                     <span ng-click="removeOneQuery(item, $index)">
-                        <i class="fa fa-fw fa-trash text-delete"
-                                       title="{{'REMOVE' | translate}}"></i>
-                     </span>
-                     <span ng-if="!item.bookmark" ng-click="moveOneQuery(item, $index, 'top')">
-                        <i class="fa fa-square-o text-info"
-                                       title="{{'PIN' | translate}}"></i>
-                     </span>
-                     <span ng-if="item.bookmark" ng-click="removeOneQueryFromChecked('mdxHistory',$index,item.uniqueID)">
-                        <i class="fa fa-check-square text-info"
-                                       title="{{'UNPIN' | translate}}"></i>
-                     </span>
-                     <span ng-if="item.queryStatus == 'success'" class="badge ml-1 badge-success"
-                     style="font-size:0.9em">
-                     {{item.responseTimeMs | num:0}} ms
-                  </span>
-                     <span>
-                        <label ng-if="item.name.length>0"
-                                       >{{item.name}}</label>
-                     </span>
-                  <span ng-if="item.message.length>0" class="badge ml-1 badge-warning"
-                     style="font-size:0.9em">
-                     {{item.message}}
-                  </span>
-                     <span>{{item.mdx}}</span>
-                  </div>
-               </div>
-            </auto-height>
-         </uib-tab>
-      </uib-tabset>
+               </uib-tab>
+            </uib-tabset>
+         </div>
+      </div>
+
    </div>
 
 </div>
