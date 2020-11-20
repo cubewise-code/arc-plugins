@@ -161,12 +161,12 @@ arc.directive("cubewiseMdx", function () {
             $scope.options.message = null;
             var sendDate = (new Date()).getTime();
 
-            // Check for mdx expression, otherwise dealing with set expression
-            $scope.options.queryType = "ExecuteMDXSetExpression";
-            var pattern = new RegExp("SELECT", "gmi");
-            var containsSelect = pattern.exec($scope.options.mdx);
-            if(!_.isEmpty(containsSelect)){
-               $scope.options.queryType = "ExecuteMDX";
+            // Check for mdx set expression, otherwise dealing with mdx expression
+            $scope.options.queryType = "ExecuteMDX";
+            var pattern = new RegExp(/^\s*({)/, "g");
+            var startsWithCurlyBracket = pattern.exec($scope.options.mdx);
+            if(!_.isEmpty(startsWithCurlyBracket)){
+               $scope.options.queryType = "ExecuteMDXSetExpression";
             }
 
             var url = "/" + $scope.options.queryType;
