@@ -45,8 +45,7 @@
                   </button>
                </span>
             </div>
-            <pre ui-ace="{ onLoad : editorLoaded }" ng-model="options.mdx" ng-style="{'max-height': $root.uiPrefs.mdxSplitter}" auto-height auto-height-options="{noScroll: true, watchTab: true}"></pre>
-            <div ng-bind-html="mdx.mdx" style="overflow-y: auto;"></div>
+            <pre ui-ace="{ onLoad : editorLoaded }" ng-model="options.mdx" style="overflow-y: auto;" ng-style="{'max-height': $root.uiPrefs.mdxSplitter}" auto-height auto-height-options="{noScroll: true, watchTab: true}"></pre>
             <div class="horizontal-splitter" ng-mousedown="splitDown($event)"></div>
             <uib-tabset active="currentTabIndex">
                <uib-tab index="0">
