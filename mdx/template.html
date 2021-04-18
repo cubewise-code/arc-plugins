@@ -59,8 +59,7 @@
             <uib-tabset active="mdx.activeTabIndex">
                <uib-tab index="0" ng-click="tabSelected()">
                   <uib-tab-heading>
-                     Result <span class="badge badge-info badge-pill" ng-if="result.rows.length>0">{{result.rows.length}}</span></uib-tab-heading>
-                    
+                     Result
                   </uib-tab-heading>
                   <div class="row">
                      <div class="col-md-12 text-center">
@@ -84,29 +83,29 @@
                         </span>
                         <div class="pull-right">
                            <span>
-                              <input type="radio" ng-model="options.resultType" value="table" />
+                              <input type="radio" ng-model="options.resultType" value="table" ng-click="refreshTable()"/>
                               <span>Table</span>
                            </span>
                            <span>
-                              <input type="radio" ng-model="options.resultType" value="json-tree" />
+                              <input type="radio" ng-model="options.resultType" value="json-tree"/>
                               <span>JSON Tree</span>
                            </span>
                            <span>
-                              <input type="radio" ng-model="options.resultType" value="json" />
+                              <input type="radio" ng-model="options.resultType" value="json"/>
                               <span>JSON</span>
                            </span>
                            <span>
-                              <input type="radio" ng-model="options.resultType" value="hjson" />
+                              <input type="radio" ng-model="options.resultType" value="hjson"/>
                               <span>HJSON</span>
                            </span>
                         </div>
                         <div ng-if="options.queryType=='ExecuteMDXSetExpression'" class="pull-right">
-                           <a href class="click" ng-click="options.showUniqueName = !options.showUniqueName;execute()">
+                           <a href class="click" ng-click="options.showUniqueName = !options.showUniqueName;prepareResultForHandsOneTable()">
                               <i class="fa fa-toggle-on" ng-if="options.showUniqueName"></i>
                               <i class="fa fa-toggle-off" ng-if="!options.showUniqueName"></i>
                               <span translate=""> UniqueName </span>
                            </a>
-                           <a href class="click" ng-click="options.showAttributes = !options.showAttributes;execute()">
+                           <a href class="click" ng-click="options.showAttributes = !options.showAttributes;prepareResultForHandsOneTable()">
                               <i class="fa fa-toggle-on" ng-if="options.showAttributes"></i>
                               <i class="fa fa-toggle-off" ng-if="!options.showAttributes"></i>
                               <span class="text-info" translate="Attributes"> </span>
@@ -115,18 +114,6 @@
                         </div>
                      </div>
                      <div class="card-body" style="padding: 5px 0px 0px 5px;" ng-if="!options.message">
-                        <div class="mb-2 mr-2 ml-1" ng-if="options.resultType == 'table'">
-                           <div class="input-group">
-                              <input class="form-control" ng-model="selections.findText"
-                                 placeholder="{{'FIND' | translate}}" ng-keyup="find()" spellcheck="false"></input>
-                              <span class="input-group-append">
-                                 <button class="btn btn-secondary" title="{{'FIND' | translate}}"
-                                    ng-disabled="!selections.findText" ng-click="find()">
-                                    <i class="fa fa-search"></i>
-                                 </button>
-                              </span>
-                           </div>
-                        </div>
                         <div class="text-center">
                            <h2>
                               <i ng-if="!resultRefreshed" class="fa fa-refresh fa-spin"></i>
@@ -147,13 +134,12 @@
                               <pre>{{result.json | hjson}}</pre>
                            </auto-height>
                         </div>
-                        <div ng-if="options.resultType == 'table'">
-                           <auto-height>
-                              <hot-grid ng-if="resultRefreshed" dataset="result" drill="expandOrCollapse(axis, item)"
-                                 refresh="execute({clear: false, inBackground: true})" complete="complete()"
-                                 cells-selected="cellsSelected(headers, cells)"
-                                 context-menu-clicked="contextMenuClicked($event, type, item, location)" api="hotGrid">
-                              </hot-grid>
+                        <div ng-if="options.resultType == 'table'">                           
+                           <auto-height ng-if="!odbcError && options.queryType=='ExecuteMDXSetExpression'">                                 
+                              <div id="{{id}}-tableInstance" class="hot-grid process-editor-grid"></div>
+                           </auto-height> 
+                           <auto-height ng-if="options.queryType!='ExecuteMDXSetExpression'">
+                              <hot-grid dataset="result" api="hotGrid"></hot-grid>    
                            </auto-height>
                         </div>
                      </div>

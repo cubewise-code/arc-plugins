@@ -23,9 +23,17 @@ arc.directive("cubewiseMdx", function () {
       link: function ($scope, element, attrs) {
 
       },
-      controller: ["$scope", "$rootScope", "$http", "$tm1", "$translate", "$timeout", "$q", "$document",
-         function ($scope, $rootScope, $http, $tm1, $translate, $timeout, $q, $document) {
+      controller: ["$scope", "$rootScope", "$http", "$tm1", "$translate", "$timeout", "$q", "$document", "uuid2",
+         function ($scope, $rootScope, $http, $tm1, $translate, $timeout, $q, $document, uuid2) {
 
+         var _hotTable = null;
+         var _hotTableSettings = {};
+         var _cells = [];
+         var _colHeaders = [];
+         var _columns = null;
+   
+         $scope.id = uuid2.newuuid();
+            
          // Store the active tab index
          $scope.selections = {
             activeTab: 0,
@@ -46,16 +54,16 @@ arc.directive("cubewiseMdx", function () {
 
          $scope.clearMDXHistory = function () {
             $rootScope.uiPrefs.mdxHistory = [];
-         }
+         };
 
          $scope.clearMDXChecked = function () {
             $rootScope.uiPrefs.mdxChecked = [];
-         }
+         };
 
          $scope.clearAllHistory = function () {
             $scope.clearMDXHistory();
             $scope.clearMDXChecked();         
-         }
+         };
 
          if (!$rootScope.uiPrefs.mdxHistory || $rootScope.uiPrefs.mdxHistory.length === 0) {
             $scope.clearMDXHistory();
@@ -82,8 +90,7 @@ arc.directive("cubewiseMdx", function () {
 
          if(!$rootScope.uiPrefs.maxRows){
             $rootScope.uiPrefs.maxRows = 1000;
-         }
-         
+         };
 
          $scope.lists = {
             ExecuteMDX: [
@@ -111,8 +118,6 @@ arc.directive("cubewiseMdx", function () {
             $document.on('mouseup', $scope.splitUp);
          };
 
-         
-   
          $scope.splitMove = function (e) {
             if ($scope.splitClicked) {
                var height = e.clientY - $scope.mdxTop;
@@ -138,11 +143,6 @@ arc.directive("cubewiseMdx", function () {
             $scope.tabs.splice(index, 1);
          };
 
-         $scope.tabSelected = function () {
-            // This is required to resize the MDX panel after clicking on a tab
-            //$scope.$broadcast("auto-height-resize");
-         };
-
          $scope.toggleQuery = function (tab) {
             // Show and hide the query tab
             hideQuery = !hideQuery;
@@ -157,7 +157,7 @@ arc.directive("cubewiseMdx", function () {
             _editor.$blockScrolling = Infinity;
             _editor.setFontSize($rootScope.uiPrefs.fontSize);
             _editor.setShowPrintMargin(false);
-                _editor.getSession().setUseWrapMode($rootScope.uiPrefs.editorWrapLongLines);
+            _editor.getSession().setUseWrapMode($rootScope.uiPrefs.editorWrapLongLines);
          };
 
          $scope.find = _.debounce(function(){
@@ -171,18 +171,12 @@ arc.directive("cubewiseMdx", function () {
          };
 
          $scope.tabSelected = function(){
-            $scope.$broadcast("auto-height-resize");
-         };
-
-         var updateHeights = function(){
-            $scope.$broadcast("height-matcher-resize");
-            $scope.$broadcast("auto-height-resize");
+            updateHeights();
          };
 
          $scope.resultRefreshed = true;
          $scope.hotGrid = {};
          $scope.execute = function (options) {
-            $scope.mdx.activeTabIndex = 0;
             $scope.resultRefreshed = false;
             $scope.options.message = null;
             var sendDate = (new Date()).getTime();
@@ -207,7 +201,6 @@ arc.directive("cubewiseMdx", function () {
                      $scope.options.queryStatus = 'failed';
                   }
                } else {
-                  $scope.mdx.activeTabIndex = 0;
                   $scope.options.queryStatus = 'success';
                   $scope.options.message = null;
                   // Success
@@ -219,56 +212,21 @@ arc.directive("cubewiseMdx", function () {
                      $scope.result = $tm1.resultsetTransform($scope.instance, cube, success.data);
                      $scope.result.mdx = 'cube';
                      $scope.result.json = success.data;
-                     $scope.result.reload = true;
-                     $scope.hotGrid.loading();
-                     updateHeights();
+                     $scope.result.reload = true; 
+                     $timeout(function () {
+                        $scope.mdx.activeTabIndex = 0;
+                        updateHeights();
+                     });
                   } else {
                      // Get attributes for each member
-                     var table = _.cloneDeep(success.data.Tuples);
-                     //GET ALL ATTRIBUTES NAME
-                     $scope.allAttributes = [];
-                     if($scope.options.showAttributes){
-                        _.each(table, function(tuple){
-                           _.each(tuple.Members, function(member){
-                              var attr = _.clone(member.Attributes);
-                              //ignore captions
-                              delete attr.Caption; 
-                              delete attr.Caption_Default
-                              memberAttributes = _.keys(attr);
-                              _.each(memberAttributes, function(a){
-                                 if($scope.allAttributes.indexOf(a)==-1){
-                                    $scope.allAttributes.push(a);
-                                 }
-                              });
-                           });
-                        });
-                     }
-                     //CREATE TUPLE
-                     _.each(table, function(tuple){
-                        tuple.attributeList = [];
-                        _.each(tuple.Members, function(member){
-                           member.allAttributes = [];
-                           var attr = _.clone(member.Attributes);
-                           //ignore captions
-                           delete attr.Caption; 
-                           delete attr.Caption_Default
-                           memberAttributes = _.keys(attr);
-                           _.each($scope.allAttributes, function(a){
-                              member.allAttributes.push(member.Attributes[a]);
-                           });
-
-                        });
-
-                     });
-                     
+                     var table = _.cloneDeep(success.data.Tuples);                     
                      $scope.result = {
                         mdx: 'dimension',
                         json: _.cloneDeep(success.data),
                         dimension: success.data.Hierarchies[0].Name,
-                        table: table,
-                     };
-                     $scope.resultTransformForHandsOnTable();
-
+                        table: table
+                     };                     
+                     $scope.prepareResultForHandsOneTable();
                   }
                   var receiveDate = (new Date()).getTime();
                   $scope.options.responseTimeMs = receiveDate - sendDate;
@@ -286,146 +244,212 @@ arc.directive("cubewiseMdx", function () {
                $rootScope.uiPrefs.mdxHistory.splice(0, 0, newQuery);
             });
             // If more than 10 remove the last one
-               if($rootScope.uiPrefs.mdxHistory.length>99){
-                  $rootScope.uiPrefs.mdxHistory.splice($rootScope.uiPrefs.mdxHistory.length-1, 1);
-               }
+            if($rootScope.uiPrefs.mdxHistory.length>99){
+               $rootScope.uiPrefs.mdxHistory.splice($rootScope.uiPrefs.mdxHistory.length-1, 1);
+            }
          };
 
-         $scope.resultTransformForHandsOnTable = function(){
-            // Define headers
-            $scope.result.headers = [];
-            $scope.result.dimensions = {rows:[]};
-            var i=0;
-            $scope.result.headers[0] = {columns:[],rows:[]};
-            $scope.result.headers[0].rows[0] = {
-               colspan: 1,
-               dimension: $scope.result.dimension,
-               rowspan: 1,
-               visible: true
+         $scope.refreshTable = function(){
+            if ($scope.options.queryType == "ExecuteMDX") {
+               updateHeights(); 
+            } else {
+               $scope.prepareResultForHandsOneTable();
             };
-            if($scope.options.showUniqueName){
-               key = "UniqueName";
-               $scope.result.headers[0].columns[i] = {
-                  alias: key, 
-                  colspan: 1,
-                  dataset: $scope.result,
-                  dimension:"",
-                  element:{alias: key, 
-                           name: key, 
-                           key: key, 
-                           topLevel:0}, 
-                  hierarchy:"",
-                  index:0, 
-                  key: key,
-                  name: key,  
-                  rowspan: 1,  
-                  visible: true,
+         };
+         
+         $scope.prepareResultForHandsOneTable = function(){
+            var columns = [];
+            var rows = [];
+            $scope.result.titles = [];
+            titlesName = [];
+            titlesValues = [];
+            var data = $scope.result.json;
+            if ($scope.options.queryType == "ExecuteMDX") {
+               // Get the elements from the titles
+               if (data.Axes.length > 2) {
+                  _.each(data.Axes[2].Hierarchies, function (h) {
+                     titlesName.push(h.Name);
+                  });
+                  _.each(data.Axes[2].Tuples[0].Members, function (m) {
+                     titlesValues.push(m.Name);
+                  });
+                  _.each(titlesName, function (name, key) {
+                     title = {Name: name, value: titlesValues[key] };
+                     $scope.result.titles.push(title);
+                  });
                };
-               i++;
-            }
-            var attrHeaders = _.clone($scope.allAttributes);
-            _.each(attrHeaders, function(key){
-               $scope.result.headers[0].columns[i] = {
-                  alias: key, 
-                  colspan: 1,
-                  dataset: $scope.result,
-                  dimension:"",
-                  element:{alias: key, 
-                           name: key, 
-                           key: key, 
-                           topLevel:0}, 
-                  hierarchy:"",
-                  index:0, 
-                  key: key,
-                  name: key,  
-                  rowspan: 1,  
-                  visible: true,
+               _.each(data.Axes[1].Hierarchies, function (h) {
+                  columns.push(h.Name);
+                });
+                 // Get the elements from the columns
+                 _.each(data.Axes[0].Tuples[0].Members, function (m) {
+                  columns.push(m.Name);
+                });
+               // Rows
+               var rowNo = 0;
+               var colNo = 0;
+               _.each(data.Cells, function (c, i) {
+                 var row = [];
+                 // Get the elements from the rows
+                 _.each(data.Axes[1].Tuples[rowNo].Members, function (m) {
+                   row.push(m.Name);
+                 });
+                 if (colNo < data.Axes[0].Tuples.length - 1) {
+                   colNo++;
+                 } else {
+                   colNo = 0;
+                   rowNo++;
+                 };
+                 row.push(c.Value);
+                 rows.push(row);
+               }); 
+            } else {
+               // DIMENSIONS
+               var dimensionName = data.Hierarchies[0].Name;
+               columns.push(dimensionName);
+               if($scope.options.showUniqueName){
+                  columns.push('UniqueName');
                };
-               i++;
-            });
-            // Update rows
-            $scope.result.rows = [];
-            _.each($scope.result.table, function(tuple){
-               tuple.attributeList = [];
-               _.each(tuple.Members, function(member){
-                  // Define element
-                  var row = {elements:[], cells:[]};
-                  row.elements[0] = {
-                     alias: member.Name, 
-                     colspan: 1,
-                     dataset: $scope.result,
-                     dimension:"",
-                     element:{alias: member.Name, 
-                              name: member.Name, 
-                              key: member.UniqueName, 
-                              topLevel:0}, 
-                     hierarchy:"",
-                     index:0, 
-                     key: member.UniqueName,
-                     name: member.Name,  
-                     rowspan: 1,  
-                     visible: true,
-                  };
-                  var attr = _.clone(member.allAttributes);
-                  // Define cells
-                  var i=1;
-                  if($scope.options.showUniqueName){
-                     val = member.UniqueName;
-                     var element = {alias: member.Name, 
-                        name: member.Name, 
-                        key: member.UniqueName, 
-                        topLevel:0};
-                     var cell = {
-                        FormatString: "",
-                        HasPicklist: undefined,
-                        Updateable: 290,
-                        dataset: $scope.result,
-                        elements: element,
-                        isBaseValueDifferentInSandbox: false,
-                        isConsolidated: false,
-                        isNumeric: true,
-                        isReadOnly: false,
-                        isRuleDerived: false,
-                        key: i,
-                        lastValue: val,
-                        reference: {},
-                        row: row,
-                        sandbox: "",
-                        status: "Data",
-                        value:val};
-                     row.cells.push(cell);
-                     row[i] = cell;
-                     i++;
-                  }
-                  _.each(attr, function(val){
-                     var cell = {
-                        FormatString: "",
-                        HasPicklist: undefined,
-                        Updateable: 290,
-                        dataset: $scope.result,
-                        elements: element,
-                        isBaseValueDifferentInSandbox: false,
-                        isConsolidated: false,
-                        isNumeric: true,
-                        isReadOnly: false,
-                        isRuleDerived: false,
-                        key: i,
-                        lastValue: val,
-                        reference: {},
-                        row: row,
-                        sandbox: "",
-                        status: "Data",
-                        value:val}
-                     row.cells.push(cell);
-                     row[i] = cell;
-                     i++;
-                  });                  
-                  $scope.result.rows.push(row);
+               $scope.allAttributes = [];
+               if($scope.options.showAttributes){
+                  _.each(data.Tuples, function(tuple){
+                     _.each(tuple.Members, function(member){
+                        var attr = _.clone(member.Attributes);
+                        //ignore captions
+                        delete attr.Caption; 
+                        delete attr.Caption_Default;
+                        memberAttributes = _.keys(attr);
+                        _.each(memberAttributes, function(a){
+                           if($scope.allAttributes.indexOf(a)==-1){
+                              $scope.allAttributes.push(a);
+                              columns.push(a);
+                           }
+                        });
+                     });
+                  });
+               };
+               //CREATE TUPLE
+               _.each(data.Tuples, function(tuple){
+                  tuple.attributeList = [];
+                  var values = [];
+                  _.each(tuple.Members, function(member){
+                     member.allAttributes = [];
+                     values.push(member.Name);
+                     if($scope.options.showUniqueName){
+                        values.push(member.UniqueName);
+                     }
+                     var attr = _.clone(member.Attributes);
+                     //ignore captions
+                     delete attr.Caption; 
+                     delete attr.Caption_Default;
+                     memberAttributes = _.keys(attr);
+                     _.each($scope.allAttributes, function(a){
+                        member.allAttributes.push(member.Attributes[a]);
+                        values.push(member.Attributes[a]);
+                     });
+                     rows.push(values);
+                  });
+               });
+            };
+            populateGridProcess(columns, rows);
+           };
+   
+         var populateGridProcess = function(headers, rows){
+            _colHeaders = [];
+            _columns = [];   
+            _.each(headers, function (header) {
+               _colHeaders.push(header);
+               _columns.push({type: "text", readOnly: true});
+            });            
+            // Select elements
+            _cells = [];
+            _.each(rows, function(values, r){
+               var row = [];
+               _cells.push(row);
+               _.each(values, function (val,i) {
+                  row.push(val);
                });
             });
-            $scope.mdx.activeTabIndex = 0;
-            $scope.resultRefreshed = true;
-            updateHeights();
+            reCreateHotTableProcess();
+            $timeout(function () {
+               $scope.mdx.activeTabIndex = 0;
+               updateHeights();
+            });
+         };
+
+         var reCreateHotTableProcess = function(){
+            var container = document.getElementById($scope.id + "-tableInstance");
+            if(_hotTable){
+               _hotTable.destroy();
+               _hotTable = null;
+            }
+            _hotTableSettings = {
+               autoColumnSize: { useHeaders: true },
+               autoRowSize: true,
+               autoWrapRow: true,
+               comments: true,
+               undo: true,
+               licenseKey: 'ffb54-f28fd-47ca3-54043-b6633',
+               manualColumnResize: true,
+               multiColumnSorting: true,
+               persistentState: false,
+               manualRowMove: true,
+               viewportColumnRenderingOffset: 10,
+               viewportRowRenderingOffset: 10,
+               outsideClickDeselects: false,
+               fixedColumnsLeft: 1,
+               colHeaders: _colHeaders,
+               columns: _columns,
+               data: _cells,
+               rowHeaders: function(index) {
+                  if(!_hotTable){
+                     return index + 1;
+                  }
+                  var r = _hotTable.toPhysicalRow(index);
+                  return index + 1;
+               },
+               beforeKeyDown: function(e){
+                  // Prevent Handsontable from stealing input from dialog
+                  if($(e.target).hasClass("form-control") || $(e.target.parentElement).hasClass("modal-footer")){
+                     e.stopImmediatePropagation();
+                  } else if (e.altKey && e.keyCode == 37) {
+                     e.stopImmediatePropagation();
+                     $rootScope.goBack();
+                  } else if (e.altKey && e.keyCode == 39) {
+                     e.stopImmediatePropagation();
+                     $rootScope.goForward();
+                  }
+               },
+               afterDeselect: function(){
+                  
+               },
+               beforePaste: function(data, coords){
+               },
+               beforeCopy: function(data, coords){
+              
+               },
+               beforeCut: function(data, coords){
+               },
+               afterSelectionEnd: function(row, col, row2, col2, selectionLayerLevel){
+   
+               },
+               afterOnCellContextMenu: function($event, coords){
+                  //contextMenu($event, coords);
+               },
+               beforeRowMove: function(rows, target){
+               }
+            };   
+            _hotTable = new Handsontable(container, _hotTableSettings);
+         };
+
+         var updateHeights = function(){
+            setTimeout(function () {
+               if(_hotTable){
+                  _hotTable.render();
+               };
+            }, 500);
+            $scope.$broadcast("height-matcher-resize");
+            $scope.$broadcast("auto-height-resize");
          };
 
          $scope.removeOneQuery = function(queryToBeRemoved,index){
@@ -433,9 +457,9 @@ arc.directive("cubewiseMdx", function () {
             _.each($rootScope.uiPrefs.mdxChecked, function (query, key) {
                if(query.uniqueID == queryToBeRemoved.uniqueID){
                   $rootScope.uiPrefs.mdxChecked.splice(key, 1);
-               }
+               };
             });
-         }
+         };
 
          $scope.removeOneQueryFromChecked = function(list, index, uniqueID){
             if(list == 'mdxChecked'){
@@ -454,8 +478,8 @@ arc.directive("cubewiseMdx", function () {
                      $rootScope.uiPrefs.mdxChecked.splice(key, 1);
                   }
                });
-            }
-         }
+            };
+         };
 
          $scope.moveOneQuery = function(query, index, move){
             if(move == 'top'){
@@ -467,16 +491,16 @@ arc.directive("cubewiseMdx", function () {
                   $rootScope.uiPrefs.mdxChecked.push(query); 
                } else {
                $rootScope.uiPrefs.mdxChecked.splice(index-1, 0, query); 
-               }
+               };
             } else {
                $rootScope.uiPrefs.mdxChecked.splice(index, 1); 
                if(index == $rootScope.uiPrefs.mdxChecked.length){
                $rootScope.uiPrefs.mdxChecked.splice(0, 0, query);  
                } else {
                   $rootScope.uiPrefs.mdxChecked.splice(index+1, 0, query);    
-               }             
-            }
-         }
+               }; 
+            };
+         };
 
          $scope.indexTiFunctions = $rootScope.uiPrefs.mdxHistory.length - 1;
 
@@ -485,8 +509,7 @@ arc.directive("cubewiseMdx", function () {
             $scope.options.message = item.message;
             $scope.options.name = item.name;
             $scope.options.queryType = item.queryType;
-
-         }
+         };
 
          $scope.updateindexTiFunctions = function (string) {
             if (string == "reset") {
@@ -505,11 +528,10 @@ arc.directive("cubewiseMdx", function () {
                } else {
                   $scope.indexTiFunctions = newindex;
                }
-            }
+            };
          };
 
          $scope.$on("login-reload", function (event, args) {
-
          });
 
          $scope.$on("close-tab", function (event, args) {
@@ -521,9 +543,7 @@ arc.directive("cubewiseMdx", function () {
          });
 
          $scope.$on("$destroy", function (event) {
-
          });
-
 
       }]
    };
