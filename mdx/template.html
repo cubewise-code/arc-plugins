@@ -174,11 +174,15 @@
                               style="font-size:0.9em">
                               {{item.responseTimeMs | num:0}} ms
                            </span>
-                           <span>
-                              <label ng-if="item.name.length>0">{{item.name}}</label>
-                           </span>
                            <span ng-if="item.message.length>0" class="badge ml-1 badge-warning" style="font-size:0.9em">
                               {{item.message}}
+                           </span>   
+                           <span>
+                              <label ng-if="item.name.length>0">{{item.name}}</label>
+                           </span>                                                 
+                           <span>
+                              <i class="fa dimensions" ng-if="item.queryType=='ExecuteMDXSetExpression'" title="ExecuteMDXSetExpression"></i>
+                              <i class="fa cubes" ng-if="item.queryType!='ExecuteMDXSetExpression'" title="ExecuteMDX"></i>
                            </span>
                            <span ng-click="updateCurrentQuery(item)" class="click">{{item.mdx}}</span>
                         </div>
@@ -210,12 +214,16 @@
                            <span ng-if="item.queryStatus == 'success'" class="badge ml-1 badge-success"
                               style="font-size:0.9em">
                               {{item.responseTimeMs | num:0}} ms
+                           </span>                             
+                           <span ng-if="item.message.length>0" class="badge ml-1 badge-warning" style="font-size:0.9em">
+                              {{item.message}}
+                           </span>                         
+                           <span>
+                              <i class="fa dimensions" ng-if="item.queryType=='ExecuteMDXSetExpression'" title="ExecuteMDXSetExpression"></i>
+                              <i class="fa cubes" ng-if="item.queryType!='ExecuteMDXSetExpression'" title="ExecuteMDX"></i>
                            </span>
                            <span>
                               <label ng-if="item.name.length>0">{{item.name}}</label>
-                           </span>
-                           <span ng-if="item.message.length>0" class="badge ml-1 badge-warning" style="font-size:0.9em">
-                              {{item.message}}
                            </span>
                            <span>{{item.mdx}}</span>
                         </div>

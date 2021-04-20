@@ -183,7 +183,8 @@ arc.directive("cubewiseMdx", function () {
             //If dimension execute
             var n = $scope.options.mdx.indexOf("WHERE");
             if ($scope.options.queryType == "ExecuteMDX") {
-               var args = "$expand=Axes($expand=Hierarchies($select=Name;$expand=Dimension($select=Name)),Tuples($top="+$rootScope.uiPrefs.maxRows+";$expand=Members($select=Name,UniqueName,Ordinal,Attributes))),Cells($select=Ordinal,Status,Value,FormatString,FormattedValue,Updateable,RuleDerived,Annotated,Consolidated,Language,HasDrillthrough)"
+               // maxRows applied in the resultOption of the handsontable (required for nested columns)
+               var args = "$expand=Axes($expand=Hierarchies($select=Name;$expand=Dimension($select=Name)),Tuples($expand=Members($select=Name,UniqueName,Ordinal,Attributes))),Cells($select=Ordinal,Status,Value,FormatString,FormattedValue,Updateable,RuleDerived,Annotated,Consolidated,Language,HasDrillthrough)"
             } else {
                var args = "$expand=Hierarchies($select=Name;$expand=Dimension($select=Name)),Tuples($top="+$rootScope.uiPrefs.maxRows+";$expand=Members($select=Name,UniqueName,Ordinal,Attributes))";
             }
@@ -209,7 +210,11 @@ arc.directive("cubewiseMdx", function () {
                      var regex = /FROM\s*\[(.*)\]/g;
                      var match = regex.exec($scope.options.mdx);
                      var cube = match[1];
-                     $scope.result = $tm1.resultsetTransform($scope.instance, cube, success.data);
+                     var resultOptions = {
+                        maxRows: $rootScope.uiPrefs.maxRows
+                     };
+                     $scope.result = $tm1.resultsetTransform($scope.instance, cube, success.data, resultOptions);
+                     console.log($scope.result);
                      $scope.result.mdx = 'cube';
                      $scope.result.json = success.data;
                      $scope.result.reload = true; 
