@@ -214,7 +214,6 @@ arc.directive("cubewiseMdx", function () {
                         maxRows: $rootScope.uiPrefs.maxRows
                      };
                      $scope.result = $tm1.resultsetTransform($scope.instance, cube, success.data, resultOptions);
-                     console.log($scope.result);
                      $scope.result.mdx = 'cube';
                      $scope.result.json = success.data;
                      $scope.result.reload = true; 
@@ -548,6 +547,9 @@ arc.directive("cubewiseMdx", function () {
          });
 
          $scope.$on("$destroy", function (event) {
+            if(_hotTable){
+               _hotTable.destroy();
+            };
          });
 
       }]
