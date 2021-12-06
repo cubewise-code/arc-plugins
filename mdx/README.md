@@ -1,7 +1,7 @@
 # Plugin to run MDX queries
 This plugin can be used to run MDX and Set Expression queries.
 
-<img src="https://s3-ap-southeast-2.amazonaws.com/downloads.cubewise.com/web_assets/arc-pulgins/plugins-mdx-hierarchies.gif" />
+<img src="https://downloads.cubewise.com/web_assets/arc-pulgins/plugins-mdx-hierarchies.gif" />
 
 ## Add this plugin to your environment
 1. Download the folder

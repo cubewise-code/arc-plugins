@@ -6,7 +6,7 @@ This plugin can be used to create tasks list including:
 * Dimension Editor
 * Subset Editor
 
-<img src="https://s3-ap-southeast-2.amazonaws.com/downloads.cubewise.com/web_assets/arc-release-notes/v112/to-do-list-v2.gif" />
+<img src="https://downloads.cubewise.com/web_assets/arc-release-notes/v112/to-do-list-v2.gif" />
 
 ## About Plugins
 Before going any further we recommend you reading these two Help articles:

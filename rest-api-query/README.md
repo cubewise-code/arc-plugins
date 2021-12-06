@@ -1,7 +1,7 @@
 # Plugin to run TM1 REST API queries
 This plugin can be used to run REST API queries and see the JSON result.
 
-<img src="https://s3-ap-southeast-2.amazonaws.com/downloads.cubewise.com/web_assets/arc-pulgins/plugins-restapi-query.gif" />
+<img src="https://downloads.cubewise.com/web_assets/arc-pulgins/plugins-restapi-query.gif" />
 
 ## Add this plugin to your environment
 1. Download the folder

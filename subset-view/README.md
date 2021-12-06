@@ -6,7 +6,7 @@ What you can do:
 * Delete subsets or views.
 * Replace a subset in a view or multiple views (This feature is available only with PAL 2.0.3 as minimum)
 
-<img src="https://s3-ap-southeast-2.amazonaws.com/downloads.cubewise.com/web_assets/arc-pulgins/views-subsets.gif" />
+<img src="https://downloads.cubewise.com/web_assets/arc-pulgins/views-subsets.gif" />
 
 ## Add this plugin to your environment
 1. Download the folder
