@@ -23,8 +23,8 @@ arc.directive("executeCommand", function () {
 		link: function ($scope, element, attrs) {
 
 		},
-		controller: ["$scope", "$rootScope", "$http", "$tm1", "$translate", "$timeout", "$q", "$document", "uuid2",
-			function ($scope, $rootScope, $http) {
+		controller: ["$scope", "$rootScope", "$http", "$timeout",
+			function ($scope, $rootScope, $http, $timeout) {
 
 				$scope.data = {};
 
@@ -43,6 +43,8 @@ arc.directive("executeCommand", function () {
 
 				$scope.save = function() {
 					$scope.saving = true;
+					$scope.saved = false;
+					$scope.message = null;
 					var data = {
 						Name: "test.json",
 						Data: $scope.data
@@ -50,8 +52,18 @@ arc.directive("executeCommand", function () {
 					$http.post("/_api/command", data).then(function(success){
 						$scope.saving = false;
 						if (success.status === 200) {
-	
+							$scope.saved = true;
+						} else {
+							if (success.data && success.data.error && success.data.error.message) {
+								$scope.message = success.data.error.message;
+						 } else {
+								$scope.message = "Unable to save dimension";
+						 }
 						}
+						$timeout(function () {
+							$scope.message = null;
+							$scope.saved = false;
+						}, 20000);
 					});
 				};
 
