@@ -1,7 +1,7 @@
 
 arc.run(['$rootScope', function ($rootScope) {
 
-	$rootScope.plugin("executeCommand", "EXEC", "page", {
+	$rootScope.plugin("exec", "EXEC", "page", {
 		menu: "tools",
 		icon: "fa-terminal",
 		description: "This plugin can be to execute an external command from Arc",
@@ -12,7 +12,7 @@ arc.run(['$rootScope', function ($rootScope) {
 
 }]);
 
-arc.directive("executeCommand", function () {
+arc.directive("exec", function () {
 	return {
 		restrict: "EA",
 		replace: true,
@@ -30,7 +30,7 @@ arc.directive("executeCommand", function () {
 
 				$scope.load = function(){
 					$scope.loading = true;
-					$http.get("/_api/command?file=test.json").then(function(success){
+					$http.get(encodeURIComponent($scope.instance) + "/command?file=test.json").then(function(success){
 						$scope.loading = false;
 						if (success.status === 200) {
 							if (success.data) {
@@ -49,7 +49,7 @@ arc.directive("executeCommand", function () {
 						Name: "test.json",
 						Data: $scope.data
 					};
-					$http.post("/_api/command", data).then(function(success){
+					$http.post(encodeURIComponent($scope.instance) + "/command", data).then(function(success){
 						$scope.saving = false;
 						if (success.status === 200) {
 							$scope.saved = true;
