@@ -391,7 +391,7 @@ arc.directive("cubewiseMdx", function () {
                autoWrapRow: true,
                comments: true,
                undo: true,
-               licenseKey: 'ffb54-f28fd-47ca3-54043-b6633',
+               licenseKey: '45fa7-848ba-11370-34b17-8900d',
                manualColumnResize: true,
                multiColumnSorting: true,
                persistentState: false,
