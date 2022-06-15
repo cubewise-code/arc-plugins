@@ -158,6 +158,12 @@ arc.directive("cubewiseMdx", function () {
             _editor.setFontSize($rootScope.uiPrefs.fontSize);
             _editor.setShowPrintMargin(false);
             _editor.getSession().setUseWrapMode($rootScope.uiPrefs.editorWrapLongLines);
+            //overriding ace-editor selection event to store selected code at the editor 
+            // _.debounce(function() {
+               _editor.selection.on("changeSelection", function () {
+               $scope.options.selectedMdx = _editor.getSelectedText();
+             })
+            // }, 50);
          };
 
          $scope.find = _.debounce(function(){
@@ -176,21 +182,21 @@ arc.directive("cubewiseMdx", function () {
 
          $scope.resultRefreshed = true;
          $scope.hotGrid = {};
+
          $scope.execute = function (options) {
             $scope.resultRefreshed = false;
             $scope.options.message = null;
             var sendDate = (new Date()).getTime();
-            //If dimension execute
-            var n = $scope.options.mdx.indexOf("WHERE");
+            $scope.options.mdxToExecute = ($scope.options.selectedMdx) ? $scope.options.selectedMdx : $scope.options.mdx;
             if ($scope.options.queryType == "ExecuteMDX") {
                // maxRows applied in the resultOption of the handsontable (required for nested columns)
-               var args = "$expand=Cube($select=Name),Axes($expand=Hierarchies($select=Name;$expand=Dimension($select=Name)),Tuples($expand=Members($select=Name,UniqueName,Ordinal,Attributes))),Cells($select=Ordinal,Status,Value,FormatString,FormattedValue,Updateable,RuleDerived,Annotated,Consolidated,Language,HasDrillthrough)"
+               var args = "$expand=Cube($select=Name),Axes($expand=Hierarchies($select=Name;$expand=Dimension($select=Name)),Tuples($expand=Members($select=Name,UniqueName,Ordinal,Attributes))),Cells($select=Ordinal,Status,Value,FormatString,FormattedValue,Updateable,RuleDerived,Annotated,Consolidated,Language,HasDrillthrough)";
             } else {
                var args = "$expand=Hierarchies($select=Name;$expand=Dimension($select=Name)),Tuples($top="+$rootScope.uiPrefs.maxRows+";$expand=Members($select=Name,UniqueName,Ordinal,Attributes))";
             }
             message = null;                 
             $scope.result = {clear: true};
-            $tm1.post($scope.instance, "/" + $scope.options.queryType + "?"+ args, { MDX: $scope.options.mdx }).then(function (success) {
+            $tm1.post($scope.instance, "/" + $scope.options.queryType + "?"+ args, { MDX: $scope.options.mdxToExecute }).then(function (success) {
                $scope.resultRefreshed = true;
                if (success.status == 401) {
                   return;
@@ -200,6 +206,7 @@ arc.directive("cubewiseMdx", function () {
                   if (success.data.error && success.data.error.message) {
                      $scope.options.message = success.data.error.message;
                      $scope.options.queryStatus = 'failed';
+                     console.log($scope.options.message);
                   }
                } else {
                   $scope.options.queryStatus = 'success';
@@ -221,20 +228,20 @@ arc.directive("cubewiseMdx", function () {
                      });
                   } else {
                      // Get attributes for each member
-                     var table = _.cloneDeep(success.data.Tuples);                     
+                     var table = _.cloneDeep(success.data.Tuples);             
                      $scope.result = {
                         mdx: 'dimension',
                         json: _.cloneDeep(success.data),
                         dimension: success.data.Hierarchies[0].Name,
                         table: table
-                     };                     
+                     };           
                      $scope.prepareResultForHandsOneTable();
                   }
                   var receiveDate = (new Date()).getTime();
                   $scope.options.responseTimeMs = receiveDate - sendDate;
                }
                var newQuery = {
-                  mdx: $scope.options.mdx,
+                  mdx: $scope.options.mdxToExecute,
                   message: $scope.options.message,
                   bookmark: false,
                   queryType: $scope.options.queryType,
@@ -266,6 +273,10 @@ arc.directive("cubewiseMdx", function () {
             titlesName = [];
             titlesValues = [];
             var data = $scope.result.json;
+            //check type of mdx expression (set/not set expression)
+            var queryAsArray = $scope.options.mdxToExecute.split(" ");
+            var queryAsArray = (queryAsArray == undefined) ? $scope.options.mdxToExecute : queryAsArray;
+            var isSetExpression = (queryAsArray[0].includes("SELECT", "WITH")) ? false : true;
             if ($scope.options.queryType == "ExecuteMDX") {
                // Get the elements from the titles
                if (data.Axes.length > 2) {
@@ -307,29 +318,32 @@ arc.directive("cubewiseMdx", function () {
                }); 
             } else {
                // DIMENSIONS
-               var dimensionName = data.Hierarchies[0].Name;
-               columns.push(dimensionName);
-               if($scope.options.showUniqueName){
-                  columns.push('UniqueName');
-               };
-               $scope.allAttributes = [];
-               if($scope.options.showAttributes){
-                  _.each(data.Tuples, function(tuple){
-                     _.each(tuple.Members, function(member){
-                        var attr = _.clone(member.Attributes);
-                        //ignore captions
-                        delete attr.Caption; 
-                        delete attr.Caption_Default;
-                        memberAttributes = _.keys(attr);
-                        _.each(memberAttributes, function(a){
-                           if($scope.allAttributes.indexOf(a)==-1){
-                              $scope.allAttributes.push(a);
-                              columns.push(a);
-                           }
+               _.each(data.Hierarchies, function(hierarchy) {
+                  var dimensionName = hierarchy.Name;
+                  columns.push(dimensionName);
+                  if($scope.options.showUniqueName){
+                     columns.push('UniqueName');
+                     
+                  };
+                  $scope.allAttributes = [];
+                  if($scope.options.showAttributes){
+                     _.each(data.Tuples, function(tuple){
+                        _.each(tuple.Members, function(member){
+                           var attr = _.clone(member.Attributes);
+                           //ignore captions
+                           delete attr.Caption; 
+                           delete attr.Caption_Default;
+                           memberAttributes = _.keys(attr);
+                           _.each(memberAttributes, function(a){
+                              if($scope.allAttributes.indexOf(a)==-1){
+                                 $scope.allAttributes.push(a);
+                                 columns.push(a);
+                              }
+                           });
                         });
                      });
-                  });
-               };
+                  };
+               });
                //CREATE TUPLE
                _.each(data.Tuples, function(tuple){
                   tuple.attributeList = [];
