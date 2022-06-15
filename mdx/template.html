@@ -2,20 +2,6 @@
 
    <div>
       <div class="card" style="margin-bottom: 5px;">
-         <div class="card-header" style="padding: 5px 10px;">
-            <a href>
-               <i class="fa fa-toggle-on" ng-if="options.queryType=='ExecuteMDXSetExpression'"
-                  ng-click="options.queryType='ExecuteMDX'"></i>
-               <i class="fa fa-toggle-off" ng-if="options.queryType=='ExecuteMDX'"
-                  ng-click="options.queryType='ExecuteMDXSetExpression'"></i>
-            </a>
-            <span>Execute MDX Set Expressions</span>
-            <div class="pull-right">
-               <a href ng-click="hideQuery = !hideQuery">
-                  <i class="fa fa-toggle-on" ng-if="!hideQuery"></i>
-                  <i class="fa fa-toggle-off" ng-if="hideQuery"></i>
-               </a>
-            </div>
          </div>
          <div class="card-body" style="padding: 5px;" ng-if="!hideQuery">
             <div class="input-group mb-1">
