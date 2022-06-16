@@ -158,6 +158,12 @@ arc.directive("cubewiseMdx", function () {
             _editor.setFontSize($rootScope.uiPrefs.fontSize);
             _editor.setShowPrintMargin(false);
             _editor.getSession().setUseWrapMode($rootScope.uiPrefs.editorWrapLongLines);
+            //overriding ace-editor selection event to store selected code at the editor 
+            // _.debounce(function() {
+               _editor.selection.on("changeSelection", function () {
+               $scope.options.selectedMdx = _editor.getSelectedText();
+             })
+            // }, 50);
          };
 
          $scope.find = _.debounce(function(){
@@ -196,7 +202,7 @@ arc.directive("cubewiseMdx", function () {
             }
             message = null;                 
             $scope.result = {clear: true};
-            $tm1.post($scope.instance, "/" + $scope.options.queryType + "?"+ args, { MDX: $scope.options.mdx }).then(function (success) {
+            $tm1.post($scope.instance, "/" + $scope.options.queryType + "?"+ args, { MDX: $scope.options.mdxToExecute }).then(function (success) {
                $scope.resultRefreshed = true;
                if (success.status == 401) {
                   return;
@@ -228,22 +234,20 @@ arc.directive("cubewiseMdx", function () {
                      });
                   } else {
                      // Get attributes for each member
-                     var table = _.cloneDeep(success.data.Tuples);
-                     // console.log(table);             
+                     var table = _.cloneDeep(success.data.Tuples);             
                      $scope.result = {
                         mdx: 'dimension',
                         json: _.cloneDeep(success.data),
                         dimension: success.data.Hierarchies[0].Name,
                         table: table
-                     };
-                     // console.log($scope.result);               
+                     };           
                      $scope.prepareResultForHandsOneTable();
                   }
                   var receiveDate = (new Date()).getTime();
                   $scope.options.responseTimeMs = receiveDate - sendDate;
                }
                var newQuery = {
-                  mdx: $scope.options.mdx,
+                  mdx: $scope.options.mdxToExecute,
                   message: $scope.options.message,
                   bookmark: false,
                   queryType: $scope.options.queryType,
@@ -275,9 +279,9 @@ arc.directive("cubewiseMdx", function () {
             titlesName = [];
             titlesValues = [];
             var data = $scope.result.json;
-            var queryAsArray = $scope.options.mdx.split(" ");
+            var queryAsArray = $scope.options.mdx.trim().split(" ");
             var queryAsArray = (queryAsArray == undefined) ? $scope.options.mdx : queryAsArray;
-            var isSetExpression = (queryAsArray[0].includes("SELECT", "WITH")) ? false : true;
+            var isSetExpression = (queryAsArray[0].toUpperCase().includes("SELECT", "WITH")) ? false : true;
             if (!isSetExpression) {
                // Get the elements from the titles
                if (data.Axes.length > 2) {
@@ -319,9 +323,7 @@ arc.directive("cubewiseMdx", function () {
                }); 
             } else {
                // DIMENSIONS
-               console.log(data.Hierarchies);
                _.each(data.Hierarchies, function(hierarchy) {
-                  console.log(hierarchy);
                   var dimensionName = hierarchy.Name;
                   columns.push(dimensionName);
                   if($scope.options.showUniqueName){
