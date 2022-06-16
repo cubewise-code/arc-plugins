@@ -191,6 +191,7 @@ arc.directive("cubewiseMdx", function () {
             var queryAsArray = $scope.options.mdx.trim().split(" ");
             var queryAsArray = (queryAsArray == undefined) ? $scope.options.mdx : queryAsArray;
             var isSetExpression = (queryAsArray[0].toUpperCase().includes("SELECT", "WITH")) ? false : true;
+            $scope.options.mdxToExecute = ($scope.options.selectedMdx) ? $scope.options.selectedMdx : $scope.options.mdx;
             if (!isSetExpression) {
                // maxRows applied in the resultOption of the handsontable (required for nested columns)
                var args = "$expand=Cube($select=Name),Axes($expand=Hierarchies($select=Name;$expand=Dimension($select=Name)),Tuples($expand=Members($select=Name,UniqueName,Ordinal,Attributes))),Cells($select=Ordinal,Status,Value,FormatString,FormattedValue,Updateable,RuleDerived,Annotated,Consolidated,Language,HasDrillthrough)";
