@@ -188,19 +188,26 @@ arc.directive("cubewiseMdx", function () {
             $scope.options.message = null;
             var sendDate = (new Date()).getTime();
             //If dimension execute
-            var queryAsArray = $scope.options.mdx.trim().split(" ");
-            var queryAsArray = (queryAsArray == undefined) ? $scope.options.mdx : queryAsArray;
-            var isSetExpression = (queryAsArray[0].toUpperCase().includes("SELECT", "WITH")) ? false : true;
-            $scope.options.mdxToExecute = ($scope.options.selectedMdx) ? $scope.options.selectedMdx : $scope.options.mdx;
+
+            $scope.options.mdxToExecute = ($scope.options.selectedMdx) ? $scope.options.selectedMdx : $scope.options.mdx
+            var firstWord = $scope.options.mdxToExecute.trim().split(" ")[0].toUpperCase();
+
+            // var queryAsArray = (queryAsArray == undefined) ? $scope.options.mdx : queryAsArray;
+            if(firstWord.startsWith("SELECT") || firstWord.startsWith("WITH")) {
+               isSetExpression = false;
+            } else {
+               isSetExpression = true;
+            };
+
             if (!isSetExpression) {
                // maxRows applied in the resultOption of the handsontable (required for nested columns)
                var args = "$expand=Cube($select=Name),Axes($expand=Hierarchies($select=Name;$expand=Dimension($select=Name)),Tuples($expand=Members($select=Name,UniqueName,Ordinal,Attributes))),Cells($select=Ordinal,Status,Value,FormatString,FormattedValue,Updateable,RuleDerived,Annotated,Consolidated,Language,HasDrillthrough)";
                $scope.options.queryType = "ExecuteMDX"
-
             } else {
                var args = "$expand=Hierarchies($select=Name;$expand=Dimension($select=Name)),Tuples($top="+$rootScope.uiPrefs.maxRows+";$expand=Members($select=Name,UniqueName,Ordinal,Attributes))";
                $scope.options.queryType = "ExecuteMDXSetExpression";
-            }
+            };
+
             message = null;                 
             $scope.result = {clear: true};
             $tm1.post($scope.instance, "/" + $scope.options.queryType + "?"+ args, { MDX: $scope.options.mdxToExecute }).then(function (success) {
@@ -280,9 +287,11 @@ arc.directive("cubewiseMdx", function () {
             titlesName = [];
             titlesValues = [];
             var data = $scope.result.json;
-            var queryAsArray = $scope.options.mdx.trim().split(" ");
+            var queryAsArray = $scope.options.mdx.split(" ")[0];
             var queryAsArray = (queryAsArray == undefined) ? $scope.options.mdx : queryAsArray;
+            $scope.options.mdxToExecute = ($scope.options.selectedMdx) ? $scope.options.selectedMdx : $scope.options.mdx;
             var isSetExpression = (queryAsArray[0].toUpperCase().includes("SELECT", "WITH")) ? false : true;
+   
             if (!isSetExpression) {
                // Get the elements from the titles
                if (data.Axes.length > 2) {
