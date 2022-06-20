@@ -189,10 +189,9 @@ arc.directive("cubewiseMdx", function () {
             var sendDate = (new Date()).getTime();
             //If dimension execute
 
-            $scope.options.mdxToExecute = ($scope.options.selectedMdx) ? $scope.options.selectedMdx : $scope.options.mdx
+            $scope.options.mdxToExecute = ($scope.options.selectedMdx) ? $scope.options.selectedMdx : $scope.options.mdx;
             var firstWord = $scope.options.mdxToExecute.trim().split(" ")[0].toUpperCase();
 
-            // var queryAsArray = (queryAsArray == undefined) ? $scope.options.mdx : queryAsArray;
             if(firstWord.startsWith("SELECT") || firstWord.startsWith("WITH")) {
                isSetExpression = false;
             } else {
@@ -287,10 +286,15 @@ arc.directive("cubewiseMdx", function () {
             titlesName = [];
             titlesValues = [];
             var data = $scope.result.json;
-            var queryAsArray = $scope.options.mdx.split(" ")[0];
-            var queryAsArray = (queryAsArray == undefined) ? $scope.options.mdx : queryAsArray;
+
             $scope.options.mdxToExecute = ($scope.options.selectedMdx) ? $scope.options.selectedMdx : $scope.options.mdx;
-            var isSetExpression = (queryAsArray[0].toUpperCase().includes("SELECT", "WITH")) ? false : true;
+            var firstWord = $scope.options.mdxToExecute.trim().split(" ")[0].toUpperCase();
+
+            if(firstWord.startsWith("SELECT") || firstWord.startsWith("WITH")) {
+               isSetExpression = false;
+            } else {
+               isSetExpression = true;
+            };
    
             if (!isSetExpression) {
                // Get the elements from the titles
