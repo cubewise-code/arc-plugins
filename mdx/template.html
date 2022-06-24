@@ -3,7 +3,7 @@
    <div>
       <div class="card" style="margin-bottom: 5px;">
          <div class="card-header" style="padding: 5px 10px;">
-
+            <span translate="QUERY"></span>
             <div class="pull-right">
                <a href ng-click="hideQuery = !hideQuery">
                   <i class="fa fa-toggle-on" ng-if="!hideQuery"></i>
@@ -11,9 +11,7 @@
                </a>
             </div>
          </div>
-      </div>
-      <div class="card-body" style="padding: 5px;">
-         <div ng-show="!hideQuery">
+         <div class="card-body" style="padding: 5px;" ng-show="!hideQuery">
             <div class="input-group mb-1">
                <span class="input-group-prepend" uib-dropdown dropdown-append-to-body>
                   <button class="btn btn-primary" ng-class="{'active':options.queryType!='ExecuteMDX'}"
@@ -53,7 +51,8 @@
             <div ng-bind-html="mdx.mdx" style="overflow-y: auto;"></div>
             <div class="horizontal-splitter" ng-mousedown="splitDown($event)"></div>
          </div>
-
+      </div>
+      <div>
          <uib-tabset active="mdx.activeTabIndex">
             <uib-tab index="0" ng-click="tabSelected()">
                <uib-tab-heading>
