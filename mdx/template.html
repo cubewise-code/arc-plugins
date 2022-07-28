@@ -14,13 +14,13 @@
          <div class="card-body" style="padding: 5px;" ng-show="!hideQuery">
             <div class="input-group mb-1">
                <span class="input-group-prepend" uib-dropdown dropdown-append-to-body>
-                  <button class="btn btn-primary" ng-class="{'active':options.queryType!='ExecuteMDX'}"
+                  <button class="btn btn-secondary"
                      uib-dropdown-toggle>
                      <span class="caret"></span>
                   </button>
                   <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="split-button">
-                     <li role="menuitem" ng-repeat="item in lists[options.queryType]">
-                        <div ng-click="options.mdx = item.query" style="margin-left:10px;cursor:pointer">
+                     <li role="menuitem" ng-repeat="item in lists">
+                        <div ng-click="$root.uiPrefs.options.mdx = item.query" style="margin-left:10px;cursor:pointer">
                            <span class="badge {{item.badge}}">{{item.name}} </span> {{item.query}}
                         </div>
                      </li>
@@ -29,7 +29,7 @@
                <span class="input-group-prepend">
                   <span class="input-group-text" translate="NAME"></span>
                </span>
-               <input type="text" class="form-control" ng-model="options.name" placeholder="Query name..."
+               <input type="text" class="form-control" ng-model="$root.uiPrefs.options.name" placeholder="Query name..."
                   style="width:60%" autocomplete="off">
                <span class="input-group-prepend">
                   <span class="input-group-text ng-scope" translate="MAXROWS">Max. Rows</span>
@@ -45,7 +45,7 @@
                   </button>
                </span>
             </div>
-            <pre ui-ace="{ onLoad : editorLoaded }" ng-model="options.mdx"
+            <pre ui-ace="{ onLoad : editorLoaded }" ng-model="$root.uiPrefs.options.mdx"
                ng-style="{'max-height': $root.uiPrefs.mdxSplitter}" auto-height
                auto-height-options="{noScroll: true, watchTab: true}"></pre>
             <div ng-bind-html="mdx.mdx" style="overflow-y: auto;"></div>
@@ -63,11 +63,11 @@
                      <i ng-if="executing" class="fa fa-refresh fa-3x fa-spin"></i>
                   </div>
                </div>
-               <div class="card-body" ng-if="options.message">
+               <div class="card-body" ng-if="$root.uiPrefs.options.message">
                   <div>
                      <button class="btn btn-warning">
                         <span class="fa fa-warning" aria-hidden="true"></span>
-                        <span>{{options.message}}</span>
+                        <span>{{$root.uiPrefs.options.message}}</span>
                      </button>
                   </div>
                </div>
@@ -76,68 +76,68 @@
                      <span>
                         <i class="fa fa-table"></i>
                         <span translate="RESULT"></span>
-                        - Run in {{options.responseTimeMs | num:0}} ms
+                        - Run in {{$root.uiPrefs.options.responseTimeMs | num:0}} ms
                      </span>
                      <div class="pull-right">
                         <span>
-                           <input type="radio" ng-model="options.resultType" value="table" ng-click="refreshTable()" />
+                           <input type="radio" ng-model="$root.uiPrefs.options.resultType" value="table" ng-click="refreshTable()" />
                            <span>Table</span>
                         </span>
                         <span>
-                           <input type="radio" ng-model="options.resultType" value="json-tree" />
+                           <input type="radio" ng-model="$root.uiPrefs.options.resultType" value="json-tree" />
                            <span>JSON Tree</span>
                         </span>
                         <span>
-                           <input type="radio" ng-model="options.resultType" value="json" />
+                           <input type="radio" ng-model="$root.uiPrefs.options.resultType" value="json" />
                            <span>JSON</span>
                         </span>
                         <span>
-                           <input type="radio" ng-model="options.resultType" value="hjson" />
+                           <input type="radio" ng-model="$root.uiPrefs.options.resultType" value="hjson" />
                            <span>HJSON</span>
                         </span>
                      </div>
-                     <div ng-if="options.queryType=='ExecuteMDXSetExpression'" class="pull-right">
+                     <div ng-if="$root.uiPrefs.options.queryType=='ExecuteMDXSetExpression'" class="pull-right">
                         <a href class="click"
-                           ng-click="options.showUniqueName = !options.showUniqueName;prepareResultForHandsOneTable()">
-                           <i class="fa fa-toggle-on" ng-if="options.showUniqueName"></i>
-                           <i class="fa fa-toggle-off" ng-if="!options.showUniqueName"></i>
+                           ng-click="$root.uiPrefs.options.showUniqueName = !$root.uiPrefs.options.showUniqueName;prepareResultForHandsOneTable()">
+                           <i class="fa fa-toggle-on" ng-if="$root.uiPrefs.options.showUniqueName"></i>
+                           <i class="fa fa-toggle-off" ng-if="!$root.uiPrefs.options.showUniqueName"></i>
                            <span translate=""> UniqueName </span>
                         </a>
                         <a href class="click"
-                           ng-click="options.showAttributes = !options.showAttributes;prepareResultForHandsOneTable()">
-                           <i class="fa fa-toggle-on" ng-if="options.showAttributes"></i>
-                           <i class="fa fa-toggle-off" ng-if="!options.showAttributes"></i>
+                           ng-click="$root.uiPrefs.options.showAttributes = !$root.uiPrefs.options.showAttributes;prepareResultForHandsOneTable()">
+                           <i class="fa fa-toggle-on" ng-if="$root.uiPrefs.options.showAttributes"></i>
+                           <i class="fa fa-toggle-off" ng-if="!$root.uiPrefs.options.showAttributes"></i>
                            <span class="text-info" translate="Attributes"> </span>
                         </a>
                         <span style="padding-right:5px;padding-left:5px"> | </span>
                      </div>
                   </div>
-                  <div class="card-body" style="padding: 5px 0px 0px 5px;" ng-if="!options.message">
+                  <div class="card-body" style="padding: 5px 0px 0px 5px;" ng-if="!$root.uiPrefs.options.message">
                      <div class="text-center">
                         <h2>
                            <i ng-if="!resultRefreshed" class="fa fa-refresh fa-spin"></i>
                         </h2>
                      </div>
-                     <div ng-if="options.resultType == 'json-tree'">
+                     <div ng-if="$root.uiPrefs.options.resultType == 'json-tree'">
                         <auto-height>
                            <json-formatter json="result.json" open="1"></json-formatter>
                         </auto-height>
                      </div>
-                     <div ng-if="options.resultType == 'json'">
+                     <div ng-if="$root.uiPrefs.options.resultType == 'json'">
                         <auto-height>
                            <pre>{{result.json | json}}</pre>
                         </auto-height>
                      </div>
-                     <div ng-if="options.resultType == 'hjson'">
+                     <div ng-if="$root.uiPrefs.options.resultType == 'hjson'">
                         <auto-height>
                            <pre>{{result.json | hjson}}</pre>
                         </auto-height>
                      </div>
-                     <div ng-if="options.resultType == 'table'">
-                        <auto-height ng-if="!odbcError && options.queryType=='ExecuteMDXSetExpression'">
+                     <div ng-if="$root.uiPrefs.options.resultType == 'table'">
+                        <auto-height ng-if="!odbcError && $root.uiPrefs.options.queryType=='ExecuteMDXSetExpression'">
                            <div id="{{id}}-tableInstance" class="hot-grid process-editor-grid"></div>
                         </auto-height>
-                        <auto-height ng-if="options.queryType!='ExecuteMDXSetExpression'">
+                        <auto-height ng-if="$root.uiPrefs.options.queryType!='ExecuteMDXSetExpression'">
                            <hot-grid dataset="result" api="hotGrid"></hot-grid>
                         </auto-height>
                      </div>

@@ -49,6 +49,23 @@ arc.directive("cubewiseMdx", function () {
             $rootScope.uiPrefs.mdxSplitter = "150px";
          }
 
+         if(!$rootScope.uiPrefs.options){
+            $rootScope.uiPrefs.options = {
+               name: "",
+               mdx: "SELECT \n"
+               + "\tNON EMPTY {[Version].[Actual], [Version].[Budget]} ON COLUMNS, \n"
+               + "\tNON EMPTY {TM1SUBSETALL([Account])} ON ROWS \n"
+               + "FROM [General Ledger] \n"
+               + "WHERE ([Department].[Corporate], [Year].[2012])",
+               queryType:"ExecuteMDX",
+               maxRows: 1000,
+               message: null,
+               showAttributes: false,
+               showUniqueName: false,
+               resultType: "table"
+            };
+         }
+
          $rootScope.uiPrefs.showMDXChecked = true;
          $rootScope.uiPrefs.showMDXHistory = true;
 
@@ -73,42 +90,23 @@ arc.directive("cubewiseMdx", function () {
             $scope.clearMDXChecked();
          }
 
-         $scope.options = {
-            name: "",
-            mdx: "SELECT \n"
-            + "\tNON EMPTY {[Version].[Actual], [Version].[Budget]} ON COLUMNS, \n"
-            + "\tNON EMPTY {TM1SUBSETALL([Account])} ON ROWS \n"
-            + "FROM [General Ledger] \n"
-            + "WHERE ([Department].[Corporate], [Year].[2012])",
-            queryType:"ExecuteMDX",
-            maxRows: 1000,
-            message: null,
-            showAttributes: false,
-            showUniqueName: false,
-            resultType: "table"
-         };
-
          if(!$rootScope.uiPrefs.maxRows){
             $rootScope.uiPrefs.maxRows = 1000;
          };
 
-         $scope.lists = {
-            ExecuteMDX: [
+         $scope.lists =  [
                {
                   badge: 'badge-primary', name: 'Cube', query: "SELECT \n"
                      + "\tNON EMPTY {[Version].[Actual], [Version].[Budget]} ON COLUMNS, \n"
                      + "\tNON EMPTY {TM1SUBSETALL([Account])} ON ROWS \n"
                      + "FROM [General Ledger] \n"
                      + "WHERE ([Department].[Corporate], [Year].[2012])"
-               }
-            ],
-            ExecuteMDXSetExpression: [
+               },
                { badge: 'badge-info', name: 'Dimension', query: '{TM1SUBSETALL( [Time] )}' },
                { badge: 'badge-info', name: 'Dimension Filter by Level', query: "{\n" + "\tTM1FILTERBYLEVEL(\n" + "\t{TM1SUBSETALL( [Employee] )}\n" + "\t, 0\n" + ")}" },
                { badge: 'badge-info', name: 'Dimension Filter by Attribute', query: "{\n" + "\tFILTER(\n" + "\t {TM1SUBSETALL( [Employee] )}\n" + "\t, \n" + "\t[Employee].[Region] = 'England'\n" + ")}" },
                { badge: 'badge-info', name: 'Dimension Filter by Windcard', query: "{\n" + "\tTM1FILTERBYPATTERN(\n" + "\t {\n" + "\tTM1SUBSETALL( [Employee] )}\n" + "\t, \n" + "\t'*Da*'\n)}" }
-            ]
-         };
+            ];
 
          $scope.splitDown = function (e) {
             e.preventDefault();
@@ -161,7 +159,7 @@ arc.directive("cubewiseMdx", function () {
             //overriding ace-editor selection event to store selected code at the editor 
             // _.debounce(function() {
                _editor.selection.on("changeSelection", function () {
-               $scope.options.selectedMdx = _editor.getSelectedText();
+               $rootScope.uiPrefs.options.selectedMdx = _editor.getSelectedText();
              })
             // }, 50);
          };
@@ -185,12 +183,12 @@ arc.directive("cubewiseMdx", function () {
 
          $scope.execute = function (options) {
             $scope.resultRefreshed = false;
-            $scope.options.message = null;
+            $rootScope.uiPrefs.options.message = null;
             var sendDate = (new Date()).getTime();
             //If dimension execute
 
-            $scope.options.mdxToExecute = ($scope.options.selectedMdx) ? $scope.options.selectedMdx : $scope.options.mdx;
-            var firstWord = $scope.options.mdxToExecute.trim().split(" ")[0].toUpperCase();
+            $rootScope.uiPrefs.options.mdxToExecute = ($rootScope.uiPrefs.options.selectedMdx) ? $rootScope.uiPrefs.options.selectedMdx : $rootScope.uiPrefs.options.mdx;
+            var firstWord = $rootScope.uiPrefs.options.mdxToExecute.trim().split(" ")[0].toUpperCase();
 
             if(firstWord.startsWith("SELECT") || firstWord.startsWith("WITH")) {
                isSetExpression = false;
@@ -201,29 +199,29 @@ arc.directive("cubewiseMdx", function () {
             if (!isSetExpression) {
                // maxRows applied in the resultOption of the handsontable (required for nested columns)
                var args = "$expand=Cube($select=Name),Axes($expand=Hierarchies($select=Name;$expand=Dimension($select=Name)),Tuples($expand=Members($select=Name,UniqueName,Ordinal,Attributes))),Cells($select=Ordinal,Status,Value,FormatString,FormattedValue,Updateable,RuleDerived,Annotated,Consolidated,Language,HasDrillthrough)";
-               $scope.options.queryType = "ExecuteMDX"
+               $rootScope.uiPrefs.options.queryType = "ExecuteMDX"
             } else {
                var args = "$expand=Hierarchies($select=Name;$expand=Dimension($select=Name)),Tuples($top="+$rootScope.uiPrefs.maxRows+";$expand=Members($select=Name,UniqueName,Ordinal,Attributes))";
-               $scope.options.queryType = "ExecuteMDXSetExpression";
+               $rootScope.uiPrefs.options.queryType = "ExecuteMDXSetExpression";
             };
 
             message = null;                 
             $scope.result = {clear: true};
-            $tm1.post($scope.instance, "/" + $scope.options.queryType + "?"+ args, { MDX: $scope.options.mdxToExecute }).then(function (success) {
+            $tm1.post($scope.instance, "/" + $rootScope.uiPrefs.options.queryType + "?"+ args, { MDX: $rootScope.uiPrefs.options.mdxToExecute }).then(function (success) {
                $scope.resultRefreshed = true;
                if (success.status == 401) {
                   return;
                } else if (success.status >= 400) {
                   // Error
-                  $scope.options.message = success.data;
+                  $rootScope.uiPrefs.options.message = success.data;
                   if (success.data.error && success.data.error.message) {
-                     $scope.options.message = success.data.error.message;
-                     $scope.options.queryStatus = 'failed';
-                     console.log($scope.options.message);
+                     $rootScope.uiPrefs.options.message = success.data.error.message;
+                     $rootScope.uiPrefs.options.queryStatus = 'failed';
+                     console.log($rootScope.uiPrefs.options.message);
                   }
                } else {
-                  $scope.options.queryStatus = 'success';
-                  $scope.options.message = null;
+                  $rootScope.uiPrefs.options.queryStatus = 'success';
+                  $rootScope.uiPrefs.options.message = null;
                   // Success
                   if (!isSetExpression) {
                      $tm1.cellsetDelete($scope.instance, success.data.ID);
@@ -251,16 +249,16 @@ arc.directive("cubewiseMdx", function () {
                      $scope.prepareResultForHandsOneTable();
                   }
                   var receiveDate = (new Date()).getTime();
-                  $scope.options.responseTimeMs = receiveDate - sendDate;
+                  $rootScope.uiPrefs.options.responseTimeMs = receiveDate - sendDate;
                }
                var newQuery = {
-                  mdx: $scope.options.mdxToExecute,
-                  message: $scope.options.message,
+                  mdx: $rootScope.uiPrefs.options.mdxToExecute,
+                  message: $rootScope.uiPrefs.options.message,
                   bookmark: false,
-                  queryType: $scope.options.queryType,
-                  queryStatus: $scope.options.queryStatus,
-                  responseTimeMs: $scope.options.responseTimeMs,
-                  name: $scope.options.name,
+                  queryType: $rootScope.uiPrefs.options.queryType,
+                  queryStatus: $rootScope.uiPrefs.options.queryStatus,
+                  responseTimeMs: $rootScope.uiPrefs.options.responseTimeMs,
+                  name: $rootScope.uiPrefs.options.name,
                   uniqueID: Math.random().toString(36).slice(2)
                }
                $rootScope.uiPrefs.mdxHistory.splice(0, 0, newQuery);
@@ -287,8 +285,8 @@ arc.directive("cubewiseMdx", function () {
             titlesValues = [];
             var data = $scope.result.json;
 
-            $scope.options.mdxToExecute = ($scope.options.selectedMdx) ? $scope.options.selectedMdx : $scope.options.mdx;
-            var firstWord = $scope.options.mdxToExecute.trim().split(" ")[0].toUpperCase();
+            $rootScope.uiPrefs.options.mdxToExecute = ($rootScope.uiPrefs.options.selectedMdx) ? $rootScope.uiPrefs.options.selectedMdx : $rootScope.uiPrefs.options.mdx;
+            var firstWord = $rootScope.uiPrefs.options.mdxToExecute.trim().split(" ")[0].toUpperCase();
 
             if(firstWord.startsWith("SELECT") || firstWord.startsWith("WITH")) {
                isSetExpression = false;
@@ -340,12 +338,12 @@ arc.directive("cubewiseMdx", function () {
                _.each(data.Hierarchies, function(hierarchy) {
                   var dimensionName = hierarchy.Name;
                   columns.push(dimensionName);
-                  if($scope.options.showUniqueName){
+                  if($rootScope.uiPrefs.options.showUniqueName){
                      columns.push('UniqueName');
                      
                   };
                   $scope.allAttributes = [];
-                  if($scope.options.showAttributes){
+                  if($rootScope.uiPrefs.options.showAttributes){
                      _.each(data.Tuples, function(tuple){
                         _.each(tuple.Members, function(member){
                            var attr = _.clone(member.Attributes);
@@ -370,7 +368,7 @@ arc.directive("cubewiseMdx", function () {
                   _.each(tuple.Members, function(member){
                      member.allAttributes = [];
                      values.push(member.Name);
-                     if($scope.options.showUniqueName){
+                     if($rootScope.uiPrefs.options.showUniqueName){
                         values.push(member.UniqueName);
                      }
                      var attr = _.clone(member.Attributes);
@@ -540,10 +538,10 @@ arc.directive("cubewiseMdx", function () {
          $scope.indexTiFunctions = $rootScope.uiPrefs.mdxHistory.length - 1;
 
          $scope.updateCurrentQuery = function (item) {
-            $scope.options.mdx = item.mdx;
-            $scope.options.message = item.message;
-            $scope.options.name = item.name;
-            $scope.options.queryType = item.queryType;
+            $rootScope.uiPrefs.options.mdx = item.mdx;
+            $rootScope.uiPrefs.options.message = item.message;
+            $rootScope.uiPrefs.options.name = item.name;
+            $rootScope.uiPrefs.options.queryType = item.queryType;
          };
 
          $scope.updateindexTiFunctions = function (string) {
