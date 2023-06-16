@@ -102,6 +102,7 @@
                                  <td style="width: 200px;"> 
                                   <span class="btn btn-sm ml-1" ng-style="generateHSLColourBorder(item.cube)">
                                     {{item.cube}}
+                                    <a><i class="fa fa-search" ng-style="generateHSLColourText(item.cube)" ng-click="" title="{{'FILTERBYCUBE' | translate}}"></i></a>
                                   </span>
                                  </td>
                                  <td>
@@ -266,6 +267,7 @@
                                  <td style="width: 200px;"> 
                                   <span class="btn btn-sm ml-1" ng-style="generateHSLColourBorder(item.dimension)">
                                     {{item.dimension}}
+                                    <a><i class="fa fa-search" ng-style="generateHSLColourText(item.dimension)" ng-click="" title="{{'FILTERBYDIMENSION' | translate}}"></i></a>
                                   </span>
                                  </td>                                 
                                  <td>
@@ -274,7 +276,8 @@
                                        <span class="btn btn-sm ml-1">
                                           <a style="cursor : default;"
                                              href="#/cube/{{instance}}/{{view.cube}}/view/{{view.name}}">
-                                             {{view.cube}}:{{view.name}}                                             
+                                             {{view.cube}}:{{view.name}}  
+                                            <a><i class="fa fa-search" ng-style="generateHSLColourText(view.fullName)" ng-click="" title="{{'FILTERBYVIEW' | translate}}"></i></a>                                           
                                           <span ng-if="view.mdx"> {...} </span>
                                           <span ng-if="!view.public"> ℗</span>
                                           </a>
