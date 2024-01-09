@@ -713,6 +713,19 @@ arc.directive("cubewiseSubsetAndView", function () {
                   });
                })
             };
+
+            $scope.generateHSLColour = function(text){
+              return $helper.generateHSLColour(text);
+           };
+  
+           $scope.generateHSLColourBorder = function(text){
+              return $helper.generateHSLColourBorder(text);
+           };
+  
+           $scope.generateHSLColourText = function(text){
+              return $helper.generateHSLColourText(text);
+           };
+
             //Manage color:
             $scope.generateHSLColour = function (string) {
                //HSL refers to hue, saturation, lightness
@@ -720,6 +733,7 @@ arc.directive("cubewiseSubsetAndView", function () {
                   "background-color": "",
                   "color": "white"
                };
+                
                //for ngStyle format
                var hash = 0;
                var saturation = "50";
