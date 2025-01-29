@@ -1,0 +1,154 @@
+<vertical-splitter left-width="leftSplitterWidth" left-min-width="375" right-min-width="425">
+  <left-panel>
+    <div class="h-100 d-flex flex-column">
+      <div class="btn-toolbar" ng-disabled="data.itemNum===0">
+        <div class="input-group btn-group btn-group-sm input-group-sm">
+          <span class="input-group-prepend">
+            <div class="btn btn-secondary">
+              <i class="fa fa-filter"></i>
+            </div>
+          </span>
+          <span class="input-group-append">
+            <input class="form-control form-control-sm rounded-right" id="functionsFilter" style="border-radius: 0px;"
+              ng-model="functionsPanel.filter.function" ng-model-options="{ debounce: 500 }"
+              placeholder="{{'ATMOSPHEREPLACEHOLDERFILTERFUNCTIONS' | translate}}" title="{{'FILTER' | translate}}"
+              spellcheck="false">
+            <button type="button" class="btn btn-transparent" style="margin-left: -28px; z-index: 100;"
+              ng-disabled="!functionsPanel.filter.function" ng-click="functionsPanel.filter.function=''">
+              <i class="fa fa-close" title="{{'CLEAR' | translate}}"></i>
+            </button>
+          </span>
+        </div>
+        
+        <div class="input-group btn-group btn-group-sm input-group-sm">
+          <span class="btn btn-primary" ng-click="deployProcesses()">{{'ATMOSPHERETITLECREATEPROCESSES' |
+            translate}}</span>
+        </div>
+      </div>
+
+      <div class="flex-grow-1" style="overflow-y: auto;">
+        <table class="table table-sm table-striped table-hover table-text-bright table-vertical-align-middle" ng-if="functions.length > 0">
+          <thead>
+            <th ng-repeat="column in functionsPanel.columns | filter: {display:true}"
+              ng-style="{minWidth:column.width? column.width + 'px': ''}">
+              <span class="btn btn-sm" ng-click="sortBy('functionsPanel', column.key)">
+                {{ column.translateKey | translate}}
+                <i ng-if="functionsPanel.sortColumn.key === column.key && !functionsPanel.sortColumn.direction"
+                  class="fa fa-fw fa-sort-amount-asc"></i>
+                <i ng-if="functionsPanel.sortColumn.key === column.key && functionsPanel.sortColumn.direction"
+                  class="fa fa-fw fa-sort-amount-desc"></i>
+              </span>
+            </th>
+          </thead>
+          <tbody>
+            <tr
+              ng-repeat="function in (data.renderFunctions = (data.filteredFunctions | orderBy: functionsPanel.sortColumn.key : functionsPanel.sortColumn.direction  | limitTo : functionsPanel.pageState.itemsPerPage : (functionsPanel.pageState.currentPage - 1) * functionsPanel.pageState.itemsPerPage)) track by $index"
+              ng-click="selectFunction(function); $event.stopPropagation();"
+              title="{{'ATMOSPHERETITLEFUNCTIONSELECT' | translate}}" style="height: 36px;">
+              <td
+                ng-style="{'background-color':function['Function Name'] === processesPanel.filter.selectedFunction ? 'rgba(42, 159, 214, 0.25)' : ''}">
+                <span>
+                  {{function['Function Name']}}
+                </span>
+              </td>
+              <td
+                ng-style="{'background-color':function['Function Name'] === processesPanel.filter.selectedFunction ? 'rgba(42, 159, 214, 0.25)' : ''}">
+                <span>
+                  {{function['Function Type']}}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <arc-data-pager page-state="functionsPanel.pageState" on-page-changed="functionsPageChanged"
+        options="functionsPanel.functionPageOptions" small="true"></arc-data-pager>
+    </div>
+  </left-panel>
+  <right-panel>
+    <div class="h-100 d-flex flex-column">
+      <div class="btn-toolbar">
+        <div class="input-group btn-group btn-group-sm input-group-sm">
+          <span class="input-group-prepend">
+            <div class="btn btn-secondary">
+              <i class="fa fa-filter"></i>
+            </div>
+          </span>
+          <span class="input-group-append">
+            <input class="form-control form-control-sm rounded-right" id="processesFilter" style="border-radius: 0px;"
+              ng-model="processesPanel.filter.process" ng-model-options="{ debounce: 500 }"
+              placeholder="{{'ATMOSPHEREPLACEHOLDERFILTERPRCCESSES' | translate}}" title="{{'FILTER' | translate}}"
+              spellcheck="false">
+            <button type="button" class="btn btn-transparent" style="margin-left: -28px; z-index: 100;"
+              ng-disabled="!processesPanel.filter.process" ng-click="processesPanel.filter.process=''">
+              <i class="fa fa-close" title="{{'CLEAR' | translate}}"></i>
+            </button>
+          </span>
+        </div>
+
+        <div class="input-group btn-group btn-group-sm input-group-sm">
+          <span class="input-group-prepend">
+            <span class="input-group-text font-weight-bold">f(x)</span>
+          </span>
+          <select class="form-control editor-select" ng-model="processesPanel.filter.selectedFunction"
+            title="{{ 'ATMOSPHERETABLABELFUNCTIONS' | translate}}">
+            <option value="{{''}}" translate="ATMOSPHEREVALUEALL"></option>
+            <option ng-repeat="function in functions track by $index" value="{{function['Function Name']}}">
+              {{function['Function Name']}}</option>
+          </select>
+        </div>
+
+        <div class="input-group btn-group btn-group-sm input-group-sm">
+          <button class="btn btn-secondary" title="{{'REFRESH' | translate}}" ng-disabled="executionStatus"
+            ng-click="refreshData()">
+            <i class="fa fa-fw fa-refresh" ng-class="{ 'fa-spin': executionStatus }"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex-grow-1 d-flex justify-content-center align-items-center" ng-if="executionStatus">
+        <i class="fa fa-refresh fa-spin fa-fw fa-3x"></i>
+      </div>
+
+      <div ng-if="!executionStatus" class="flex-grow-1" style="overflow-y: auto;">
+        <table class="table table-sm table-striped table-hover table-text-bright table-vertical-align-middle">
+          <thead>
+            <tr>
+              <th ng-repeat="column in processesPanel.columns | filter: {display:true}"
+                ng-style="{minWidth:column.width? column.width + 'px': ''}">
+                <span class="btn btn-sm" ng-click="sortBy('processesPanel', column.key)">
+                  {{ column.translateKey | translate}}
+                  <i ng-if="processesPanel.sortColumn.key === column.key && !processesPanel.sortColumn.direction"
+                    class="fa fa-fw fa-sort-amount-asc"></i>
+                  <i ng-if="processesPanel.sortColumn.key === column.key && processesPanel.sortColumn.direction"
+                    class="fa fa-fw fa-sort-amount-desc"></i>
+                </span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              ng-repeat="process in (data.renderProcesses = (data.filteredProcesses | orderBy: processesPanel.sortColumn.key : processesPanel.sortColumn.direction  | limitTo : processesPanel.pageState.itemsPerPage : (processesPanel.pageState.currentPage - 1) * processesPanel.pageState.itemsPerPage)) track by $index"
+              style="height: 36px;">
+              <td>
+                <span>
+                  {{process['Name']}}
+                </span>
+              </td>
+              <td>
+                <span class="pull-right">
+                  <button class="btn btn-sm btn-secondary" title="{{'ATMOSPHERETITLEPROCESSEXECUTE' | translate}}"
+                    ng-click="executeProcess(process); $event.stopPropagation();" ng-disabled="executionStatus">
+                    <i class="fa fa-fw fa-bolt"></i>
+                  </button>
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <arc-data-pager page-state="processesPanel.pageState" on-page-changed="processPageChanged"
+        options="processesPanel.pageOptions" small="true"></arc-data-pager>
+    </div>
+  </right-panel>
+</vertical-splitter>

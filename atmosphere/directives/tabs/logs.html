@@ -1,0 +1,100 @@
+<div class="h-100 d-flex flex-column">
+  <div class="btn-toolbar">
+    <!-- Bulk actions toolbar group -->
+    <div class="input-group btn-group btn-group-sm input-group-sm">
+      <button class="btn btn-secondary py-0" title="{{ 'ATMOSPHERETITLEHISTORYCHECKALL' | translate}}"
+        ng-click="toggleAllChecked()">
+        <i class="fa fa-fw text-info" ng-class="settings.allChecked ? 'fa-check-square-o' : 'fa-square-o'"></i>
+        <span ng-if="data.checkedNum > 0" class="badge badge-pill badge-info">{{data.checkedNum}}</span>
+      </button>
+    </div>
+
+    <div class="input-group btn-group btn-group-sm input-group-sm">
+      <span class="input-group-prepend">
+        <span class="input-group-text font-weight-bold">f(x)</span>
+        <!-- <span class="input-group-text">{{'ATMOSPHERETABLABELFUNCTIONS' | translate}}</span> -->
+      </span>
+      <select class="form-control editor-select" ng-model="settings.filter.functionName" ng-change="refreshData()"
+        title="{{ 'ATMOSPHERETABLABELFUNCTIONS' | translate}}" ng-disabled="executionStatus">
+        <option value=""></option>
+        <option ng-repeat="function in functions track by $index" value="{{function['Function Name']}}">
+          {{function['Function Name']}}</option>
+      </select>
+    </div>
+
+    <div class="input-group btn-group btn-group-sm input-group-sm">
+      <button class="btn btn-secondary" title="{{'REFRESH' | translate}}" ng-disabled="executionStatus"
+        ng-click="refreshData()">
+        <i class="fa fa-fw fa-refresh" ng-class="{ 'fa-spin': executionStatus }"></i>
+      </button>
+    </div>
+
+    <div class="input-group btn-group btn-group-sm input-group-sm">
+      <button type="button" class="btn" ng-class="data.checkedNum == 0 ? 'btn-secondary' : 'btn-success'"
+        ng-disabled="data.checkedNum == 0" ng-click="export()">
+        <i class="fa fa-file-excel-o" title="{{'ATMOSPHERETABLABELDOWNLOADCSV' | translate}}"></i>
+        {{'ATMOSPHERETABLABELEXPORT' | translate}}
+      </button>
+    </div>
+
+    <div class="input-group btn-group btn-group-sm input-group-sm" ng-if="settings.filter.functionName === ''">
+      <span class="btn btn-info disabled">Please select a function</span>
+    </div>
+  </div>
+
+  <div class="flex-grow-1 d-flex justify-content-center align-items-center" ng-if="executionStatus">
+    <i class="fa fa-refresh fa-spin fa-fw fa-5x"></i>
+  </div>
+
+  <div ng-if="!executionStatus" class="flex-grow-1" style="overflow-y: auto;">
+    <table ng-if="data.itemNum > 0"
+      class="table table-sm table-striped table-hover table-text-bright table-vertical-align-middle">
+      <thead>
+        <tr>
+          <th style="width:30px">
+            <span class="btn btn-sm pull-left">{{'ATMOSPHERETITLESELECT' | translate}}</span>
+          </th>
+          <th style="width:150px;">
+            <span class="btn btn-sm pull-left" ng-click="sortBy(column.key)">
+              {{'ATMOSPHERETITLELOGTIME' | translate}}
+            </span>
+          </th>
+          <th style="width:100px">
+            <span class="btn btn-sm pull-left" ng-click="sortBy(column.key)">
+              {{'ATMOSPHERETITLELOGMESSAGE' | translate}}
+            </span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          ng-repeat="item in (settins.itemFiltered = (data.items | orderBy: settings.sortColumn.key : settings.sortColumn.direction | limitTo : settings.pageState.itemsPerPage : (settings.pageState.currentPage - 1) * settings.pageState.itemsPerPage)) track by $index"
+          ng-class="{ 'list-item-selected': item.checked }">
+          <td>
+            <span title="{{ 'ATMOSPHERETITLELOGCHECK' | translate}}"
+              ng-click="toggleChecked(item); $event.stopPropagation();">
+              <i class="fa fa-fw text-info" ng-class="item.checked ? 'fa-check-square-o' : 'fa-square-o'"></i>
+            </span>
+          </td>
+          <td>
+            <span>
+              {{item['Timestamp']}}
+            </span>
+          </td>
+          <td>
+            <span>
+              {{item['Message']}}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!--   <div ng-if="settings.filter.functionName !== '' && data.itemNum == 0">
+    <span class="btn btn-info disabled">No log for this function</span>
+  </div> -->
+
+  <arc-data-pager page-state="settings.pageState" on-page-changed="pageChanged" options="settings.pageOptions"
+    small="true"></arc-data-pager>
+</div>
