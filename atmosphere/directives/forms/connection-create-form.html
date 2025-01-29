@@ -1,0 +1,63 @@
+<div>
+  <div ng-if="isLoading" class="text-center" style="margin-top: 50px;">
+    <i class="fa fa-refresh fa-spin fa-5x"></i>
+  </div>
+  <div ng-if="!isLoading">
+    <div class="form-group mb-0">
+      <label>{{'ATMOSPHERECONNECTIONCREATETITLENAME' | translate}}</label>
+      <input class="form-control" ng-disabled="executing" placeholder="{{'ATMOSPHERECONNECTIONCREATEHINTNAME' | translate}}"
+        ng-model="data.name" spellcheck="false"
+        set-focus>
+    </div>
+    <div class="form-group mb-0">
+      <label>{{'ATMOSPHERECONNECTIONCREATETITLESETTINGTYPE' | translate}}</label>
+      <select class="form-control editor-select" ng-model="data.settingType" title="{{ 'ATMOSPHERECONNECTIONCREATETITLETYPE' | translate}}">
+        <option value="tm1UserPassword">{{'ATMOSPHERECONNECTIONCREATETITLESETTINGTYPETM1PASSWORD' | translate}}</option>
+        <option value="json">{{'ATMOSPHERECONNECTIONCREATETITLESETTINGTYPEJSON' | translate}}</option>
+      </select>
+    </div>
+    <div class="form-group mb-0" ng-show="data.settingType == 'tm1UserPassword'">
+      <label>{{'ATMOSPHERECONNECTIONCREATETITLEBASEURL' | translate}}</label>
+      <input class="form-control" ng-disabled="executing" placeholder="{{'ATMOSPHERECONNECTIONCREATEHINTBASEURL' | translate}}"
+        ng-model="data.baseurl" spellcheck="false" set-focus>
+    </div>
+     <div class="form-group mb-0" ng-show="data.settingType == 'tm1UserPassword'">
+      <label>{{'ATMOSPHERECONNECTIONCREATETITLENAMESPACE' | translate}}</label>
+      <input class="form-control" ng-disabled="executing" placeholder=""
+        ng-model="data.namespace" spellcheck="false" set-focus>
+    </div>
+    <div class="form-group mb-0" ng-show="data.settingType == 'tm1UserPassword'">
+      <label>{{'ATMOSPHERECONNECTIONCREATETITLEUSERNAME' | translate}}</label>
+      <input class="form-control" ng-disabled="executing" placeholder=""
+        ng-model="data.user" spellcheck="false" set-focus>
+    </div>
+    <div class="form-group mb-0" ng-show="data.settingType == 'tm1UserPassword'">
+      <label>{{'ATMOSPHERECONNECTIONCREATETITLEPASSWORD' | translate}}</label>
+      <input class="form-control" ng-disabled="executing" type="password" placeholder="" ng-model="data.password" spellcheck="false" set-focus>
+    </div>
+    <div class="form-group mb-0" ng-show="data.settingType == 'tm1UserPassword'">
+      <label>{{'ATMOSPHERECONNECTIONCREATETITLESSL' | translate}}</label>
+      <input type="checkbox" ng-model="data.ssl" ng-disabled="executing">{{'ATMOSPHERECONNECTIONCREATETITLESSL' | translate}}
+    </div>
+    <div class="form-group mb-0" ng-show="data.settingType == 'json'">
+      <label>{{'ATMOSPHERECONNECTIONCREATETITLEJSON' | translate}}</label>
+      <div class="row">
+        <div class="col-md-12">
+          <textarea class="form-control" ng-model="data.jsonValue" ng-disabled="executing" rows="12" placeholder="{{'ATMOSPHERECONNECTIONCREATETITLEJSONHINT' | translate}}"
+          (keydown)="triggerFunction($event);$event.preventDefault();">
+          </textarea>
+        </div>
+        <div class="col-md-12" ng-show="jsonValidateMessage != ''">
+          <div class="alert alert-danger">{{jsonValidateMessage}}</div>
+          <!-- <json-formatter json="data.jsonValueObj" open="1"></json-formatter> -->
+        </div>
+      </div>      
+    </div>    
+    <div class="form-group pt-4" ng-if="unsuccessful">
+      <div class="alert alert-danger">
+        <div translate="CREATEUNSUCCESSFUL"></div>
+        <div ng-if="message.length">{{message}}</div>
+      </div>
+    </div>
+  </div>
+</div>
