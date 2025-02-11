@@ -8,9 +8,11 @@
           arc-click="showConnectionsDialog()" arc-icon-states="{}" arc-icon-state="{{ global.state }}">
         </arc-toolbar-button>
         <arc-toolbar-button arc-text="REFRESH" arc-title="REFRESH" arc-icon-class="fa-refresh" arc-click="refresh()"
-          arc-icon-states="{ executing: iconStates.refreshing }"
-          arc-icon-state="{{ executionStatus ? 'executing' : null }}">
+          arc-icon-states="{ executing: iconStates.refreshing, disabled: iconStates.disabled }"
+          arc-icon-state="{{ hasAtmosphere ? (executionStatus ? 'executing' : null) : 'disabled' }}">
         </arc-toolbar-button>
+      </arc-toolbar-group>
+      <arc-toolbar-group>
         <arc-toolbar-dropdown arc-text="OPTIONS" arc-title="OPTIONS" arc-icon-class="fa-cog"
           arc-dropdown-alignment="right" arc-dropdown-width="280px">
           <arc-toolbar-dropdown-item
@@ -40,7 +42,7 @@
         <arc-toolbar-button arc-text="HELP" arc-title="HELP" arc-icon-class="fa-question-circle" arc-click="help()">
         </arc-toolbar-button>
       </arc-toolbar-group>
-      <div class="btn-group ml-auto">
+      <div class="btn-group ml-auto" ng-if="hasAtmosphere">
         <button class="btn btn-warning btn-message" ng-if="initialized && !executionStatus && !global.connection"
           ng-click="showConnectionsDialog()">
           <i class="fa fa-exclamation-triangle icon-left"></i>
@@ -55,6 +57,8 @@
     </arc-toolbar>
   </div>
 
+  <atmosphere-message-url-missing message = "atmosphereMessage" atmosphere-url="atmosphereUrl"></atmosphere-message-url-missing>
+
   <div class="flex-grow-1 d-flex justify-content-center align-items-center" ng-if="!initialized || executionStatus">
     <i class="fa fa-refresh fa-spin fa-fw fa-5x" style="margin-top: 50px;"></i>
   </div>
@@ -64,7 +68,7 @@
   </div>
 
   <!-- Main Tabset -->
-  <uib-tabset active="tabIndex" class="flex-grow-1" ng-if="!executionStatus && global.connection">
+  <uib-tabset active="tabIndex" class="flex-grow-1" ng-if="!executionStatus && hasAtmosphere && global.connection">
     <uib-tab class="h-100" ng-click="tabChanged('functions')">
       <uib-tab-heading>
         <span class="font-weight-bold">f(x)</span>

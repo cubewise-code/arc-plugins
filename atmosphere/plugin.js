@@ -1,7 +1,7 @@
-arc.run(['$rootScope', '$atmosphere',
-  function ($rootScope, $atmosphere) {
+arc.run(['$rootScope', '$settings', '$atmosphere',
+  function ($rootScope, $settings, $atmosphere) {
     // Register plugin
-    $rootScope.plugin("cubewiseAtmospherePortal", "ATMOSPHEREPLUGINTITLEPORTAL", "page", {
+    var plugin = $rootScope.plugin("cubewiseAtmospherePortal", "ATMOSPHEREPLUGINTITLEPORTAL", "page", {
       menu: "atmosphere",
       icon: "fa-globe",
       description: "This plugin allows users to interface with Atmosphere.",
@@ -19,6 +19,11 @@ arc.run(['$rootScope', '$atmosphere',
         }
       }
     });
+
+    $settings.settings()
+      .then(function (settings) {
+        plugin.topMenu.isHidden = _.isEmpty(settings.AtmosphereURL);
+      });
   }]);
 
 arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', '$timeout', '$tm1',
@@ -52,6 +57,16 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
     if (!$rootScope.uiPrefs.atmospherePortalBigButtons) {
       $rootScope.uiPrefs.atmospherePortalBigButtons = true;
     }
+
+    this.hasAtmosphere = function() {
+      if(!$rootScope.settings) return null;
+      return !_.isEmpty($rootScope.settings.AtmosphereURL);
+    };
+
+    this.getAtmosphereUrl = function() {
+      if(!$rootScope.settings) return null;
+      return $rootScope.settings.AtmosphereURL;
+    };
 
     this.isLoggedIn = function () {
       return $rootScope.uiPrefs.atmosphereIsLoggedIn;
@@ -533,6 +548,22 @@ arc.directive("atmosphereLoginForm", function () {
       }]
   }
 });
+
+arc.directive("atmosphereMessageUrlMissing", ["$rootScope", "$timeout", function ($rootScope, $timeout) {
+  return {
+    restrict: "E",
+    scope: {
+      pulseURL: "=atmosphereUrl",
+      message: "=message"
+    },
+    templateUrl: "__/plugins/atmosphere/directives/messages/atmosphere-message-check-url.html",
+    link: function ($scope, element, attrs) { },
+    controller: ["$scope", "$rootScope",
+      function ($scope, $rootScope) {
+
+      }]
+  }
+}]);
 
 arc.directive("atmosphereConnectionsForm", ['$rootScope', '$atmosphere', '$dialogs',
   function ($rootScope, $atmosphere, $dialogs) {
@@ -1526,6 +1557,10 @@ arc.directive("cubewiseAtmospherePortal", function () {
 
         $scope.id = uuid2.newuuid();
 
+        $scope.hasAtmosphere = $atmosphere.hasAtmosphere();
+        $scope.atmosphereUrl = $atmosphere.getAtmosphereUrl();
+        $scope.atmosphereMessage = !$scope.hasAtmosphere ? 'ATMOSPHEREURLNOTFOUNDMESSAGE' : null;
+
         $scope.iconStates = {
           refreshing: { class: 'fa-refresh', spin: true, disabled: true },
           disabled: { disabled: true },
@@ -1611,7 +1646,7 @@ arc.directive("cubewiseAtmospherePortal", function () {
             }, function (error) {
               $scope.global.functions = [];
 
-              $scope.showError('ATMOSPHEREERRORGETFUNCTIONINFO', 'ATMOSPHEREERRORGETFUNCTIONINFO', "(status: " + error.status + ") " + $helper.errorText(error));
+              if($scope.hasAtmosphere) $scope.showError('ATMOSPHEREERRORGETFUNCTIONINFO', 'ATMOSPHEREERRORGETFUNCTIONINFO', "(status: " + error.status + ") " + $helper.errorText(error));
 
               $scope.executionStatus = false;
             });
@@ -1782,4 +1817,3 @@ arc.factory('atmosphereHttpResponseInterceptor', ['$q', '$location', '$rootScope
       }
     }
   }]);
-

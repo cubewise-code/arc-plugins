@@ -1,5 +1,6 @@
 {
   "ATMOSPHERE": "Atmosphere",
+  "ATMOSPHEREURLNOTFOUNDMESSAGE": "The Atmophere URL was not found in Settings.yml",
   "ATMOSPHEREPORTALHELP": "Atmosphere Portal",
   "ATMOSPHEREPLUGINTITLEPORTAL": "Portal",
   "ATMOSPHEREPLUGINLABELTOPMENU": "Atmosphere Connections",
