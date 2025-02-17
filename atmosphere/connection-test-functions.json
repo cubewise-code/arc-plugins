@@ -1,7 +1,30 @@
 {
-  "tm1": "ping-tm1",
-  "salesforce": "ping-salesforce",
-  "snowflake": "ping-snowflake",
-  "sharepoint": "ping-sharepoint",
-  "databricks": "ping-databricks-sql"
+  "tm1": {
+    "function_name":"ping-tm1",
+    "connection_param_name": "tm1_connection",
+    "parameters": {
+      
+    }
+  },
+  "salesforce": {
+    "function_name":"ping-salesforce",
+    "connection_param_name": "salesforce_connection",
+    "parameters":  {
+      
+    }
+  },
+  "snowflake": {
+    "function_name": "ping-snowflake",
+    "connection_param_name": "snowflake_connection",
+    "parameters": {
+      
+    }
+  },
+  "xero": {
+    "function_name": "ping-xero",
+    "connection_param_name": "xero_connection",
+    "parameters": {
+      
+    }
+  }
 }

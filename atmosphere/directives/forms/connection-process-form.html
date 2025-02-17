@@ -9,7 +9,7 @@
     </div>
     <div class="form-group mb-0">
       <label>{{'ATMOSPHERECONNECTIONPROCESSTITLEFUNCTIONNAME' | translate}}</label>
-      <select class="form-control editor-select" ng-model="data.function_name">
+      <select class="form-control editor-select" ng-model="data.functionName">
         <option value="">all</option>
         <option value="{{function['Function Name']}}" ng-repeat="function in data.functions track by $index">
           {{function['Function Name']}}</option>

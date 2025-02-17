@@ -47,6 +47,7 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
     this.atmosphereAPIFunctionInfoFunctionName = 'function-info';
     this.atmosphereAPIUsageInfoFunctionName = 'usage-info';
     this.atmosphereAPILogsInfoFunctionName = 'logs-info';
+    this.atmosphereAPIQuotaInfoFunctionName = "quota-info"
     this.atmosphereAPIUpdateSecretFunctionName = 'update-secret';
     this.atmosphereAPIIPInfoFunctionName = 'ip-info';
     this.atmosphereAPICreateProcessesFunctionName = 'create-processes';
@@ -58,13 +59,13 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
       $rootScope.uiPrefs.atmospherePortalBigButtons = true;
     }
 
-    this.hasAtmosphere = function() {
-      if(!$rootScope.settings) return null;
+    this.hasAtmosphere = function () {
+      if (!$rootScope.settings) return null;
       return !_.isEmpty($rootScope.settings.AtmosphereURL);
     };
 
-    this.getAtmosphereUrl = function() {
-      if(!$rootScope.settings) return null;
+    this.getAtmosphereUrl = function () {
+      if (!$rootScope.settings) return null;
       return $rootScope.settings.AtmosphereURL;
     };
 
@@ -90,11 +91,13 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
           } else {
             console.log('loginAtmosphere status incorrect', success);
             $rootScope.uiPrefs.atmosphereIsLoggedIn = false;
+            $rootScope.uiPrefs.atmosphereCredentials = null;
             defer.reject(new Error('loginAtmosphere status incorrect'));
           }
         }, function (error) {
           console.error('loginAtmosphere error', error);
           $rootScope.uiPrefs.atmosphereIsLoggedIn = false;
+          $rootScope.uiPrefs.atmosphereCredentials = null;
           defer.reject(new Error('loginAtmosphere error'));
         });
 
@@ -150,6 +153,11 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
           "run_mode": "response"
         }
       };
+
+      if (functionParameters && functionParameters['no_tm1_connection']) {
+        delete defaultInitPayload['parameters']['tm1_connection'];
+        delete functionParameters['no_tm1_connection']
+      }
 
       var pollForResult = function (asyncId, defer, i) {
         var url = _this.atmosphereAPIRoot + _this.atmosphereAPIPollPath;
@@ -390,6 +398,37 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
       return defer.promise;
     };
 
+    this.getFunctionQuota = function (connectionName) {
+      var defer = $q.defer();
+
+      var parameters = {
+        'mail_recipients': ''
+      };
+
+      _service.runFunctionAsync(connectionName, _service.atmosphereAPIQuotaInfoFunctionName, parameters)
+        .then(function (data) {
+          var status = data.status_code;
+          if (status === 200) {
+            var value = data.value;
+            //fix sometimes return string
+            if (typeof (value) === "string") {
+              value = value.split(" Extract:")[0];
+              var decoded = atob(value);
+              value = JSON.parse(decoded);
+              console.log(value)
+            }
+            defer.resolve(value);
+          } else {
+            defer.reject(new Error('get quota status incorrect'));
+          }
+        }, function (error) {
+          console.error('get quota status failed', error);
+          defer.reject(error);
+        });
+
+      return defer.promise;
+    };
+
     this.createProcesses = function (connectionName, update, domain, function_name, api_key) {
       var defer = $q.defer();
 
@@ -425,16 +464,21 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
       (testFunctionMapping ? $q.resolve({ status: 200, data: testFunctionMapping }) : $http.get('__/plugins/atmosphere/connection-test-functions.json'))
         .then(function (success) {
           if (success.status === 200) {
-            var functionName = success.data[connectionType];
-            var parameters = {
-              "tm1_connection": connectionName
-            };
+            var connectionTestConfig = success.data[connectionType];
+            if (!connectionTestConfig) {
+              console.error('Connection Type not support');
+              defer.reject(new Error('Connection Type not support'));
+            }
 
-            console.log('running', connectionName, functionName, parameters);
+            var parameters = connectionTestConfig['parameters'] || {};
 
-            _service.runFunctionAsync(connectionName, functionName, parameters)
+            parameters[connectionTestConfig['connection_param_name']] = connectionName;
+            if (connectionType !== 'tm1') {
+              parameters['no_tm1_connection'] = true;
+            }
+
+            _service.runFunctionAsync(connectionName, connectionTestConfig['function_name'], parameters)
               .then(function (data) {
-                console.log(data);
                 var status = data.status_code;
                 if (status === 200) {
                   defer.resolve(data.value);
@@ -453,7 +497,6 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
         });
 
       return defer.promise;
-
     };
 
     this.showConnectionsDialog = function () {
@@ -470,6 +513,7 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
         delete $rootScope.uiPrefs.atmosphereConnections[connectionName];
         delete connection.selectedInstance;
       }
+      $rootScope.$broadcast('update-atmosphere-connection');
     };
 
     this.getConnectionInstance = function (connection) {
@@ -524,6 +568,58 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
           console.error('loadConnectionIcons error', error);
         });
     };
+
+    this.showUpdateLicense = function ($scope) {
+      $dialogs.showDialog('atmosphereLicenseUpdateDialog', null, null, function (result) {
+        if (result.actionName === "OK") {
+          var secret_value = [];
+          try {
+            var obj = JSON.parse(result.data.jsonValue);
+            Object.keys(obj).forEach(function (key) {
+              var val = obj[key];
+              if (typeof (val) == "string") {
+                val = '\"' + val + '\"'
+              }
+              var str = '\"' + key + '\":' + val
+              secret_value.push(str)
+            })
+            secret_value = '{' + secret_value.join(',') + '}'
+          } catch (err) {
+            $scope.$emit('show-error', {
+              operationTranslation: 'ATMOSPHEREERRORCREATECONEECTIONINFO',
+              errorTranslation: 'ATMOSPHEREERRORCREATECONEECTIONINFO',
+              errorMessage: "JSON parse error"
+            });
+            return;
+          }
+
+          var data = {
+            "secret_key": 'license',
+            "secret_value": secret_value
+          }
+
+          console.log(data)
+
+          $scope.isLoading = true;
+
+          _service.generalPOSTRequest(_service.atmosphereAPIUpdateSecretPath, data)
+            .then(function (data) {
+              $scope.$emit('show-success', {
+                operationTranslation: 'ATMOSPHERELABELUPDATELICENSE',
+                messageTranslation: 'ATMOSPHERESUCCESS'
+              });
+              $rootScope.isLoading = false;
+            }, function (error) {
+              $scope.$emit('show-error', {
+                operationTranslation: 'ATMOSPHERELABELUPDATELICENSE',
+                errorTranslation: 'ATMOSPHEREFAILED',
+                errorMessage: "(status: " + error.status + ") " + (error.statusText ? error.statusText : "No error message.")
+              });
+              $scope.isLoading = false;
+            })
+        }
+      })
+    }
 
     this.loadConnectionIcons();
   }]);
@@ -586,7 +682,6 @@ arc.directive("atmosphereConnectionsForm", ['$rootScope', '$atmosphere', '$dialo
           $scope.isLoading = false;
           $scope.instance = $scope.options.instance;
           $scope.globalConnectionName = $scope.options.globalConnectionName;
-          $scope.isActive = $scope.options.isActive;
 
           if (!$rootScope.uiPrefs.atmosphereConnectionResult) $rootScope.uiPrefs.atmosphereConnectionResult = {};
 
@@ -691,7 +786,7 @@ arc.directive("atmosphereConnectionsForm", ['$rootScope', '$atmosphere', '$dialo
           $scope.refreshData = function () {
             $scope.isLoading = true;
 
-            $atmosphere.getConnectionInfo()
+            return $atmosphere.getConnectionInfo()
               .then(function (data) {
 
                 $scope.data.items = data.connections;
@@ -724,8 +819,6 @@ arc.directive("atmosphereConnectionsForm", ['$rootScope', '$atmosphere', '$dialo
               message: $helper.translate('ATMOSPHERETITLECONNECTIONTESTING', { connectionName: connectionName })
             };
             connection.testStatus = $rootScope.uiPrefs.atmosphereConnectionResult[connectionName].status;
-
-            console.log('testConnection', connection);
 
             $atmosphere.testConnection(connection, $scope.testFunctionMapping)
               .then(function (data) {
@@ -760,45 +853,25 @@ arc.directive("atmosphereConnectionsForm", ['$rootScope', '$atmosphere', '$dialo
                   var name = result.data.name;
                   var settingType = result.data.settingType;
 
-                  var secret_value = result.data.value || "";
-                  if (settingType === "tm1UserPassword") {
-                    var base_url = result.data.baseurl || "";
-                    var user = result.data.user || "";
-                    var atmosphere_connection_type = "tm1";
-                    var namespace = result.data.namespace || "";
-                    var password = result.data.password || "";
-                    var ssl = result.data.ssl || false;
-                    secret_value = `
-                    {\"base_url\": \"${base_url}\", 
-                    \"user\": \"${user}\", 
-                    \"namespace\": \"${namespace}\", 
-                    \"password\": \"${password}\",
-                    \"atmosphere_connection_type\": \"${atmosphere_connection_type}\", 
-                    \"ssl\": ${ssl}, 
-                    \"verify\": true,
-                    \"async_requests_mode\": true,
-                    \"session_context\": \"Atmosphere\"}`;
-                  } else if (settingType === "json") {
-                    secret_value = [];
-                    try {
-                      var obj = JSON.parse(result.data.jsonValue);
-                      Object.keys(obj).forEach(function (key) {
-                        var val = obj[key];
-                        if (typeof (val) == "string") {
-                          val = '\"' + val + '\"'
-                        }
-                        var str = '\"' + key + '\":' + val
-                        secret_value.push(str)
-                      })
-                      secret_value = '{' + secret_value.join(',') + '}'
-                    } catch (err) {
-                      $scope.$emit('show-error', {
-                        operationTranslation: 'ATMOSPHEREERRORCREATECONEECTIONINFO',
-                        errorTranslation: 'ATMOSPHEREERRORCREATECONEECTIONINFO',
-                        errorMessage: "JSON parse error"
-                      });
-                      return;
-                    }
+                  var secret_value = [];
+                  try {
+                    var obj = JSON.parse(result.data.jsonValue);
+                    Object.keys(obj).forEach(function (key) {
+                      var val = obj[key];
+                      if (typeof (val) == "string") {
+                        val = '\"' + val + '\"'
+                      }
+                      var str = '\"' + key + '\":' + val
+                      secret_value.push(str)
+                    })
+                    secret_value = '{' + secret_value.join(',') + '}'
+                  } catch (err) {
+                    $scope.$emit('show-error', {
+                      operationTranslation: 'ATMOSPHEREERRORCREATECONEECTIONINFO',
+                      errorTranslation: 'ATMOSPHEREERRORCREATECONEECTIONINFO',
+                      errorMessage: "JSON parse error"
+                    });
+                    return;
                   }
 
                   var data = {
@@ -865,9 +938,7 @@ arc.directive("atmosphereConnectionsForm", ['$rootScope', '$atmosphere', '$dialo
           };
 
           $rootScope.$on("atmosphere-login-reload", function (event, args) {
-            if ($scope.isActive) {
-              $scope.refreshData();
-            }
+            $scope.refreshData();
           });
         }]
     }
@@ -910,17 +981,60 @@ arc.directive("atmosphereConnectionCreateForm", function () {
       function ($scope, $rootScope, $http, $q, $translate, $timeout, uuid2, $atmosphere) {
         $scope.id = uuid2.newuuid();
         $scope.data = {
-          settingType: "tm1UserPassword",
-          jsonValue: `{"atmosphere_connection_type": "tm1",
-          "base_url": "https://company.planning-analytics.ibmcloud.com/tm1/api/tm1", 
-          "user": "company01_tm1_automation", 
-          "namespace": "LDAP", 
-          "password": "...", 
-          "ssl": true, 
-          "verify": true, 
-          "async_requests_mode": true, 
-          "session_context": "Atmosphere"}`
-        };
+          jsonValue: `{
+   "atmosphere_connection_type": "tm1",
+   "base_url": "https://pa-cloud-service/tm1/api/tm1", 
+   "user": "user", 
+   "namespace": "namespace", 
+   "password": "...", 
+   "ssl": true, 
+   "verify": true, 
+   "async_requests_mode": true, 
+   "session_context": "Atmosphere"
+}`};
+
+        $scope.jsonValidateMessage = "";
+
+        $scope.triggerFunction = function (event) {
+
+        }
+
+        $scope.$watch('data.jsonValue', function () {
+          try {
+            $scope.data.jsonValueObj = JSON.parse($scope.data.jsonValue);
+            $scope.jsonValidateMessage = '';
+          } catch (err) {
+            $scope.data.jsonValueObj = "JSON format incorrect";
+            $scope.jsonValidateMessage = 'JSON format incorrect';
+          }
+        })
+      }]
+  }
+});
+
+arc.directive("atmosphereLicenseUpdateForm", function () {
+  return {
+    restrict: "EA",
+    replace: true,
+    scope: {
+      data: "=arcModelData",
+      options: "=arcOptions",
+      dialog: "=arcDialog"
+    },
+    templateUrl: "__/plugins/atmosphere/directives/forms/license-update-form.html",
+    link: function ($scope, element, attrs) {
+
+    },
+    controller: ["$scope", "$rootScope", "$http", "$q", "$translate", "$timeout", "uuid2", "$atmosphere",
+      function ($scope, $rootScope, $http, $q, $translate, $timeout, uuid2, $atmosphere) {
+        $scope.id = uuid2.newuuid();
+        $scope.data = {
+          jsonValue: `{
+    "tenant": "tenant name",
+    "product_name": "ATMOSPHERE",
+    "expiry_date": "xxxx-xx-xx 00:00:00",
+    "signature": "..."
+}`};
 
         $scope.jsonValidateMessage = "";
 
@@ -1160,7 +1274,7 @@ arc.directive("cubewiseAtmosphereFunctions", ['$rootScope', '$atmosphere', '$tm1
           };
 
           $scope.$watch('functions', function () {
-            if ($scope.isActive)
+            if ($scope.isActive && !$scope.dataLoaded)
               $scope.refreshData()
                 .then(function () {
                   $scope.dataLoaded = true;
@@ -1346,7 +1460,7 @@ arc.directive("cubewiseAtmosphereUsageHistory", ['$rootScope', '$atmosphere', fu
         };
 
         $scope.$watch('functions', function () {
-          if ($scope.isActive)
+          if ($scope.isActive && !$scope.dataLoaded)
             $scope.refreshData()
               .then(function () {
                 $scope.dataLoaded = true;
@@ -1512,7 +1626,7 @@ arc.directive("cubewiseAtmosphereLogs", ['$rootScope', '$atmosphere', function (
         };
 
         $scope.$watch('functions', function () {
-          if ($scope.isActive)
+          if ($scope.isActive && !$scope.dataLoaded)
             $scope.refreshData()
               .then(function () {
                 $scope.dataLoaded = true;
@@ -1536,6 +1650,94 @@ arc.directive("cubewiseAtmosphereLogs", ['$rootScope', '$atmosphere', function (
           $scope.settings.pageState.totalItems = $scope.data.itemNum;
           $scope.settings.pageState.currentItems = $scope.data.itemNum;
           $scope.$emit('heights-update');
+        });
+      }]
+  }
+}]);
+
+arc.directive("cubewiseAtmosphereQuota", ['$rootScope', '$atmosphere', function ($rootScope, $atmosphere) {
+  return {
+    restrict: "EA",
+    // replace: true,
+    scope: {
+      instance: "=instance",
+      connection: "=connection",
+      isActive: '=isActive'
+    },
+    templateUrl: "__/plugins/atmosphere/directives/tabs/quota.html",
+    link: function ($scope, element, attrs) {
+
+    },
+    controller: ["$scope", "$rootScope", "$http", "$translate", "$timeout", "uuid2", "$atmosphere", "$q",
+      function ($scope, $rootScope, $http, $translate, $timeout, uuid2, $atmosphere, $q) {
+        $scope.id = uuid2.newuuid();
+        $scope.data = {
+          items: []
+        };
+
+        $scope.settings = {
+
+        }
+
+        $scope.refreshData = function () {
+          $scope.executionStatus = true;
+
+          return $atmosphere.getFunctionQuota($scope.connection)
+            .then(function (data) {
+              // console.log(data)
+              $scope.data.items = data;
+              $scope.data.items.forEach(function (item) {
+                item.periodElapsedProgressClass = $scope.progressClass(item['% Period Elapsed']);
+                item.runtimeUsedProgressClass = $scope.progressClass(item['% Runtime Used']);
+                item.availableRuntimeStr = $scope.timeStr(item['Available Runtime in Minutes']);
+                item.actualRuntimeStr = $scope.timeStr(item['Actual Runtime in Minutes']);
+              })
+              console.log($scope.data.items)
+              $scope.executionStatus = false;
+            }, function (error) {
+              $scope.$emit('show-error', {
+                operationTranslation: 'ATMOSPHEREERRORGETQUOTAINFO',
+                errorTranslation: 'ATMOSPHEREERRORGETQUOTAINFO',
+                errorMessage: "(status: " + error.status + ") " + (error.statusText ? error.statusText : "No error message.")
+              });
+              $scope.executionStatus = false;
+            });
+        }
+
+        $scope.progressClass = function (value) {
+          var v = parseInt(value);
+          if (v < 60) {
+            return 'progress-bar-success';
+          } else if (v >= 60 && v < 80) {
+            return 'progress-bar-warning';
+          } else {
+            return 'progress-bar-danger';
+          }
+        }
+
+        $scope.timeStr = function (min) {
+          min = min || 0;
+          var strs = (min + "").split(".");
+          var minStr = strs[0] + "min ";
+          if (strs[0] === "0" && strs.length > 1) {
+            minStr = "";
+          }
+          var secStr = "";
+          if (strs.length > 1) {
+            secStr = parseInt(parseFloat("0." + strs[1]) * 60) + 'sec';
+          }
+          return minStr + secStr;
+        }
+
+        $scope.$watch('isActive', function () {
+          if ($scope.isActive && !$scope.dataLoaded) {
+            $scope.data.items = [];
+            $scope.refreshData()
+              .then(function () {
+                $scope.dataLoaded = true;
+              }, function () {
+              });
+          }
         });
       }]
   }
@@ -1630,15 +1832,19 @@ arc.directive("cubewiseAtmospherePortal", function () {
 
           $atmosphere.getFunctionInfo($scope.global.connection)
             .then(function (data) {
-              $scope.global.functions = _.filter(data.functions, function (item) {
+              var functions = _.sortBy(data.functions, function (item) {
+                return item['Function Name'];
+              });
+
+              $scope.global.functions = _.filter(functions, function (item) {
                 return item['Function Type'] != 'Coordination Function' && item['Function Name'] != 'init' && item['Function Name'] != 'poll';
               });
 
-              $scope.global.functionsUsage = _.filter(data.functions, function (item) {
+              $scope.global.functionsUsage = _.filter(functions, function (item) {
                 return item['Function Type'] != 'Coordination Function';
               });
 
-              $scope.global.functionsLogs = _.filter(data.functions, function (item) {
+              $scope.global.functionsLogs = _.filter(functions, function (item) {
                 return item['Function Type'] != 'Coordination Function' && item['Function Name'] != 'init' && item['Function Name'] != 'poll';
               });
 
@@ -1646,7 +1852,7 @@ arc.directive("cubewiseAtmospherePortal", function () {
             }, function (error) {
               $scope.global.functions = [];
 
-              if($scope.hasAtmosphere) $scope.showError('ATMOSPHEREERRORGETFUNCTIONINFO', 'ATMOSPHEREERRORGETFUNCTIONINFO', "(status: " + error.status + ") " + $helper.errorText(error));
+              if ($scope.hasAtmosphere) $scope.showError('ATMOSPHEREERRORGETFUNCTIONINFO', 'ATMOSPHEREERRORGETFUNCTIONINFO', "(status: " + error.status + ") " + $helper.errorText(error));
 
               $scope.executionStatus = false;
             });
@@ -1654,7 +1860,7 @@ arc.directive("cubewiseAtmospherePortal", function () {
 
         $scope.$watch('global.connection', function () {
           if ($scope.global.connection) {
-            $scope.loadFunctions();
+            $scope.refresh();
           } else {
             $scope.global.functions = [];
           }
@@ -1672,6 +1878,10 @@ arc.directive("cubewiseAtmospherePortal", function () {
             $rootScope.uiPrefs.atmosphereCredentials = null;
           }
         };
+
+        $scope.updateLicense = function () {
+          $atmosphere.showUpdateLicense($scope);
+        }
 
         $scope.refresh = function () {
           $scope.loadConnection();
@@ -1691,6 +1901,10 @@ arc.directive("cubewiseAtmospherePortal", function () {
 
         //Trigger an event after the login screen
         $scope.$on("login-reload", function (event, args) { });
+
+        $scope.$on("update-atmosphere-connection", function (event, args) {
+          $scope.loadConnection();
+        });
 
         $scope.$on('show-error', function (event, args) {
           var operationTranslation = args.operationTranslation || 'ATMOSPHEREERRORNORMAL';
@@ -1774,6 +1988,19 @@ arc.run(['$rootScope', '$helper', '$dialogs', '$atmosphere',
       icon: 'fa-globe',
       size: 'middle',
       okButtonLabel: "Create",
+      okButtonClass: 'btn-success',
+      okButtonDisabled: function (data, options) {
+        return false
+      }
+    });
+
+    // License Update
+    $dialogs.registerDialog('atmosphereLicenseUpdateDialog', {
+      title: 'ATMOSPHERELABELUPDATELICENSE',
+      directive: 'atmosphereLicenseUpdateForm',
+      icon: 'fa-id-card-o',
+      size: 'middle',
+      okButtonLabel: "Update",
       okButtonClass: 'btn-success',
       okButtonDisabled: function (data, options) {
         return false

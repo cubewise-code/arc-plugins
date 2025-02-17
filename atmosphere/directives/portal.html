@@ -18,7 +18,7 @@
           <arc-toolbar-dropdown-item
             arc-click="$root.uiPrefs.atmospherePortalBigButtons = !$root.uiPrefs.atmospherePortalBigButtons;"
             arc-dropdown-stay-open>
-            <a href>
+            <a href style="padding: 4px;display: block;">
               <i class="fa fa-fw"
                 ng-class="{ 'fa-expand': $root.uiPrefs.atmospherePortalBigButtons, 'fa-compress': !$root.uiPrefs.atmospherePortalBigButtons }"></i>
               <span translate="{{'LARGEBUTTONS' | translate}}"></span>
@@ -29,13 +29,19 @@
             </a>
           </arc-toolbar-dropdown-item>
           <arc-toolbar-dropdown-item arc-click="toggleCredentials()" arc-dropdown-stay-open>
-            <a href>
+            <a href style="padding: 4px;display: block;">
               <i class="fa fa-fw fa-key"></i>
               <span translate="{{'ATMOSPHERELABELCLEARCREDENTIALS' | translate}}"></span>
               <span class="pull-right mt-1 mr-2">
                 <i class="fa fa-toggle-on pull-right" ng-if="$root.uiPrefs.atmosphereStoreCredentials"></i>
                 <i class="fa fa-toggle-off pull-right" ng-if="!$root.uiPrefs.atmosphereStoreCredentials"></i>
               </span>
+            </a>
+          </arc-toolbar-dropdown-item>
+          <arc-toolbar-dropdown-item arc-click="updateLicense()" arc-dropdown-stay-open>
+            <a href style="padding: 4px;display: block;">
+              <i class="fa fa-id-card-o"></i>
+              <span translate="{{'ATMOSPHERELABELUPDATELICENSE' | translate}}"></span>
             </a>
           </arc-toolbar-dropdown-item>
         </arc-toolbar-dropdown>
@@ -100,6 +106,17 @@
         <cubewise-atmosphere-logs is-active="global.activeTab == 'log'" instance="instance"
           connection="global.connection" functions="global.functionsLogs">
         </cubewise-atmosphere-logs>
+      </auto-height>
+    </uib-tab>
+    <uib-tab class="h-100" ng-click="tabChanged('quota')">
+      <uib-tab-heading>
+        <i class="fa fa-tachometer"></i>
+        <span translate="ATMOSPHERETABLABELQUOTA"></span>
+      </uib-tab-heading>
+      <auto-height>
+        <cubewise-atmosphere-quota is-active="global.activeTab == 'quota'" instance="instance"
+          connection="global.connection">
+        </cubewise-atmosphere-quota>
       </auto-height>
     </uib-tab>
   </uib-tabset>
