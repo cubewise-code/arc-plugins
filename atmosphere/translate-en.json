@@ -108,5 +108,6 @@
   "ATMOSPHEREERRORGETQUOTAINFO": "Error getting quota info: {{errorMessage}}",
   "ATMOSPHERELABELUPDATELICENSE": "Update Atomsphere License",
   "ATMOSPHEREUPDATELICENSETITLEJSON": "JSON of Atomsphere License",
-  "ATMOSPHEREUPDATELICENSETITLEJSONHINT":"JSON format Atomsphere License value"
+  "ATMOSPHEREUPDATELICENSETITLEJSONHINT":"JSON format Atomsphere License value",
+  "ATMOSPHERELINKURLNOTFOUND": "Find out more"
 }
