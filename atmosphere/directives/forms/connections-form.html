@@ -38,10 +38,21 @@
       </span>
       <button class="btn btn-secondary" ng-repeat="connectionIcon in connectionIcons"
         ng-click="toggleConnectionType(connectionIcon.connectionType)"
-        ng-style="connectionIconStyles[connectionIcon.connectionType].borderStyle">
+        ng-style="connectionIconStyles[connectionIcon.connectionType].borderStyle"
+        title="{{connectionIcon.connectionType}}">
         <i class="fa fa-fw"
           ng-class="connectionIcon.icon.pngPath ? connectionIcon.connectionType : [ connectionIcon.icon.faClass, connectionIcon.connectionType ] "></i>
         <i class="fa fa-fw fa-check fa-mark text-dark" ng-show="connectionIcon.checked"></i>
+      </button>
+    </div>
+
+    <div class="input-group btn-group btn-group-sm input-group-sm">
+      <span class="input-group-prepend">
+        <span class="input-group-text font-weight-bold" translate="ATMOSPHERECONNECTIONTENANT"
+          ng-class="atmosphereTenant ? 'btn-success' : ''"></span>
+      </span>
+      <button class="btn btn-success">
+        {{atmosphereTenant}}
       </button>
     </div>
 
@@ -163,6 +174,15 @@
                 ng-class="{ 'text-danger': $root.uiPrefs.atmosphereConnectionResult[connection['Connection Name']].status == 'fail', 'text-success': $root.uiPrefs.atmosphereConnectionResult[connection['Connection Name']].status == 'success' }">
                 <i class="fa fa-fw"
                   ng-class="{ 'fa-wifi': $root.uiPrefs.atmosphereConnectionResult[connection['Connection Name']].status != 'testing', 'fa-refresh': $root.uiPrefs.atmosphereConnectionResult[connection['Connection Name']].status == 'testing', 'fa-spin': $root.uiPrefs.atmosphereConnectionResult[connection['Connection Name']].status == 'testing' }"></i>
+              </button>
+            </span>
+          </td>
+          <td>
+            <span class="pull-right">
+              <button class="btn btn-sm btn-secondary"
+                title="{{'ATMOSPHERECOLUMNHEADERCONNECTIONDELETE'  | translate}}"
+                ng-click="deleteConnection(connection)">
+                <i class="fa fa-fw fa-trash text-delete"></i>
               </button>
             </span>
           </td>

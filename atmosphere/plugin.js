@@ -42,6 +42,7 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
     this.atmosphereAPIInitPath = '/init';
     this.atmosphereAPIPollPath = '/poll';
     this.atmosphereAPIUpdateSecretPath = '/update-secret';
+    this.atmosphereAPIDeleteConnectionPath = '/delete-secret';
 
     this.atmosphereAPIConnectionInfoFunctionName = 'connection-info';
     this.atmosphereAPIFunctionInfoFunctionName = 'function-info';
@@ -69,6 +70,17 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
       return $rootScope.settings.AtmosphereURL;
     };
 
+    this.getAtmosphereTenant = function () {
+      if (!$rootScope.settings || _.isEmpty($rootScope.settings.AtmosphereURL)) return null;
+      let tenant = "";
+      let strs = $rootScope.settings.AtmosphereURL.split('//');
+
+      if(strs.length == 2){
+        tenant = strs[1].split(".")[0];
+      }
+      return tenant;
+    };
+
     this.isLoggedIn = function () {
       return $rootScope.uiPrefs.atmosphereIsLoggedIn;
     };
@@ -89,13 +101,13 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
             $rootScope.$broadcast("atmosphere-login-reload");
             defer.resolve(success);
           } else {
-            console.log('loginAtmosphere status incorrect', success);
+            $rootScope.uiPrefs.atmosphereStoreCredentials = false;
             $rootScope.uiPrefs.atmosphereIsLoggedIn = false;
             $rootScope.uiPrefs.atmosphereCredentials = null;
             defer.reject(new Error('loginAtmosphere status incorrect'));
           }
         }, function (error) {
-          console.error('loginAtmosphere error', error);
+          $rootScope.uiPrefs.atmosphereStoreCredentials = false;
           $rootScope.uiPrefs.atmosphereIsLoggedIn = false;
           $rootScope.uiPrefs.atmosphereCredentials = null;
           defer.reject(new Error('loginAtmosphere error'));
@@ -111,7 +123,9 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
       $http.post(url)
         .then(function (success) {
           if (success.status === 200) {
+            $rootScope.uiPrefs.atmosphereCredentials = null;
             $rootScope.uiPrefs.atmosphereIsLoggedIn = false;
+            $rootScope.uiPrefs.atmosphereConnections = null;
             defer.resolve(success);
           } else {
             defer.reject(new Error('logoutAtmosphere status incorrect'));
@@ -262,7 +276,6 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
 
     this.getConnectionInfo = function () {
       var defer = $q.defer();
-
       _service.runFunctionAsync(_service.atmosphereAPIValueConnectionNone, _service.atmosphereAPIConnectionInfoFunctionName, {})
         .then(function (data) {
           var status = data.status_code;
@@ -330,6 +343,11 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
       return m.isValid() ? m.format('mm:ss') : '';
     }
 
+    function parseDateTimeToLocal(value) {
+      var m = moment.utc(value);
+      return m.isValid() ? m.local().format('YYYY-MM-DD HH:mm:ss') : '';
+    }
+
     this.getUsageHistory = function (connectionName, filter) {
       var defer = $q.defer();
 
@@ -339,7 +357,6 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
         since: filter.sinceDate !== '' ? parseDate(filter.sinceDate) : "",
         until: filter.untilDate !== '' ? parseDate(filter.untilDate) : ""
       };
-
       _service.runFunctionAsync(connectionName, _service.atmosphereAPIUsageInfoFunctionName, parameters)
         .then(function (data) {
           var status = data.status_code;
@@ -352,12 +369,15 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
             defer.resolve(data.value.map(function (i) {
               var r = _.merge({}, i, {
                 InvocationTime: parseDateTime(i.InvocationTime),
+                InvocationTimeLocal: parseDateTimeToLocal(i.InvocationTime),
                 StartTime: parseDateTime(i.StartTime),
+                StartTimeLocal: parseDateTimeToLocal(i.StartTime),
                 Duration: parseTime(i['Duration (secs)']),
                 ExtractStepTime: parseTime(i.ExtractStepTime),
                 LoadStepTime: parseTime(i.LoadStepTime),
                 TransformStepTime: parseTime(i.TransformStepTime),
-                EndTime: parseDateTime(i.EndTime)
+                EndTime: parseDateTime(i.EndTime),
+                EndTimeLocal: parseDateTimeToLocal(i.EndTime),
               });
               return r;
             }));
@@ -386,7 +406,14 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
         .then(function (data) {
           var status = data.status_code;
           if (status === 200) {
-            defer.resolve(data.value);
+            // defer.resolve(data.value);
+            defer.resolve(data.value.map(function (i) {
+              var r = _.merge({}, i, {
+                Timestamp: parseDateTime(i.Timestamp),
+                TimestampLocal: parseDateTimeToLocal(i.Timestamp),
+              });
+              return r;
+            }));
           } else {
             defer.reject(new Error('getLogs status incorrect'));
           }
@@ -499,8 +526,12 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
       return defer.promise;
     };
 
-    this.showConnectionsDialog = function () {
-      $dialogs.showDialog('atmosphereConnectionsDialog', null, null, null);
+    this.showConnectionsDialog = function (tm1Only) {
+      console.log(tm1Only)
+      let data = {
+        tm1Only:!!tm1Only 
+      }
+      $dialogs.showDialog('atmosphereConnectionsDialog', data, null, null);
     };
 
     this.setConnectionInstance = function (connection, instanceName) {
@@ -598,8 +629,6 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
             "secret_value": secret_value
           }
 
-          console.log(data)
-
           $scope.isLoading = true;
 
           _service.generalPOSTRequest(_service.atmosphereAPIUpdateSecretPath, data)
@@ -682,6 +711,8 @@ arc.directive("atmosphereConnectionsForm", ['$rootScope', '$atmosphere', '$dialo
           $scope.isLoading = false;
           $scope.instance = $scope.options.instance;
           $scope.globalConnectionName = $scope.options.globalConnectionName;
+          $scope.atmosphereTenant = $atmosphere.getAtmosphereTenant();
+          $scope.tm1ConnectionOnly = $scope.data.tm1Only;
 
           if (!$rootScope.uiPrefs.atmosphereConnectionResult) $rootScope.uiPrefs.atmosphereConnectionResult = {};
 
@@ -724,7 +755,8 @@ arc.directive("atmosphereConnectionsForm", ['$rootScope', '$atmosphere', '$dialo
               { key: '"Connection Name"', translateKey: 'ATMOSPHERECOLUMNHEADERCONNECTIONNAME', display: true, width: 0 },
               { key: '"Connection Type"', translateKey: 'ATMOSPHERECOLUMNHEADERCONNECTIONTYPE', display: true, width: 250 },
               { key: 'selectedInstance', translateKey: 'ATMOSPHERECOLUMNHEADERCONNECTIONINSTANCE', display: true, width: 180 },
-              { key: 'testStatus', translateKey: 'ATMOSPHERECOLUMNHEADERCONNECTIONTESTSTATUS', display: true, width: -1 }
+              { key: 'testStatus', translateKey: 'ATMOSPHERECOLUMNHEADERCONNECTIONTESTSTATUSSHORT', display: true, width: -1 },
+              { key: 'delete', translateKey: 'ATMOSPHERECOLUMNHEADERCONNECTIONDELETESHORT', display: true, width: -1 }
             ],
             sortColumn: {
               key: '"Connection Name"',
@@ -751,6 +783,10 @@ arc.directive("atmosphereConnectionsForm", ['$rootScope', '$atmosphere', '$dialo
               return icon.connectionType;
             });
           };
+
+          if($scope.tm1ConnectionOnly){
+            $scope.toggleConnectionType('tm1');
+          }
 
           $scope.sortBy = function (key) {
             if (!key) return;
@@ -851,6 +887,14 @@ arc.directive("atmosphereConnectionsForm", ['$rootScope', '$atmosphere', '$dialo
                 if (result.actionName === "OK") {
                   // console.log(result.data)
                   var name = result.data.name;
+                  if(!name){
+                    $rootScope.$broadcast('show-error', {
+                      operationTranslation: 'ATMOSPHEREERRORCREATECONEECTIONINFO',
+                      errorTranslation: 'ATMOSPHEREERRORCREATECONEECTIONINFO',
+                      errorMessage: "Connection name can't be empty"
+                    });
+                    return;
+                  }
                   var settingType = result.data.settingType;
 
                   var secret_value = [];
@@ -866,7 +910,7 @@ arc.directive("atmosphereConnectionsForm", ['$rootScope', '$atmosphere', '$dialo
                     })
                     secret_value = '{' + secret_value.join(',') + '}'
                   } catch (err) {
-                    $scope.$emit('show-error', {
+                    $rootScope.$broadcast('show-error', {
                       operationTranslation: 'ATMOSPHEREERRORCREATECONEECTIONINFO',
                       errorTranslation: 'ATMOSPHEREERRORCREATECONEECTIONINFO',
                       errorMessage: "JSON parse error"
@@ -900,6 +944,31 @@ arc.directive("atmosphereConnectionsForm", ['$rootScope', '$atmosphere', '$dialo
               });
           };
 
+          $scope.deleteConnection = function(connection) {
+            let data = {
+              'secret_key': connection['Connection Name']
+            }
+
+            $scope.isLoading = true;
+
+            $atmosphere.generalPOSTRequest($atmosphere.atmosphereAPIDeleteConnectionPath, data)
+              .then(function (data) {
+                $scope.$emit('show-success', {
+                  operationTranslation: 'ATMOSPHERECOLUMNHEADERCONNECTIONDELETE',
+                  messageTranslation: 'ATMOSPHEREHISTORYCOLUMNSUCCESS'
+                });
+                $scope.isLoading = false;
+                $scope.refreshData();
+              }, function (error) {
+                $scope.$emit('show-error', {
+                  operationTranslation: 'ATMOSPHEREERRORDELEtECONEECTIONINFO',
+                  errorTranslation: 'ATMOSPHEREERRORDELEtECONEECTIONINFO',
+                  errorMessage: "(status: " + error.status + ") " + (error.statusText ? error.statusText : "No error message.")
+                });
+                $scope.isLoading = false;
+              })
+          }
+
           $scope.setConnectionInstance = function (connection, instanceName) {
             $atmosphere.setConnectionInstance(connection, instanceName);
           };
@@ -920,7 +989,7 @@ arc.directive("atmosphereConnectionsForm", ['$rootScope', '$atmosphere', '$dialo
 
             $atmosphere.logoutAtmosphere()
               .then(function () {
-                $scope.$emit('atmosphere-logout', null);
+                $rootScope.$broadcast('atmosphere-logout', null);
                 $scope.$emit('show-success', {
                   operationTranslation: 'ATMOSPHEREDIALOGTITLELOGOUT',
                   messageTranslation: 'ATMOSPHEREHISTORYCOLUMNSUCCESS'
@@ -1185,7 +1254,6 @@ arc.directive("cubewiseAtmosphereFunctions", ['$rootScope', '$atmosphere', '$tm1
                   apiKey: "",
                   needApiKey: true
                 };
-
                 if (!_.isEmpty($rootScope.uiPrefs.atmosphereCredentials)) {
                   var credentials = JSON.parse($rootScope.uiPrefs.atmosphereCredentials);
                   if (credentials.apiKey) {
@@ -1198,7 +1266,6 @@ arc.directive("cubewiseAtmosphereFunctions", ['$rootScope', '$atmosphere', '$tm1
                   function (result) {
                     if (result.actionName === "OK") {
                       $scope.executionStatus = true;
-
                       $atmosphere.createProcesses(result.data.connection, result.data.update, result.data.domain, result.data.functionName, result.data.apiKey)
                         .then(function (data) {
                           $scope.executionStatus = false;
@@ -1294,9 +1361,25 @@ arc.directive("cubewiseAtmosphereFunctions", ['$rootScope', '$atmosphere', '$tm1
                 .then(function () {
                   $scope.dataLoaded = true;
                 }, function () {
-                });
+              });
             }
           });
+
+          $scope.$on("atmosphere-portal-refresh", function (event, args) {
+            if ($scope.isActive) {
+              $scope.data.processes = [];
+              // $scope.data.functions = [];
+              $scope.processesPanel.pageState.totalItems = 0;
+              $scope.processesPanel.pageState.currentItems = 0;
+              $scope.processesPanel.pageState.totalItems = 0;
+              $scope.processesPanel.pageState.currentItems = 0;
+              $scope.refreshData()
+                .then(function () {
+                  $scope.dataLoaded = true;
+                }, function () {
+              });
+            }
+          });         
 
         }]
     }
@@ -1329,8 +1412,11 @@ arc.directive("cubewiseAtmosphereUsageHistory", ['$rootScope', '$atmosphere', fu
           columns: [
             { key: 'Function', translateKey: 'ATMOSPHEREHISTORYCOLUMNFUNCTION', display: true, width: 130 },
             { key: 'InvocationTime', translateKey: 'ATMOSPHEREHISTORYCOLUMNINVOCATIONTIME', display: true, width: 145 },
-            { key: 'StartTime', translateKey: 'ATMOSPHEREHISTORYCOLUMNSTARTTIME', display: true, width: 145 },
+            { key: 'InvocationTimeLocal', translateKey: 'ATMOSPHEREHISTORYCOLUMNINVOCATIONTIMELOCAL', display: true, width: 145 },
+            { key: 'StartTime', translateKey: 'ATMOSPHEREHISTORYCOLUMNSTARTTIMEUTC', display: true, width: 145 },
+            { key: 'StartTimeLocal', translateKey: 'ATMOSPHEREHISTORYCOLUMNSTARTTIMELOCAL', display: true, width: 145 },
             { key: 'EndTime', translateKey: 'ATMOSPHEREHISTORYCOLUMNENDTIME', display: false, width: 145 },
+            { key: 'EndTimeLocal', translateKey: 'ATMOSPHEREHISTORYCOLUMNENDTIMELOCAL', display: false, width: 145 },
             { key: 'Duration', translateKey: 'ATMOSPHEREHISTORYCOLUMNDURATION', display: true, width: 100 },
             { key: 'ExtractStepTime', translateKey: 'ATMOSPHEREHISTORYCOLUMNEXTRACTSTEPTIME', display: true, width: 140 },
             { key: 'TransformStepTime', translateKey: 'ATMOSPHEREHISTORYCOLUMNTRANSFORMSTEPTIME', display: true, width: 160 },
@@ -1486,7 +1572,7 @@ arc.directive("cubewiseAtmosphereUsageHistory", ['$rootScope', '$atmosphere', fu
           $scope.$emit('heights-update');
         })
 
-        $rootScope.$on("atmosphere-login-reload", function (event, args) {
+        $scope.$on("atmosphere-portal-refresh", function (event, args) {
           if ($scope.isActive) {
             $scope.refreshData();
           }
@@ -1523,6 +1609,7 @@ arc.directive("cubewiseAtmosphereLogs", ['$rootScope', '$atmosphere', function (
             functionName: ''
           },
           allChecked: false,
+          levels:["INFO"],
           sortColumn: {
             'key': 'Timestamp',
             'direction': true
@@ -1550,6 +1637,15 @@ arc.directive("cubewiseAtmosphereLogs", ['$rootScope', '$atmosphere', function (
 
           $atmosphere.getFunctionLogs($scope.connection, $scope.settings.filter.functionName)
             .then(function (data) {
+              data.forEach(function(i){
+                i.Level = "";
+                let strs = i.Message.split(" - ");
+                if(strs.length > 1){
+                // if(strs.length > 1 && $scope.settings.levels.indexOf(strs[0]) >= 0){
+                  i.Message = strs[1]
+                  i.Level = strs[0];
+                }
+              })
               $scope.data.items = data;
               $scope.data.itemNum = $scope.data.items.length;
               $scope.executionStatus = false;
@@ -1581,7 +1677,7 @@ arc.directive("cubewiseAtmosphereLogs", ['$rootScope', '$atmosphere', function (
 
         $scope.export = function () {
           let rows = [];
-          let headers = ['Function', 'Timestamp', 'Message'];
+          let headers = ['Function','Time(UTC)','Time(Local)','Level','Message'];
           rows.push(headers);
 
           let index = 0;
@@ -1596,6 +1692,10 @@ arc.directive("cubewiseAtmosphereLogs", ['$rootScope', '$atmosphere', function (
                   value = item[key] ? item[key] + '' : '';
                   if (key === 'Mesage') {
                     value = value.replaceAll("\n", " ").replaceAll(",", " ");
+                  }else if (key === 'Time(UTC)') {
+                    value = item['Timestamp'];
+                  }else if (key === 'Time(Local)') {
+                    value = item['TimestampLocal'];
                   }
                 }
                 row.push(value);
@@ -1650,6 +1750,12 @@ arc.directive("cubewiseAtmosphereLogs", ['$rootScope', '$atmosphere', function (
           $scope.settings.pageState.totalItems = $scope.data.itemNum;
           $scope.settings.pageState.currentItems = $scope.data.itemNum;
           $scope.$emit('heights-update');
+        });
+
+        $scope.$on("atmosphere-portal-refresh", function (event, args) {
+          if ($scope.isActive) {
+            $scope.refreshData();
+          }
         });
       }]
   }
@@ -1739,6 +1845,12 @@ arc.directive("cubewiseAtmosphereQuota", ['$rootScope', '$atmosphere', function 
               });
           }
         });
+
+        $scope.$on("atmosphere-portal-refresh", function (event, args) {
+          if ($scope.isActive) {
+            $scope.refreshData();
+          }
+        });
       }]
   }
 }]);
@@ -1825,9 +1937,8 @@ arc.directive("cubewiseAtmospherePortal", function () {
         };
 
         $scope.loadFunctions = function () {
-
           if (!$scope.global.connection) return;
-
+          if ($scope.executionStatus) return;
           $scope.executionStatus = true;
 
           $atmosphere.getFunctionInfo($scope.global.connection)
@@ -1858,14 +1969,6 @@ arc.directive("cubewiseAtmospherePortal", function () {
             });
         };
 
-        $scope.$watch('global.connection', function () {
-          if ($scope.global.connection) {
-            $scope.refresh();
-          } else {
-            $scope.global.functions = [];
-          }
-        });
-
         $scope.loadConnection();
 
         $scope.reset = function () {
@@ -1876,6 +1979,8 @@ arc.directive("cubewiseAtmospherePortal", function () {
           $rootScope.uiPrefs.atmosphereStoreCredentials = !$rootScope.uiPrefs.atmosphereStoreCredentials;
           if (!$rootScope.uiPrefs.atmosphereStoreCredentials) {
             $rootScope.uiPrefs.atmosphereCredentials = null;
+          }else {
+            $rootScope.atmosphereLoginRequired();
           }
         };
 
@@ -1884,23 +1989,31 @@ arc.directive("cubewiseAtmospherePortal", function () {
         }
 
         $scope.refresh = function () {
-          $scope.loadConnection();
-          $scope.loadFunctions();
+          if($scope.global.activeTab === 'functions'){
+            $scope.loadConnection();
+            $scope.loadFunctions();
+          }
+          $rootScope.$broadcast('atmosphere-portal-refresh');
         };
 
-        $scope.showConnectionsDialog = function () {
-          $atmosphere.showConnectionsDialog();
+        $scope.showConnectionsDialog = function (tm1Only) {
+          $atmosphere.showConnectionsDialog(tm1Only);
         };
 
         //init
         $settings.settings()
           .then(function (settings) {
             $scope.reset();
-            $scope.atmosphereURL = settings.AtmosphereURL;
+            // $scope.atmosphereURL = settings.AtmosphereURL;
           });
 
-        //Trigger an event after the login screen
-        $scope.$on("login-reload", function (event, args) { });
+        $scope.$watch('global.connection', function () {
+          if ($scope.global.connection) {
+            $scope.loadFunctions();
+          } else {
+            $scope.global.functions = [];
+          }
+        });
 
         $scope.$on("update-atmosphere-connection", function (event, args) {
           $scope.loadConnection();
@@ -1933,12 +2046,23 @@ arc.directive("cubewiseAtmospherePortal", function () {
 
         //Trigger an event after the plugin closes
         $scope.$on("$destroy", function (event) { });
+
+        $scope.$on("atmosphere-logout", function (event, args) { 
+          $scope.global.connection = null;
+          $scope.global.connections = [];
+          $scope.global.functions = [];
+          $scope.global.activeTab = 'functions';
+        });
+
+        $scope.$on("atmosphere-login-reload", function (event, args) {
+          $scope.refresh();
+        })
       }]
   };
 });
 
-arc.run(['$rootScope', '$helper', '$dialogs', '$atmosphere',
-  function ($rootScope, $helper, $dialogs, $atmosphere) {
+arc.run(['$rootScope', '$helper', '$dialogs', '$atmosphere','Notification',
+  function ($rootScope, $helper, $dialogs, $atmosphere,Notification) {
     // Register atmophere dialogs
 
     // Login

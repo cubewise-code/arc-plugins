@@ -26,5 +26,19 @@
     "parameters": {
       
     }
+  },
+  "d365": {
+    "function_name": "ping-d365",
+    "connection_param_name": "d365_connection",
+    "parameters": {
+      
+    }
+  },
+  "cin7": {
+    "function_name": "ping-cin7",
+    "connection_param_name": "cin7_connection",
+    "parameters": {
+      
+    }
   }
 }

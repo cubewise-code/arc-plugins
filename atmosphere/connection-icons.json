@@ -2,9 +2,12 @@
   "tm1": { "pngPath": "images/tm1.png", "accentColor": "#3eb5b6", "colorizeIcon": { "dark": "#c8c8c8", "light": "#444" } },
   "salesforce": { "pngPath": "images/salesforce.png", "accentColor": "#00a1e0", "colorizeIcon": { "dark": "#c8c8c8", "light": "#444" } },
   "snowflake": { "pngPath": "images/snowflake.png", "accentColor": "#29b5e8", "colorizeIcon": { "dark": "#c8c8c8", "light": "#444" } },
-  "sharepoint": { "pngPath": "images/sharepoint.png", "accentColor": "#37c6d0", "desaturateIcon": true },
+  "sharepoint": { "pngPath": "images/sharepoint.png", "accentColor": "#37c6d0", "desaturateIcon": true },  
+  "d365": { "pngPath": "images/d365.png", "accentColor": "#37c6d0", "colorizeIcon": { "dark": "#c8c8c8", "light": "#444" } },
   "databricks": { "pngPath": "images/databricks.png", "accentColor": "#ff3621", "colorizeIcon": { "dark": "#c8c8c8", "light": "#444" } },
   "techone": { "pngPath": "images/techone.png", "accentColor": "#f9bd1b", "colorizeIcon": { "dark": "#c8c8c8", "light": "#444" } },
   "sftp": { "pngPath": "images/sftp.png", "accentColor": "#ffc966", "colorizeIcon": { "dark": "#c8c8c8", "light": "#444" } },
-  "default": { "faClass": "fa-globe", "accentColor": "#c8c8c8", "colorizeIcon": { "dark": "#c8c8c8", "light": "#444" } }
+  "default": { "faClass": "fa-globe", "accentColor": "#c8c8c8", "colorizeIcon": { "dark": "#c8c8c8", "light": "#444" } },
+  "xero": { "pngPath": "images/xero.png", "accentColor": "#13B5EA", "colorizeIcon": { "dark": "#c8c8c8", "light": "#444" } },   
+  "cin7": { "pngPath": "images/cin7.png", "accentColor": "#13B5EA", "colorizeIcon": { "dark": "#c8c8c8", "light": "#444" } }
 }

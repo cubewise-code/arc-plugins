@@ -30,8 +30,9 @@
         <table class="table table-sm table-striped table-hover table-text-bright table-vertical-align-middle" ng-if="functions.length > 0">
           <thead>
             <th ng-repeat="column in functionsPanel.columns | filter: {display:true}"
-              ng-style="{minWidth:column.width? column.width + 'px': ''}">
-              <span class="btn btn-sm" ng-click="sortBy('functionsPanel', column.key)">
+              ng-style="{minWidth:column.width? column.width + 'px': ''}"
+              ng-click="sortBy('functionsPanel', column.key)">
+              <span class="click">
                 {{ column.translateKey | translate}}
                 <i ng-if="functionsPanel.sortColumn.key === column.key && !functionsPanel.sortColumn.direction"
                   class="fa fa-fw fa-sort-amount-asc"></i>
