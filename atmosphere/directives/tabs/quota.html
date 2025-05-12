@@ -1,5 +1,5 @@
 <div class="h-100 d-flex flex-column">
-  <div class="btn-toolbar">
+  <div class="btn-toolbar" ng-show="false">
     <div class="input-group btn-group btn-group-sm input-group-sm">
       <button class="btn btn-secondary" title="{{'REFRESH' | translate}}" ng-disabled="executionStatus"
         ng-click="refreshData()">
@@ -11,29 +11,29 @@
     <i class="fa fa-refresh fa-spin fa-fw fa-5x"></i>
   </div>
   <div ng-if="!executionStatus" class="flex-grow-1" style="overflow-y: auto;">
-    <table class="table table-sm table-hover table-text-bright table-vertical-align-middle">
+    <table class="table table-sm table-hover table-text-bright table-vertical-align-top">
       <thead>
         <tr>
           <th style="width:65px">
-            <span class="btn btn-sm pull-left">{{'ATMOSPHERETITLEPERIOD' | translate}}</span>
+            <span class="pull-left">{{'ATMOSPHERETITLEPERIOD' | translate}}</span>
           </th>
           <th style="width:100px;">
-            <span class="btn btn-sm pull-right" ng-click="sortBy(column.key)">
+            <span class="click pull-right" ng-click="sortBy(column.key)">
               {{'ATMOSPHERETITLEAVAILABLERUNTIMEINMINUTES' | translate}}
             </span>
           </th>
           <th style="width:100px">
-            <span class="btn btn-sm pull-right" ng-click="sortBy(column.key)">
+            <span class="click pull-right" ng-click="sortBy(column.key)">
               {{'ATMOSPHERETITLERUNTIMEINMINUTES' | translate}}
             </span>
           </th>
           <th style="width:120px">
-            <span class="btn btn-sm pull-right" ng-click="sortBy(column.key)">
+            <span class="click pull-right" ng-click="sortBy(column.key)">
               {{'ATMOSPHERETITLEPERIODELAPSED' | translate}}
             </span>
           </th>
           <th style="width:120px">
-            <span class="btn btn-sm pull-right" ng-click="sortBy(column.key)">
+            <span class="click pull-right" ng-click="sortBy(column.key)">
               {{'ATMOSPHERETITLERUNTIMEUSED' | translate}}
             </span>
           </th>

@@ -28,7 +28,10 @@
 
     <div class="input-group btn-group btn-group-sm input-group-sm">
       <span class="input-group-prepend">
-        <span class="input-group-text font-weight-bold">f(x)</span>
+        <span class="input-group-text font-weight-bold"
+        title="{{ 'ATMOSPHERETABLABELFUNCTIONS' | translate}}">
+          <i class="fa fa-fw fa-plug"></i>
+        </span>
       </span>
       <select class="form-control editor-select" ng-model="settings.filter.functionName" ng-change="refreshData()"
         title="{{ 'ATMOSPHERETABLABELFUNCTIONS' | translate}}" ng-disabled="executionStatus">
@@ -128,13 +131,13 @@
   </div>
 
   <div ng-if="!executionStatus" class="flex-grow-1" style="overflow-y: auto;">
-    <table ng-if="data.itemNum > 0" class="table table-sm table-striped table-hover table-text-bright table-vertical-align-middle">
+    <table ng-if="data.itemNum > 0" class="table table-sm table-striped table-hover table-text-bright table-vertical-align-top">
       <thead>
         <tr>
           <th style="width:30px"></th>
           <th ng-repeat="column in settings.columns | filter: {display:true}"
             ng-style="{minWidth:column.width? column.width + 'px': ''}">
-            <span class="btn btn-sm" ng-click="sortBy(column.key)">
+            <span class="click" ng-click="sortBy(column.key)">
               {{ column.translateKey | translate}}
               <i ng-if="settings.sortColumn.key === column.key && !settings.sortColumn.direction"
                 class="fa fa-fw fa-sort-amount-asc"></i>

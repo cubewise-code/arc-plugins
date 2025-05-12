@@ -11,7 +11,10 @@
 
     <div class="input-group btn-group btn-group-sm input-group-sm">
       <span class="input-group-prepend">
-        <span class="input-group-text font-weight-bold">f(x)</span>
+        <span class="input-group-text font-weight-bold"
+        title="{{ 'ATMOSPHERETABLABELFUNCTIONS' | translate}}">
+          <i class="fa fa-fw fa-plug"></i>
+        </span>
         <!-- <span class="input-group-text">{{'ATMOSPHERETABLABELFUNCTIONS' | translate}}</span> -->
       </span>
       <select class="form-control editor-select" ng-model="settings.filter.functionName" ng-change="refreshData()"
@@ -38,7 +41,7 @@
     </div>
 
     <div class="input-group btn-group btn-group-sm input-group-sm" ng-if="settings.filter.functionName === ''">
-      <span class="btn btn-info disabled">Please select a function</span>
+      <span class="btn btn-info btn-warning disabled">{{'ATMOSPHERETABLABELFUNCTIONSELECTALARM' | translate}}</span>
     </div>
   </div>
 
@@ -48,19 +51,29 @@
 
   <div ng-if="!executionStatus" class="flex-grow-1" style="overflow-y: auto;">
     <table ng-if="data.itemNum > 0"
-      class="table table-sm table-striped table-hover table-text-bright table-vertical-align-middle">
+      class="table table-sm table-striped table-hover table-text-bright table-vertical-align-top">
       <thead>
         <tr>
           <th style="width:30px">
-            <span class="btn btn-sm pull-left">{{'ATMOSPHERETITLESELECT' | translate}}</span>
+            <span class="click pull-left">{{'ATMOSPHERETITLESELECT' | translate}}</span>
           </th>
-          <th style="width:150px;">
-            <span class="btn btn-sm pull-left" ng-click="sortBy(column.key)">
-              {{'ATMOSPHERETITLELOGTIME' | translate}}
+          <th style="width:145px;">
+            <span class="click pull-left" ng-click="sortBy(column.key)">
+              {{'ATMOSPHERETITLELOGTIMEUTC' | translate}}
             </span>
           </th>
-          <th style="width:100px">
-            <span class="btn btn-sm pull-left" ng-click="sortBy(column.key)">
+          <th style="width:145px;">
+            <span class="click pull-left" ng-click="sortBy(column.key)">
+              {{'ATMOSPHERETITLELOGTIMELOCAL' | translate}}
+            </span>
+          </th>
+          <th style="width:55px;">
+            <span class="click pull-left" ng-click="sortBy(column.key)">
+              {{'ATMOSPHERETITLELOGLEVEL' | translate}}
+            </span>
+          </th>
+          <th>
+            <span class="click pull-left" ng-click="sortBy(column.key)">
               {{'ATMOSPHERETITLELOGMESSAGE' | translate}}
             </span>
           </th>
@@ -79,6 +92,16 @@
           <td>
             <span>
               {{item['Timestamp']}}
+            </span>
+          </td>
+          <td>
+            <span>
+              {{item['TimestampLocal']}}
+            </span>
+          </td>
+          <td>
+            <span>
+              {{item['Level']}}
             </span>
           </td>
           <td>
