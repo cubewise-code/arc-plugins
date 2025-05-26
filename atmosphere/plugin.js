@@ -157,73 +157,36 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
     };
 
     this.runFunctionAsync = function (connectionName, functionName, functionParameters) {
-      var defer = $q.defer();
       var _this = this;
+      var url = _this.atmosphereAPIRoot + "/" + functionName;
 
-      var defaultInitPayload = {
-        function_name: functionName,
-        parameters: {
-          "tm1_connection": connectionName,
-          "run_mode": "response"
-        }
+      // Handle default parameters
+      var parameters = {
+        run_mode: "response"
       };
 
-      if (functionParameters && functionParameters['no_tm1_connection']) {
-        delete defaultInitPayload['parameters']['tm1_connection'];
-        delete functionParameters['no_tm1_connection']
+      if (!(functionParameters && functionParameters['no_tm1_connection'])) {
+        parameters["tm1_connection"] = connectionName;
+      } else {
+        delete functionParameters['no_tm1_connection'];
       }
 
-      var pollForResult = function (asyncId, defer, i) {
-        var url = _this.atmosphereAPIRoot + _this.atmosphereAPIPollPath;
-        // Request the async response
-        $http.post(url, {
-          "request_mode": "poll",
-          "parameters": {
-            "unique_id": asyncId
-          }
-        }).then(function (success) {
-          if (i !== 0) {
-            if (success.status === 200) {
-              // The response is ready, resolve the promise
-              var data = success.data;
-              defer.resolve(data);
-            } else if (success.status === 204) {
-              // Response is not yet ready, try again in 1 second
-              $timeout(function () {
-                pollForResult(asyncId, defer, --i);
-              }, atmosphereDelayPoll);
-            } else {
-              // We got some other error, reject the promise
-              defer.reject(success);
-            }
-          } else {
-            defer.reject(new Error('pollForResult exceeded maximum attempts'));
-          }
-        }, function (error) {
-          console.error('pollForResult failed', error);
-          defer.reject(error);
-        });
+      // Merge any additional parameters
+      if (functionParameters) {
+        parameters = _.merge(parameters, functionParameters);
+      }
+
+      var payload = {
+        parameters: parameters
       };
 
-      var url = this.atmosphereAPIRoot + this.atmosphereAPIInitPath;
-      $http.post(url, _.merge(defaultInitPayload, { parameters: functionParameters }))
+      return $http.post(url, payload)
         .then(function (success) {
-          if (success.status === 201) {
-            var id = success.data;
-            // Poll for the result after a short delay
-            $timeout(function () {
-              pollForResult(id, defer, atmosphereMaxPollAttempts);
-            }, atmosphereDelayFirst);
-          } else {
-            defer.reject(success);
-          }
+          return success;
         }, function (error) {
-
           console.error('runFunctionAsync failed', error);
-          defer.reject(error);
+          return Promise.reject(error);
         });
-
-      return defer.promise;
     };
 
     this.generalPOSTRequest = function (path, parameters) {
@@ -231,7 +194,6 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
       var url = this.atmosphereAPIRoot + path;
       $http.post(url, parameters)
         .then(function (success) {
-          console.log(success)
           if (success.status === 200 || success.status === 201) {
             defer.resolve(success);
           } else {
@@ -277,10 +239,10 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
     this.getConnectionInfo = function () {
       var defer = $q.defer();
       _service.runFunctionAsync(_service.atmosphereAPIValueConnectionNone, _service.atmosphereAPIConnectionInfoFunctionName, {})
-        .then(function (data) {
-          var status = data.status_code;
+        .then(function (success) {
+          var status = success.status;
           if (status === 200) {
-            var connections = data.value;
+            var connections = success.data.value;
             $tm1.instances(false)
               .then(function (instances) {
                 if (!$rootScope.uiPrefs.atmosphereConnections) $rootScope.uiPrefs.atmosphereConnections = {};
@@ -314,10 +276,10 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
     this.getFunctionInfo = function (connectionName, functionName) {
       var defer = $q.defer();
       _service.runFunctionAsync(connectionName, _service.atmosphereAPIFunctionInfoFunctionName, { function_name: functionName })
-        .then(function (data) {
-          var status = data.status_code;
+        .then(function (success) {
+          var status = success.status;
           if (status === 200) {
-            defer.resolve({ functions: data.value });
+            defer.resolve({ functions: success.data.value });
           } else {
             defer.reject(new Error('getFunctionInfo status incorrect'));
           }
@@ -358,9 +320,10 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
         until: filter.untilDate !== '' ? parseDate(filter.untilDate) : ""
       };
       _service.runFunctionAsync(connectionName, _service.atmosphereAPIUsageInfoFunctionName, parameters)
-        .then(function (data) {
-          var status = data.status_code;
+        .then(function (success) {
+          var status = success.status;
           if (status === 200) {
+            var data = success.data;
             if (filter.success !== '') {
               data.value = data.value.filter(function (i) {
                 return i.Success !== null && ("" + i.Success).toLowerCase() === filter.success;
@@ -403,10 +366,11 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
       };
 
       _service.runFunctionAsync(connectionName, _service.atmosphereAPILogsInfoFunctionName, parameters)
-        .then(function (data) {
-          var status = data.status_code;
+        .then(function (success) {
+          var status = success.status;
           if (status === 200) {
             // defer.resolve(data.value);
+            data = success.data
             defer.resolve(data.value.map(function (i) {
               var r = _.merge({}, i, {
                 Timestamp: parseDateTime(i.Timestamp),
@@ -433,16 +397,15 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
       };
 
       _service.runFunctionAsync(connectionName, _service.atmosphereAPIQuotaInfoFunctionName, parameters)
-        .then(function (data) {
-          var status = data.status_code;
+        .then(function (success) {
+          var status = success.status;
           if (status === 200) {
-            var value = data.value;
+            var value = success.data.value;
             //fix sometimes return string
             if (typeof (value) === "string") {
               value = value.split(" Extract:")[0];
               var decoded = atob(value);
               value = JSON.parse(decoded);
-              console.log(value)
             }
             defer.resolve(value);
           } else {
@@ -468,10 +431,10 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
       };
 
       _service.runFunctionAsync(connectionName, _service.atmosphereAPICreateProcessesFunctionName, data)
-        .then(function (data) {
-          var status = data.status_code;
+        .then(function (success) {
+          var status = success.status;
           if (status === 200) {
-            defer.resolve(data.value);
+            defer.resolve(success.data.value);
           } else {
             defer.reject(new Error('createProcesses status incorrect'));
           }
@@ -505,10 +468,10 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
             }
 
             _service.runFunctionAsync(connectionName, connectionTestConfig['function_name'], parameters)
-              .then(function (data) {
-                var status = data.status_code;
+              .then(function (success) {
+                var status = success.status;
                 if (status === 200) {
-                  defer.resolve(data.value);
+                  defer.resolve(success.data.value);
                 } else {
                   defer.reject(new Error('pingConnection status incorrect (' + status + ')'));
                 }
@@ -527,7 +490,6 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
     };
 
     this.showConnectionsDialog = function (tm1Only) {
-      console.log(tm1Only)
       let data = {
         tm1Only:!!tm1Only 
       }
@@ -885,7 +847,6 @@ arc.directive("atmosphereConnectionsForm", ['$rootScope', '$atmosphere', '$dialo
             $dialogs.showDialog('atmosphereConnectionCreateDialog', { options: options }, null,
               function (result) {
                 if (result.actionName === "OK") {
-                  // console.log(result.data)
                   var name = result.data.name;
                   if(!name){
                     $rootScope.$broadcast('show-error', {
@@ -1199,6 +1160,29 @@ arc.directive("cubewiseAtmosphereFunctions", ['$rootScope', '$atmosphere', '$tm1
             }
           };
 
+
+          // Track which functions are expanded
+          $scope.expandedFunctions = {};
+
+          // Toggle expanded state for a function
+          $scope.toggleFunction = function (funcName) {
+            $scope.expandedFunctions[funcName] = !$scope.expandedFunctions[funcName];
+          };
+
+          // Check if a function is expanded
+          $scope.isExpanded = function (funcName) {
+            return !!$scope.expandedFunctions[funcName];
+          };
+
+          // Get processes related to a function
+          $scope.getProcessesForFunction = function (funcName) {
+            if (!$scope.data.processes || !$scope.data.processes.length) return [];
+            var matchStr = funcName.split('-').join('.');
+            return $scope.data.processes.filter(function (proc) {
+              return proc.Name.indexOf(matchStr) >= 0;
+            });
+          };
+
           if (!$scope.leftSplitterWidth)
             $scope.leftSplitterWidth = 456;
 
@@ -1224,10 +1208,17 @@ arc.directive("cubewiseAtmosphereFunctions", ['$rootScope', '$atmosphere', '$tm1
                 if (data && data.data && data.data.value) {
                   $scope.data.processes = data.data.value;
                   $scope.filterProcesses();
+
+                  $scope.functionProcessMap = {};
+                  _.each($scope.functions, function(func) {
+                    $scope.functionProcessMap[func['Function Name']] = $scope.getProcessesForFunction(func['Function Name']);
+                  });
+
                   $scope.executionStatus = false;
                 }
               }, function (err) {
                 $scope.data.processes = [];
+                $scope.functionProcessMap = {};
                 $scope.executionStatus = false;
               });
           };
@@ -1379,7 +1370,7 @@ arc.directive("cubewiseAtmosphereFunctions", ['$rootScope', '$atmosphere', '$tm1
                 }, function () {
               });
             }
-          });         
+          });
 
         }]
     }
@@ -1790,7 +1781,6 @@ arc.directive("cubewiseAtmosphereQuota", ['$rootScope', '$atmosphere', function 
 
           return $atmosphere.getFunctionQuota($scope.connection)
             .then(function (data) {
-              // console.log(data)
               $scope.data.items = data;
               $scope.data.items.forEach(function (item) {
                 item.periodElapsedProgressClass = $scope.progressClass(item['% Period Elapsed']);
@@ -1798,7 +1788,6 @@ arc.directive("cubewiseAtmosphereQuota", ['$rootScope', '$atmosphere', function 
                 item.availableRuntimeStr = $scope.timeStr(item['Available Runtime in Minutes']);
                 item.actualRuntimeStr = $scope.timeStr(item['Actual Runtime in Minutes']);
               })
-              console.log($scope.data.items)
               $scope.executionStatus = false;
             }, function (error) {
               $scope.$emit('show-error', {
