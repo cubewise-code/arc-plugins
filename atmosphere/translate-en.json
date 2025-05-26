@@ -119,5 +119,6 @@
   "ATMOSPHERELABELUPDATELICENSE": "Update Atomsphere License",
   "ATMOSPHEREUPDATELICENSETITLEJSON": "JSON of Atomsphere License",
   "ATMOSPHEREUPDATELICENSETITLEJSONHINT":"JSON format Atomsphere License value",
-  "ATMOSPHERELINKURLNOTFOUND": "Find out more"
+  "ATMOSPHERELINKURLNOTFOUND": "Find out more",
+  "ATMOSPHERENOPROCESSESFOUND": "No processes found for function"
 }
