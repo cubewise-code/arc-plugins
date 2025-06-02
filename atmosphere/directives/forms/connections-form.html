@@ -31,27 +31,36 @@
       </span>
     </div>
 
-    <div class="input-group btn-group btn-group-sm input-group-sm">
-      <span class="input-group-prepend">
-        <span class="input-group-text font-weight-bold" translate="ATMOSPHERECONNECTIONCREATETITLETYPE"
-          ng-class="settings.filter['Connection Type'].length > 0 ? 'btn-success' : ''"></span>
-      </span>
-      <button class="btn btn-secondary" ng-repeat="connectionIcon in connectionIcons"
-        ng-click="toggleConnectionType(connectionIcon.connectionType)"
-        ng-style="connectionIconStyles[connectionIcon.connectionType].borderStyle"
-        title="{{connectionIcon.connectionType}}">
-        <i class="fa fa-fw"
-          ng-class="connectionIcon.icon.pngPath ? connectionIcon.connectionType : [ connectionIcon.icon.faClass, connectionIcon.connectionType ] "></i>
-        <i class="fa fa-fw fa-check fa-mark text-dark" ng-show="connectionIcon.checked"></i>
+    <!-- Connection Type filter -->
+    <div class="btn-group btn-group-sm" uib-dropdown>
+      <button id="dropdownFilter" type="button" class="btn btn-secondary rounded-left" uib-dropdown-toggle
+        title="{{'ATMOSPHERECONNECTIONCREATETITLETYPE' | translate}}">
+        <i class="fa fa-exchange mr-2"></i>
+        <span class="mr-1" translate="ATMOSPHERECONNECTIONCREATETITLETYPE"></span>
+        <span class="badge"
+          ng-class="settings.filter['Connection Type'].length ? 'badge-success' : 'badge-secondary'">
+          {{ settings.filter['Connection Type'].length }}
+        </span>
       </button>
+      <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="split-button" style="min-width: 280px">
+        <li role="menuitem" ng-repeat="connectionIcon in connectionIcons">
+          <div ng-click="toggleConnectionType(connectionIcon.connectionType); $event.stopPropagation();"
+            ng-style="connectionIconStyles[connectionIcon.connectionType].leftBorderStyle" class="pl-2 pr-2 click">
+            <i class="fa fa-fw"
+              ng-class="connectionIcon.icon.pngPath ? connectionIcon.connectionType : [ connectionIcon.icon.faClass, connectionIcon.connectionType ] "></i>
+            <span>{{connectionIcon.connectionType}}</span>
+            <i class="fa fa-fw pull-right ml-2 mt-1"
+              ng-class="[connectionIcon.checked ? 'fa-check-square-o' : 'fa-square-o']"></i>
+          </div>
+        </li>
+      </ul>
     </div>
 
     <div class="input-group btn-group btn-group-sm input-group-sm">
       <span class="input-group-prepend">
-        <span class="input-group-text font-weight-bold" translate="ATMOSPHERECONNECTIONTENANT"
-          ng-class="atmosphereTenant ? 'btn-success' : ''"></span>
+        <span class="input-group-text font-weight-bold" translate="ATMOSPHERECONNECTIONTENANT"></span>
       </span>
-      <button class="btn btn-success">
+      <button class="btn btn-secondary btn-sm">
         {{atmosphereTenant}}
       </button>
     </div>
@@ -97,7 +106,8 @@
             </span>
           </td>
           <td>
-            <span class="btn btn-sm btn-no-click ml-1" ng-style="connectionIconStyles[connection['Connection Type']].borderStyle">
+            <span class="btn btn-sm btn-no-click ml-1"
+              ng-style="connectionIconStyles[connection['Connection Type']].bottomBorderStyle">
               <i class="fa fa-fw mr-1" ng-if="connectionIcons[connection['Connection Type']].icon.faClass"
                 ng-class="connectionIcons[connection['Connection Type']].icon.faClass"></i>
               <i class="fa fa-fw mr-1" ng-if="connectionIcons[connection['Connection Type']].icon.pngPath"
@@ -147,12 +157,11 @@
               </div>
               <button class="btn btn-sm btn-secondary position-relative pull-right"
                 ng-if="!$root.uiPrefs.atmosphereConnections[connection['Connection Name']]">
-                <i class="fa fa-fw fa-asterisk text-danger"></i>
+                <i class="fa fa-fw fa-asterisk text-warning"></i>
               </button>
               <button class="btn btn-sm btn-secondary position-relative pull-right"
                 ng-if="$root.uiPrefs.atmosphereConnections[connection['Connection Name']]"
-                ng-click="goToPortal(connection['Connection Name'])"
-                title="{{'ATMOSPHERECONNECTIONGOTO' | translate}}">
+                ng-click="goToPortal(connection['Connection Name'])" title="{{'ATMOSPHERECONNECTIONGOTO' | translate}}">
                 <i class="fa fa-fw fa-globe"></i>
                 <i class="fa fa-fw fa-arrow-right fa-mark text-primary"></i>
               </button>
@@ -171,7 +180,7 @@
                 title="{{ ($root.uiPrefs.atmosphereConnectionResult[connection['Connection Name']].message ? $root.uiPrefs.atmosphereConnectionResult[connection['Connection Name']].message : 'ATMOSPHERETITLECONNECTIONTEST'  | translate )}}"
                 ng-click="testConnection(connection)"
                 ng-disabled="!testFunctionMapping || !testFunctionMapping[connection['Connection Type']] || $root.uiPrefs.atmosphereConnectionResult[connection['Connection Name']].status == 'testing'"
-                ng-class="{ 'text-danger': $root.uiPrefs.atmosphereConnectionResult[connection['Connection Name']].status == 'fail', 'text-success': $root.uiPrefs.atmosphereConnectionResult[connection['Connection Name']].status == 'success' }">
+                ng-class="{ 'text-warning': $root.uiPrefs.atmosphereConnectionResult[connection['Connection Name']].status == 'fail', 'text-success': $root.uiPrefs.atmosphereConnectionResult[connection['Connection Name']].status == 'success' }">
                 <i class="fa fa-fw"
                   ng-class="{ 'fa-wifi': $root.uiPrefs.atmosphereConnectionResult[connection['Connection Name']].status != 'testing', 'fa-refresh': $root.uiPrefs.atmosphereConnectionResult[connection['Connection Name']].status == 'testing', 'fa-spin': $root.uiPrefs.atmosphereConnectionResult[connection['Connection Name']].status == 'testing' }"></i>
               </button>
@@ -179,7 +188,7 @@
           </td>
           <td>
             <span class="pull-right">
-              <button class="btn btn-sm btn-secondary"
+              <button class="btn btn-sm btn-secondary text-danger"
                 title="{{'ATMOSPHERECOLUMNHEADERCONNECTIONDELETE'  | translate}}"
                 ng-click="deleteConnection(connection)">
                 <i class="fa fa-fw fa-trash text-delete"></i>

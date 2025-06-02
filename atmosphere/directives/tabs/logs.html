@@ -39,10 +39,6 @@
         {{'ATMOSPHERETABLABELEXPORT' | translate}}
       </button>
     </div>
-
-    <div class="input-group btn-group btn-group-sm input-group-sm" ng-if="settings.filter.functionName === ''">
-      <span class="btn btn-info btn-warning disabled">{{'ATMOSPHERETABLABELFUNCTIONSELECTALARM' | translate}}</span>
-    </div>
   </div>
 
   <div class="flex-grow-1 d-flex justify-content-center align-items-center" ng-if="executionStatus">
@@ -50,9 +46,9 @@
   </div>
 
   <div ng-if="!executionStatus" class="flex-grow-1" style="overflow-y: auto;">
-    <table ng-if="data.itemNum > 0"
+    <table 
       class="table table-sm table-striped table-hover table-text-bright table-vertical-align-top">
-      <thead>
+      <thead ng-if="data.itemNum > 0">
         <tr>
           <th style="width:30px">
             <span class="click pull-left">{{'ATMOSPHERETITLESELECT' | translate}}</span>
@@ -112,11 +108,11 @@
         </tr>
       </tbody>
     </table>
+    <div class="alert alert-info mt-1" ng-if="data.itemNum === 0">
+        <span ng-if="settings.filter.functionName === ''">{{'ATMOSPHERETABLABELFUNCTIONSELECTALARM' | translate}}</span>
+        <span ng-if="settings.filter.functionName !== ''">{{'ATMOSPHERETABLABELNODATAOFLOGS' | translate}}</span>
+    </div>
   </div>
-
-  <!--   <div ng-if="settings.filter.functionName !== '' && data.itemNum == 0">
-    <span class="btn btn-info disabled">No log for this function</span>
-  </div> -->
 
   <arc-data-pager page-state="settings.pageState" on-page-changed="pageChanged" options="settings.pageOptions"
     small="true"></arc-data-pager>

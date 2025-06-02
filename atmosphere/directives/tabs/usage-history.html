@@ -9,7 +9,7 @@
       </button>
     </div>
 
-    <div class="input-group btn-group btn-group-sm input-group-sm" uib-dropdown is-open="selectColumnsIsOpen">
+    <div class="input-group btn-group btn-group-sm input-group-sm" uib-dropdown is-open="selectColumnsIsOpen" auto-close="outsideClick">
       <button id="dropdownSelectColumns" type="button" class="dropdown-toggle btn btn-secondary btn-sm"
         uib-dropdown-toggle title="{{ 'ATMOSPHERETABLABELCOLUMNS' | translate}}">
         <span class="fa fa-columns"></span>
@@ -18,7 +18,7 @@
       <div class="dropdown-menu dropdown-menu-left" uib-dropdown-menu style="width:180px">
         <div class="list-group">
           <button type="button" class="list-group-item btn btn-sm text-left"
-          ng-repeat="column in settings.columns track by $index" ng-click="column.display = !column.display;">
+          ng-repeat="column in settings.columns track by $index" ng-click="column.display = !column.display;event.preventDefault();">
           <i class="fa fa-fw text-info" ng-class="column.display ? 'fa-check-square-o' : 'fa-square-o'"></i>
             <span class="">{{column.translateKey | translate}}</span>
           </button>
@@ -59,17 +59,19 @@
           <!-- <i class="fa fa-angle-right"></i> -->
           <span class="caret"></span>
         </button>
+        <span class="fa fa-remove btn btn-sm" style="position: absolute;top: 0px;right: -100px;z-index: 5;" title="{{'ATMOSPHERETITLECLEARDATEVALUE' | translate}}"
+        ng-click="clearFilter('sinceDate');refreshData();"></span>
         <div class="dropdown-menu dropdown-menu-left" uib-dropdown-menu>
           <datetimepicker ng-model="settings.filter.sinceDate"
             datetimepicker-config="{modelType:'moment', startView:'day', minView:'day'}" popup-placement="top"
             on-set-time="refreshData();sinceDateIsOpen=false;" />
         </div>
       </div>
-      <span type="text" class="form-control form-control-sm" autocomplete="off" style="width:90px"
+      <span type="text" class="form-control form-control-sm" autocomplete="off" style="width:100px"
         ng-if="settings.filter.sinceDate !== ''">
         {{settings.filter.sinceDate | amDateFormat:'ll'}}
       </span>
-      <span type="text" class="form-control form-control-sm" autocomplete="off" style="width:90px"
+      <span type="text" class="form-control form-control-sm" autocomplete="off" style="width:100px"
         ng-if="settings.filter.sinceDate === ''">
         {{'ATMOSPHERETABLABELSINCE' | translate}}
       </span>
@@ -83,17 +85,19 @@
           <!-- <i class="fa fa-angle-left"></i> -->
           <span class="caret"></span>
         </button>
+        <span class="fa fa-remove btn btn-sm" style="position: absolute;top: 0px;right: -100px;z-index: 5;" title="{{'ATMOSPHERETITLECLEARDATEVALUE' | translate}}"
+        ng-click="clearFilter('untilDate');refreshData();"></span>
         <div class="dropdown-menu dropdown-menu-left" uib-dropdown-menu>
           <datetimepicker ng-model="settings.filter.untilDate"
             datetimepicker-config="{modelType:'moment', startView:'day', minView:'day'}" popup-placement="top"
             on-set-time="refreshData(); untilDateIsOpen=false;" />
         </div>
       </div>
-      <span type="text" class="form-control form-control-sm" autocomplete="off" style="width:90px"
+      <span type="text" class="form-control form-control-sm" autocomplete="off" style="width:100px"
         ng-if="settings.filter.untilDate !== ''">
         {{settings.filter.untilDate | amDateFormat:'ll'}}
       </span>
-      <span type="text" class="form-control form-control-sm" autocomplete="off" style="width:90px"
+      <span type="text" class="form-control form-control-sm" autocomplete="off" style="width:100px"
         ng-if="settings.filter.untilDate === ''">
         {{'ATMOSPHERETABLABELUNTIL' | translate}}
       </span>
