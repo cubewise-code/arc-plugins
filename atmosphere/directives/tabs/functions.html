@@ -84,6 +84,7 @@
       <div class="p-2 d-flex justify-content-between align-items-center cursor-pointer function-header"
         ng-click="toggleFunction(function['Function Name'])">
         <div>
+          <i class="fa fa-fw fa-plug"></i>
           <strong>{{function['Function Name']}}</strong> - {{function['Function Type']}} - <span
             class="badge badge-pill badge-info">{{functionProcessMap[function['Function Name']].length}}</span>
           processes
@@ -99,7 +100,10 @@
       <div class="px-2 pb-2" ng-if="isExpanded(function['Function Name'])">
         <div ng-repeat="process in functionProcessMap[function['Function Name']] track by process.Name"
           class="process-row d-flex justify-content-between align-items-center">
-          <div>{{ process.Name }}</div>
+          
+          <div>
+            <i class="fa processes" style="margin-right: 10px;"></i>{{ process.Name }}
+          </div>
           <div>
             <button class="btn btn-sm btn-secondary" title="{{'ATMOSPHERETITLEPROCESSEXECUTE' | translate}}"
               ng-click="executeProcess(process); $event.stopPropagation();" ng-disabled="executionStatus">
@@ -110,6 +114,7 @@
 
         <div ng-if="functionProcessMap[function['Function Name']].length === 0"
           class="text-muted text-center small mt-2">
+          
           {{ 'ATMOSPHERENOPROCESSESFOUND' | translate }}
         </div>
       </div>

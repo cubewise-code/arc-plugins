@@ -75,7 +75,7 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
       let tenant = "";
       let strs = $rootScope.settings.AtmosphereURL.split('//');
 
-      if(strs.length == 2){
+      if (strs.length == 2) {
         tenant = strs[1].split(".")[0];
       }
       return tenant;
@@ -156,7 +156,7 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
       return defer.promise;
     };
 
-    this.runFunctionAsync = function (connectionName, functionName, functionParameters) {
+    this.runFunctionAsyncDirectRequest = function (connectionName, functionName, functionParameters) {
       var _this = this;
       var url = _this.atmosphereAPIRoot + "/" + functionName;
 
@@ -188,6 +188,79 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
           return Promise.reject(error);
         });
     };
+
+
+    this.runFunctionAsync = function (connectionName, functionName, functionParameters) {
+      var defer = $q.defer();
+      var _this = this;
+
+      var defaultInitPayload = {
+        function_name: functionName,
+        parameters: {
+          "tm1_connection": connectionName,
+          "run_mode": "response"
+        }
+      };
+
+      if (functionParameters && functionParameters['no_tm1_connection']) {
+        delete defaultInitPayload['parameters']['tm1_connection'];
+        delete functionParameters['no_tm1_connection']
+      }
+
+      var pollForResult = function (asyncId, defer, i) {
+        var url = _this.atmosphereAPIRoot + _this.atmosphereAPIPollPath;
+        // Request the async response
+        $http.post(url, {
+          "request_mode": "poll",
+          "parameters": {
+            "unique_id": asyncId
+          }
+        }).then(function (success) {
+          if (i !== 0) {
+            if (success.status === 200) {
+              // The response is ready, resolve the promise
+              var data = success.data;
+              defer.resolve(data);
+            } else if (success.status === 204) {
+              // Response is not yet ready, try again in 1 second
+              $timeout(function () {
+                pollForResult(asyncId, defer, --i);
+              }, atmosphereDelayPoll);
+            } else {
+              // We got some other error, reject the promise
+              defer.reject(success);
+            }
+          } else {
+            defer.reject(new Error('pollForResult exceeded maximum attempts'));
+          }
+        }, function (error) {
+          console.error('pollForResult failed', error);
+          defer.reject(error);
+        });
+      };
+
+      var url = this.atmosphereAPIRoot + this.atmosphereAPIInitPath;
+      $http.post(url, _.merge(defaultInitPayload, { parameters: functionParameters }))
+        .then(function (success) {
+          if (success.status === 201) {
+            var id = success.data;
+            // Poll for the result after a short delay
+            $timeout(function () {
+              pollForResult(id, defer, atmosphereMaxPollAttempts);
+            }, atmosphereDelayFirst);
+          } else {
+            defer.reject(success);
+          }
+        }, function (error) {
+
+          console.error('runFunctionAsync failed', error);
+          defer.reject(error);
+        });
+
+      return defer.promise;
+    };
+
+
 
     this.generalPOSTRequest = function (path, parameters) {
       var defer = $q.defer();
@@ -238,7 +311,7 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
 
     this.getConnectionInfo = function () {
       var defer = $q.defer();
-      _service.runFunctionAsync(_service.atmosphereAPIValueConnectionNone, _service.atmosphereAPIConnectionInfoFunctionName, {})
+      _service.runFunctionAsyncDirectRequest(_service.atmosphereAPIValueConnectionNone, _service.atmosphereAPIConnectionInfoFunctionName, {})
         .then(function (success) {
           var status = success.status;
           if (status === 200) {
@@ -275,7 +348,7 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
 
     this.getFunctionInfo = function (connectionName, functionName) {
       var defer = $q.defer();
-      _service.runFunctionAsync(connectionName, _service.atmosphereAPIFunctionInfoFunctionName, { function_name: functionName })
+      _service.runFunctionAsyncDirectRequest(connectionName, _service.atmosphereAPIFunctionInfoFunctionName, { function_name: functionName })
         .then(function (success) {
           var status = success.status;
           if (status === 200) {
@@ -301,8 +374,14 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
     }
 
     function parseTime(seconds) {
-      var m = moment(seconds, 's');
-      return m.isValid() ? m.format('mm:ss') : '';
+      if (moment(seconds).isValid()) {
+        var duration = moment.duration(seconds, 'seconds');
+        var hour = duration.hours().toString()
+        var minutes = Math.floor(duration.minutes()).toString().padStart(2, '0')
+        var seconds = Math.floor(duration.seconds()).toString().padStart(2, '0')
+        return hour !== '' ? `${hour}:${minutes}:${seconds}` : `${minutes}:${seconds}`
+      }
+      return '';
     }
 
     function parseDateTimeToLocal(value) {
@@ -319,7 +398,7 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
         since: filter.sinceDate !== '' ? parseDate(filter.sinceDate) : "",
         until: filter.untilDate !== '' ? parseDate(filter.untilDate) : ""
       };
-      _service.runFunctionAsync(connectionName, _service.atmosphereAPIUsageInfoFunctionName, parameters)
+      _service.runFunctionAsyncDirectRequest(connectionName, _service.atmosphereAPIUsageInfoFunctionName, parameters)
         .then(function (success) {
           var status = success.status;
           if (status === 200) {
@@ -365,7 +444,7 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
         "function_name": functionName
       };
 
-      _service.runFunctionAsync(connectionName, _service.atmosphereAPILogsInfoFunctionName, parameters)
+      _service.runFunctionAsyncDirectRequest(connectionName, _service.atmosphereAPILogsInfoFunctionName, parameters)
         .then(function (success) {
           var status = success.status;
           if (status === 200) {
@@ -396,7 +475,7 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
         'mail_recipients': ''
       };
 
-      _service.runFunctionAsync(connectionName, _service.atmosphereAPIQuotaInfoFunctionName, parameters)
+      _service.runFunctionAsyncDirectRequest(connectionName, _service.atmosphereAPIQuotaInfoFunctionName, parameters)
         .then(function (success) {
           var status = success.status;
           if (status === 200) {
@@ -431,10 +510,10 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
       };
 
       _service.runFunctionAsync(connectionName, _service.atmosphereAPICreateProcessesFunctionName, data)
-        .then(function (success) {
-          var status = success.status;
+        .then(function (data) {
+          var status = data.status_code;
           if (status === 200) {
-            defer.resolve(success.data.value);
+            defer.resolve(data.value);
           } else {
             defer.reject(new Error('createProcesses status incorrect'));
           }
@@ -468,10 +547,10 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
             }
 
             _service.runFunctionAsync(connectionName, connectionTestConfig['function_name'], parameters)
-              .then(function (success) {
-                var status = success.status;
+              .then(function (data) {
+                var status = data.status_code;
                 if (status === 200) {
-                  defer.resolve(success.data.value);
+                  defer.resolve(data.value);
                 } else {
                   defer.reject(new Error('pingConnection status incorrect (' + status + ')'));
                 }
@@ -491,7 +570,7 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
 
     this.showConnectionsDialog = function (tm1Only) {
       let data = {
-        tm1Only:!!tm1Only 
+        tm1Only: !!tm1Only
       }
       $dialogs.showDialog('atmosphereConnectionsDialog', data, null, null);
     };
@@ -669,10 +748,7 @@ arc.directive("atmosphereConnectionsForm", ['$rootScope', '$atmosphere', '$dialo
       controller: ["$scope", "$rootScope", "$http", "$translate", "$timeout", "uuid2", "Notification", "$helper", "$tabs", "$tm1", "$atmosphere",
         function ($scope, $rootScope, $http, $translate, $timeout, uuid2, Notification, $helper, $tabs, $tm1, $atmosphere) {
           $scope.id = uuid2.newuuid();
-
           $scope.isLoading = false;
-          $scope.instance = $scope.options.instance;
-          $scope.globalConnectionName = $scope.options.globalConnectionName;
           $scope.atmosphereTenant = $atmosphere.getAtmosphereTenant();
           $scope.tm1ConnectionOnly = $scope.data.tm1Only;
 
@@ -698,11 +774,40 @@ arc.directive("atmosphereConnectionsForm", ['$rootScope', '$atmosphere', '$dialo
             });
           $scope.connectionIconStyleText = cssText;
 
+          var createHSLColourBorderBottom = function (color) {
+            return $helper.createHSLColourBorder(color);
+          };
+
+          var createHSLColourBorderLeft = function (color) {
+            return {
+              "border-left-style": "solid",
+              "border-left-width": "medium",
+              "border-left-color": color
+            };
+          };
+
+          var createHSLColourText = function (color) {
+            return $helper.createHSLColourText(color);
+          };
+
+          var generateHSLColourBorderBottom = function (color) {
+            return $helper.generateHSLColourBorder(color);
+          };
+
+          var generateHSLColourBorderLeft = function (text) {
+            return $scope.createHSLColourBorderLeft($helper.generateColour(text));
+          };
+
+          var generateHSLColourText = function (color) {
+            return $helper.generateHSLColourText(color);
+          };
+
           $scope.connectionIconStyles = _.mapValues($atmosphere.connectionIcons, function (connectionIcon, connectionType) {
             return {
-              borderStyle: connectionIcon.accentColor ? $helper.createHSLColourBorder(connectionIcon.accentColor) : $helper.generateHSLColourBorder(connectionType),
-              searchIconStyle: connectionIcon.accentColor ? $helper.createHSLColourText(connectionIcon.accentColor) : $helper.generateHSLColourText(connectionType),
-              connectionIconStyle: $helper.createHSLColourText('#888')
+              bottomBorderStyle: connectionIcon.accentColor ? createHSLColourBorderBottom(connectionIcon.accentColor) : generateHSLColourBorderBottom(connectionType),
+              leftBorderStyle: connectionIcon.accentColor ? createHSLColourBorderLeft(connectionIcon.accentColor) : generateHSLColourBorderLeft(connectionType),
+              searchIconStyle: connectionIcon.accentColor ? createHSLColourText(connectionIcon.accentColor) : generateHSLColourText(connectionType),
+              connectionIconStyle: createHSLColourText('#888')
             };
           });
 
@@ -740,13 +845,14 @@ arc.directive("atmosphereConnectionsForm", ['$rootScope', '$atmosphere', '$dialo
 
           $scope.toggleConnectionType = function (connectionType) {
             var icon = _.find($scope.connectionIcons, { connectionType: connectionType });
+            if (!icon) return;
             icon.checked = !icon.checked;
             $scope.settings.filter['Connection Type'] = _.filter($scope.connectionIcons, 'checked').map(function (icon) {
               return icon.connectionType;
             });
           };
 
-          if($scope.tm1ConnectionOnly){
+          if ($scope.tm1ConnectionOnly) {
             $scope.toggleConnectionType('tm1');
           }
 
@@ -848,7 +954,7 @@ arc.directive("atmosphereConnectionsForm", ['$rootScope', '$atmosphere', '$dialo
               function (result) {
                 if (result.actionName === "OK") {
                   var name = result.data.name;
-                  if(!name){
+                  if (!name) {
                     $rootScope.$broadcast('show-error', {
                       operationTranslation: 'ATMOSPHEREERRORCREATECONEECTIONINFO',
                       errorTranslation: 'ATMOSPHEREERRORCREATECONEECTIONINFO',
@@ -905,28 +1011,33 @@ arc.directive("atmosphereConnectionsForm", ['$rootScope', '$atmosphere', '$dialo
               });
           };
 
-          $scope.deleteConnection = function(connection) {
-            let data = {
-              'secret_key': connection['Connection Name']
-            }
+          $scope.deleteConnection = function (connection) {
+            $dialogs.showDialog('atmosphereConnectionDeleteConfirmDialog', { connection: connection }, null,
+              function (result) {
+                if (result.actionName === "OK") {
+                  let data = {
+                    'secret_key': connection['Connection Name']
+                  }
 
-            $scope.isLoading = true;
+                  $scope.isLoading = true;
 
-            $atmosphere.generalPOSTRequest($atmosphere.atmosphereAPIDeleteConnectionPath, data)
-              .then(function (data) {
-                $scope.$emit('show-success', {
-                  operationTranslation: 'ATMOSPHERECOLUMNHEADERCONNECTIONDELETE',
-                  messageTranslation: 'ATMOSPHEREHISTORYCOLUMNSUCCESS'
-                });
-                $scope.isLoading = false;
-                $scope.refreshData();
-              }, function (error) {
-                $scope.$emit('show-error', {
-                  operationTranslation: 'ATMOSPHEREERRORDELEtECONEECTIONINFO',
-                  errorTranslation: 'ATMOSPHEREERRORDELEtECONEECTIONINFO',
-                  errorMessage: "(status: " + error.status + ") " + (error.statusText ? error.statusText : "No error message.")
-                });
-                $scope.isLoading = false;
+                  $atmosphere.generalPOSTRequest($atmosphere.atmosphereAPIDeleteConnectionPath, data)
+                    .then(function (data) {
+                      $scope.$emit('show-success', {
+                        operationTranslation: 'ATMOSPHERECOLUMNHEADERCONNECTIONDELETE',
+                        messageTranslation: 'ATMOSPHEREHISTORYCOLUMNSUCCESS'
+                      });
+                      $scope.isLoading = false;
+                      $scope.refreshData();
+                    }, function (error) {
+                      $scope.$emit('show-error', {
+                        operationTranslation: 'ATMOSPHEREERRORDELEtECONEECTIONINFO',
+                        errorTranslation: 'ATMOSPHEREERRORDELEtECONEECTIONINFO',
+                        errorMessage: "(status: " + error.status + ") " + (error.statusText ? error.statusText : "No error message.")
+                      });
+                      $scope.isLoading = false;
+                    })
+                }
               })
           }
 
@@ -1085,6 +1196,26 @@ arc.directive("atmosphereLicenseUpdateForm", function () {
   }
 });
 
+arc.directive("atmosphereConnectionDeleteConfirmForm", function () {
+  return {
+    restrict: "EA",
+    replace: true,
+    scope: {
+      data: "=arcModelData",
+      options: "=arcOptions",
+      dialog: "=arcDialog"
+    },
+    templateUrl: "__/plugins/atmosphere/directives/forms/connection-delete-confirm-form.html",
+    link: function ($scope, element, attrs) {
+
+    },
+    controller: ["$scope", "uuid2",
+      function ($scope, uuid2) {
+        $scope.id = uuid2.newuuid();
+      }]
+  }
+});
+
 arc.directive("cubewiseAtmosphereFunctions", ['$rootScope', '$atmosphere', '$tm1', '$dialogs',
   function ($rootScope, $atmosphere, $tm1, $dialogs) {
     return {
@@ -1210,7 +1341,7 @@ arc.directive("cubewiseAtmosphereFunctions", ['$rootScope', '$atmosphere', '$tm1
                   $scope.filterProcesses();
 
                   $scope.functionProcessMap = {};
-                  _.each($scope.functions, function(func) {
+                  _.each($scope.functions, function (func) {
                     $scope.functionProcessMap[func['Function Name']] = $scope.getProcessesForFunction(func['Function Name']);
                   });
 
@@ -1352,7 +1483,7 @@ arc.directive("cubewiseAtmosphereFunctions", ['$rootScope', '$atmosphere', '$tm1
                 .then(function () {
                   $scope.dataLoaded = true;
                 }, function () {
-              });
+                });
             }
           });
 
@@ -1368,7 +1499,7 @@ arc.directive("cubewiseAtmosphereFunctions", ['$rootScope', '$atmosphere', '$tm1
                 .then(function () {
                   $scope.dataLoaded = true;
                 }, function () {
-              });
+                });
             }
           });
 
@@ -1402,7 +1533,7 @@ arc.directive("cubewiseAtmosphereUsageHistory", ['$rootScope', '$atmosphere', fu
           key: 'history',
           columns: [
             { key: 'Function', translateKey: 'ATMOSPHEREHISTORYCOLUMNFUNCTION', display: true, width: 130 },
-            { key: 'InvocationTime', translateKey: 'ATMOSPHEREHISTORYCOLUMNINVOCATIONTIME', display: true, width: 145 },
+            { key: 'InvocationTime', translateKey: 'ATMOSPHEREHISTORYCOLUMNINVOCATIONTIMEUTC', display: true, width: 145 },
             { key: 'InvocationTimeLocal', translateKey: 'ATMOSPHEREHISTORYCOLUMNINVOCATIONTIMELOCAL', display: true, width: 145 },
             { key: 'StartTime', translateKey: 'ATMOSPHEREHISTORYCOLUMNSTARTTIMEUTC', display: true, width: 145 },
             { key: 'StartTimeLocal', translateKey: 'ATMOSPHEREHISTORYCOLUMNSTARTTIMELOCAL', display: true, width: 145 },
@@ -1494,6 +1625,10 @@ arc.directive("cubewiseAtmosphereUsageHistory", ['$rootScope', '$atmosphere', fu
             $scope.settings.sortColumn.direction = false;
           }
         };
+
+        $scope.clearFilter = function (key) {
+          $scope.settings.filter[key] = '';
+        }
 
         $scope.export = function () {
           let rows = [];
@@ -1600,7 +1735,7 @@ arc.directive("cubewiseAtmosphereLogs", ['$rootScope', '$atmosphere', function (
             functionName: ''
           },
           allChecked: false,
-          levels:["INFO"],
+          levels: ["INFO"],
           sortColumn: {
             'key': 'Timestamp',
             'direction': true
@@ -1628,11 +1763,11 @@ arc.directive("cubewiseAtmosphereLogs", ['$rootScope', '$atmosphere', function (
 
           $atmosphere.getFunctionLogs($scope.connection, $scope.settings.filter.functionName)
             .then(function (data) {
-              data.forEach(function(i){
+              data.forEach(function (i) {
                 i.Level = "";
                 let strs = i.Message.split(" - ");
-                if(strs.length > 1){
-                // if(strs.length > 1 && $scope.settings.levels.indexOf(strs[0]) >= 0){
+                if (strs.length > 1) {
+                  // if(strs.length > 1 && $scope.settings.levels.indexOf(strs[0]) >= 0){
                   i.Message = strs[1]
                   i.Level = strs[0];
                 }
@@ -1668,7 +1803,7 @@ arc.directive("cubewiseAtmosphereLogs", ['$rootScope', '$atmosphere', function (
 
         $scope.export = function () {
           let rows = [];
-          let headers = ['Function','Time(UTC)','Time(Local)','Level','Message'];
+          let headers = ['Function', 'Time(UTC)', 'Time(Local)', 'Level', 'Message'];
           rows.push(headers);
 
           let index = 0;
@@ -1683,9 +1818,9 @@ arc.directive("cubewiseAtmosphereLogs", ['$rootScope', '$atmosphere', function (
                   value = item[key] ? item[key] + '' : '';
                   if (key === 'Mesage') {
                     value = value.replaceAll("\n", " ").replaceAll(",", " ");
-                  }else if (key === 'Time(UTC)') {
+                  } else if (key === 'Time(UTC)') {
                     value = item['Timestamp'];
-                  }else if (key === 'Time(Local)') {
+                  } else if (key === 'Time(Local)') {
                     value = item['TimestampLocal'];
                   }
                 }
@@ -1968,7 +2103,7 @@ arc.directive("cubewiseAtmospherePortal", function () {
           $rootScope.uiPrefs.atmosphereStoreCredentials = !$rootScope.uiPrefs.atmosphereStoreCredentials;
           if (!$rootScope.uiPrefs.atmosphereStoreCredentials) {
             $rootScope.uiPrefs.atmosphereCredentials = null;
-          }else {
+          } else {
             $rootScope.atmosphereLoginRequired();
           }
         };
@@ -1978,7 +2113,7 @@ arc.directive("cubewiseAtmospherePortal", function () {
         }
 
         $scope.refresh = function () {
-          if($scope.global.activeTab === 'functions'){
+          if ($scope.global.activeTab === 'functions') {
             $scope.loadConnection();
             $scope.loadFunctions();
           }
@@ -2036,7 +2171,7 @@ arc.directive("cubewiseAtmospherePortal", function () {
         //Trigger an event after the plugin closes
         $scope.$on("$destroy", function (event) { });
 
-        $scope.$on("atmosphere-logout", function (event, args) { 
+        $scope.$on("atmosphere-logout", function (event, args) {
           $scope.global.connection = null;
           $scope.global.connections = [];
           $scope.global.functions = [];
@@ -2050,8 +2185,8 @@ arc.directive("cubewiseAtmospherePortal", function () {
   };
 });
 
-arc.run(['$rootScope', '$helper', '$dialogs', '$atmosphere','Notification',
-  function ($rootScope, $helper, $dialogs, $atmosphere,Notification) {
+arc.run(['$rootScope', '$helper', '$dialogs', '$atmosphere', 'Notification',
+  function ($rootScope, $helper, $dialogs, $atmosphere, Notification) {
     // Register atmophere dialogs
 
     // Login
@@ -2119,6 +2254,20 @@ arc.run(['$rootScope', '$helper', '$dialogs', '$atmosphere','Notification',
         return false
       }
     });
+
+    $dialogs.registerDialog('atmosphereConnectionDeleteConfirmDialog', {
+      title: 'ATMOSPHERECOLUMNHEADERCONNECTIONDELETE',
+      directive: 'atmosphereConnectionDeleteConfirmForm',
+      icon: 'fa-globe',
+      size: 'small',
+      okButtonLabel: "Delete",
+      okButtonClass: 'btn-danger',
+      okButtonDisabled: function (data, options) {
+        return false
+      }
+    });
+
+
   }]);
 
 arc.config(['$httpProvider', function ($httpProvider) {
