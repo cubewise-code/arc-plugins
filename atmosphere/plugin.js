@@ -374,11 +374,12 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
     }
 
     function parseTime(seconds) {
-      if (moment(seconds).isValid()) {
+      if (!!seconds) {
+        seconds = parseInt(seconds)
         var duration = moment.duration(seconds, 'seconds');
         var hour = duration.hours().toString()
         var minutes = Math.floor(duration.minutes()).toString().padStart(2, '0')
-        var seconds = Math.floor(duration.seconds()).toString().padStart(2, '0')
+        seconds = Math.floor(duration.seconds()).toString().padStart(2, '0')
         return hour !== '' ? `${hour}:${minutes}:${seconds}` : `${minutes}:${seconds}`
       }
       return '';

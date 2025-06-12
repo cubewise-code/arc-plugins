@@ -78,7 +78,7 @@
       <tbody>
         <tr
           ng-repeat="item in (settins.itemFiltered = (data.items | orderBy: settings.sortColumn.key : settings.sortColumn.direction | limitTo : settings.pageState.itemsPerPage : (settings.pageState.currentPage - 1) * settings.pageState.itemsPerPage)) track by $index"
-          ng-class="{ 'list-item-selected': item.checked }">
+          ng-class="{ 'list-item-selected': item.checked, 'alert-danger': item.Level.toLocaleUpperCase() === 'ERROR' || item.Level.toLocaleUpperCase() === 'CRITICAL', 'alert-warning': item.Level.toLocaleUpperCase() === 'WARNING', 'alert-info': item.Level.toLocaleUpperCase() === 'DEBUG' }">
           <td>
             <span title="{{ 'ATMOSPHERETITLELOGCHECK' | translate}}"
               ng-click="toggleChecked(item); $event.stopPropagation();">
