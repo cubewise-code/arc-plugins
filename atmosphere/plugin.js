@@ -1102,6 +1102,7 @@ arc.directive("atmosphereConnectionDeployProcessForm", function () {
     controller: ["$scope", "$rootScope", "$http", "$q", "$translate", "$timeout", "uuid2", "$atmosphere",
       function ($scope, $rootScope, $http, $q, $translate, $timeout, uuid2, $atmosphere) {
         $scope.id = uuid2.newuuid();
+        $scope.data.domain = $atmosphere.getAtmosphereTenant();
       }]
   }
 });
