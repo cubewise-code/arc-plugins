@@ -764,9 +764,13 @@ arc.directive("atmosphereConnectionsForm", ['$rootScope', '$atmosphere', '$dialo
           };
           $scope.resetData();
 
-          $scope.connectionIcons = _.mapValues($atmosphere.connectionIcons, function (connectionIcon, connectionType) {
-            return { connectionType: connectionType, icon: connectionIcon };
-          });
+          $scope.connectionIcons = _
+            .chain($atmosphere.connectionIcons)
+            .toPairs() // Convert to array of [key, value]
+            .sortBy(0) // Sort by the key (connectionType)
+            .map(([connectionType, connectionIcon]) => [connectionType, { connectionType, icon: connectionIcon }])
+            .fromPairs() // Convert back to object
+            .value();
 
           var cssText = "";
           _.each($scope.connectionIcons,
@@ -1102,6 +1106,7 @@ arc.directive("atmosphereConnectionDeployProcessForm", function () {
     controller: ["$scope", "$rootScope", "$http", "$q", "$translate", "$timeout", "uuid2", "$atmosphere",
       function ($scope, $rootScope, $http, $q, $translate, $timeout, uuid2, $atmosphere) {
         $scope.id = uuid2.newuuid();
+        $scope.data.domain = $atmosphere.getAtmosphereTenant();
       }]
   }
 });
@@ -1534,12 +1539,12 @@ arc.directive("cubewiseAtmosphereUsageHistory", ['$rootScope', '$atmosphere', fu
           key: 'history',
           columns: [
             { key: 'Function', translateKey: 'ATMOSPHEREHISTORYCOLUMNFUNCTION', display: true, width: 130 },
-            { key: 'InvocationTime', translateKey: 'ATMOSPHEREHISTORYCOLUMNINVOCATIONTIMEUTC', display: true, width: 145 },
-            { key: 'InvocationTimeLocal', translateKey: 'ATMOSPHEREHISTORYCOLUMNINVOCATIONTIMELOCAL', display: true, width: 145 },
-            { key: 'StartTime', translateKey: 'ATMOSPHEREHISTORYCOLUMNSTARTTIMEUTC', display: true, width: 145 },
+            { key: 'InvocationTime', translateKey: 'ATMOSPHEREHISTORYCOLUMNINVOCATIONTIMEUTC', display: false, width: 145 },
+            { key: 'InvocationTimeLocal', translateKey: 'ATMOSPHEREHISTORYCOLUMNINVOCATIONTIMELOCAL', display: false, width: 145 },
+            { key: 'StartTime', translateKey: 'ATMOSPHEREHISTORYCOLUMNSTARTTIMEUTC', display: false, width: 145 },
             { key: 'StartTimeLocal', translateKey: 'ATMOSPHEREHISTORYCOLUMNSTARTTIMELOCAL', display: true, width: 145 },
             { key: 'EndTime', translateKey: 'ATMOSPHEREHISTORYCOLUMNENDTIME', display: false, width: 145 },
-            { key: 'EndTimeLocal', translateKey: 'ATMOSPHEREHISTORYCOLUMNENDTIMELOCAL', display: false, width: 145 },
+            { key: 'EndTimeLocal', translateKey: 'ATMOSPHEREHISTORYCOLUMNENDTIMELOCAL', display: true, width: 145 },
             { key: 'Duration', translateKey: 'ATMOSPHEREHISTORYCOLUMNDURATION', display: true, width: 100 },
             { key: 'ExtractStepTime', translateKey: 'ATMOSPHEREHISTORYCOLUMNEXTRACTSTEPTIME', display: true, width: 140 },
             { key: 'TransformStepTime', translateKey: 'ATMOSPHEREHISTORYCOLUMNTRANSFORMSTEPTIME', display: true, width: 160 },

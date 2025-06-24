@@ -36,8 +36,12 @@
       <select class="form-control editor-select" ng-model="settings.filter.functionName" ng-change="refreshData()"
         title="{{ 'ATMOSPHERETABLABELFUNCTIONS' | translate}}" ng-disabled="executionStatus">
         <option value=""></option>
-        <option ng-repeat="function in functions track by $index" value="{{function['Function Name']}}">
-          {{function['Function Name']}}</option>
+        <option ng-repeat="function in functions track by $index" 
+                ng-if="function['Function Type'] !== 'Info Function'" 
+                value="{{function['Function Name']}}">
+          {{function['Function Name']}}
+        </option>
+
       </select>
     </div>
 

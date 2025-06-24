@@ -119,9 +119,9 @@
   "ATMOSPHERETITLEPERIODELAPSED": "% Period Elapsed",
   "ATMOSPHERETITLERUNTIMEUSED": "% Runtime Used",
   "ATMOSPHEREERRORGETQUOTAINFO": "Error getting quota info: {{errorMessage}}",
-  "ATMOSPHERELABELUPDATELICENSE": "Update Atomsphere License",
-  "ATMOSPHEREUPDATELICENSETITLEJSON": "JSON of Atomsphere License",
-  "ATMOSPHEREUPDATELICENSETITLEJSONHINT":"JSON format Atomsphere License value",
+  "ATMOSPHERELABELUPDATELICENSE": "Update Atmosphere License",
+  "ATMOSPHEREUPDATELICENSETITLEJSON": "JSON of Atmosphere License",
+  "ATMOSPHEREUPDATELICENSETITLEJSONHINT":"JSON format Atmosphere License value",
   "ATMOSPHERELINKURLNOTFOUND": "Find out more",
   "ATMOSPHERENOPROCESSESFOUND": "No processes found for function"
 }
