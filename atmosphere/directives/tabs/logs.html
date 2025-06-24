@@ -1,4 +1,38 @@
 <div class="h-100 d-flex flex-column">
+  <style>
+    
+    /* light mode table row tweaks */
+    .table-hover tbody tr.alert-danger:hover {
+      background-color: #f3c7cb;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd).alert-danger {
+      background-color: #edd9db;
+    }
+
+    .table-striped.table-hover tbody tr:nth-of-type(odd).alert-danger:hover {
+      background-color: #edd0d3;
+    }
+
+    /* dark mode table row tweaks */
+    .theme-dark tbody tr.alert-danger {
+      background-color: #580600;
+      color: #ffd6d3;
+    }
+
+    .theme-dark .table-hover tbody tr.alert-danger:hover {
+      background-color: #66000e;
+    }
+    
+    .theme-dark .table-striped tbody tr:nth-of-type(odd).alert-danger {
+      background-color: #4b0500;
+      color: #ffc8c4;
+    }
+
+    .theme-dark .table-striped.table-hover tbody tr:nth-of-type(odd).alert-danger:hover {
+      background-color: #58000c;
+    }
+  </style>
   <div class="btn-toolbar">
     <!-- Bulk actions toolbar group -->
     <div class="input-group btn-group btn-group-sm input-group-sm">
@@ -11,17 +45,21 @@
 
     <div class="input-group btn-group btn-group-sm input-group-sm">
       <span class="input-group-prepend">
-        <span class="input-group-text font-weight-bold"
-        title="{{ 'ATMOSPHERETABLABELFUNCTIONS' | translate}}">
+        <span class="input-group-text font-weight-bold" title="{{ 'ATMOSPHERETABLABELFUNCTIONS' | translate}}">
           <i class="fa fa-fw fa-plug"></i>
         </span>
         <!-- <span class="input-group-text">{{'ATMOSPHERETABLABELFUNCTIONS' | translate}}</span> -->
       </span>
       <select class="form-control editor-select" ng-model="settings.filter.functionName" ng-change="refreshData()"
-        title="{{ 'ATMOSPHERETABLABELFUNCTIONS' | translate}}" ng-disabled="executionStatus">
+        title="{{ 'ATMOSPHERETABLABELFUNCTIONS' | translate }}" ng-disabled="executionStatus">
+
         <option value=""></option>
-        <option ng-repeat="function in functions track by $index" value="{{function['Function Name']}}">
-          {{function['Function Name']}}</option>
+
+        <option ng-repeat="function in functions track by $index" ng-if="function['Function Type'] !== 'Info Function'"
+          value="{{function['Function Name']}}">
+          {{function['Function Name']}}
+        </option>
+
       </select>
     </div>
 
@@ -46,8 +84,7 @@
   </div>
 
   <div ng-if="!executionStatus" class="flex-grow-1" style="overflow-y: auto;">
-    <table 
-      class="table table-sm table-striped table-hover table-text-bright table-vertical-align-top">
+    <table class="table table-sm table-striped table-hover table-text-bright table-vertical-align-top">
       <thead ng-if="data.itemNum > 0">
         <tr>
           <th style="width:30px">
@@ -109,8 +146,8 @@
       </tbody>
     </table>
     <div class="alert alert-info mt-1" ng-if="data.itemNum === 0">
-        <span ng-if="settings.filter.functionName === ''">{{'ATMOSPHERETABLABELFUNCTIONSELECTALARM' | translate}}</span>
-        <span ng-if="settings.filter.functionName !== ''">{{'ATMOSPHERETABLABELNODATAOFLOGS' | translate}}</span>
+      <span ng-if="settings.filter.functionName === ''">{{'ATMOSPHERETABLABELFUNCTIONSELECTALARM' | translate}}</span>
+      <span ng-if="settings.filter.functionName !== ''">{{'ATMOSPHERETABLABELNODATAOFLOGS' | translate}}</span>
     </div>
   </div>
 
