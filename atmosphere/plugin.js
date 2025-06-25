@@ -1773,7 +1773,7 @@ arc.directive("cubewiseAtmosphereLogs", ['$rootScope', '$atmosphere', function (
                 i.Level = "";
                 let strs = i.Message.split(" - ");
                 //Level - Message
-                if (strs.length >= 2) {
+                if(strs.length >= 2) {
                   i.Level = strs[0];
                   strs.shift();
                   i.Message = strs.join(" - ");
