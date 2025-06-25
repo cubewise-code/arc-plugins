@@ -446,12 +446,10 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
         "function_name": functionName
       };
 
-      _service.runFunctionAsyncDirectRequest(connectionName, _service.atmosphereAPILogsInfoFunctionName, parameters)
-        .then(function (success) {
-          var status = success.status;
+      _service.runFunctionAsync(connectionName, _service.atmosphereAPILogsInfoFunctionName, parameters)
+        .then(function (data) {
+          var status = data.status_code;
           if (status === 200) {
-            // defer.resolve(data.value);
-            data = success.data
             defer.resolve(data.value.map(function (i) {
               var r = _.merge({}, i, {
                 Timestamp: parseDateTime(i.Timestamp),
@@ -1812,7 +1810,7 @@ arc.directive("cubewiseAtmosphereLogs", ['$rootScope', '$atmosphere', function (
 
         $scope.export = function () {
           let rows = [];
-          let headers = ['Function', 'Time(UTC)', 'Time(Local)', 'TaskId','Level', 'Message'];
+          let headers = ['Function', 'Time(UTC)', 'Time(Local)', 'TaskId', 'Level', 'Message'];
           rows.push(headers);
 
           let index = 0;
