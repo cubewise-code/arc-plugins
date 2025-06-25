@@ -24,7 +24,12 @@
     "accentColor": "#002050",
     "colorizeIcon": { "dark": "#c8c8c8", "light": "#444" }
   },
-  "databricks": {
+  "databricks-sql": {
+    "pngPath": "images/databricks.png",
+    "accentColor": "#FF6F61",
+    "colorizeIcon": { "dark": "#c8c8c8", "light": "#444" }
+  },
+    "databricks-dbfs": {
     "pngPath": "images/databricks.png",
     "accentColor": "#FF6F61",
     "colorizeIcon": { "dark": "#c8c8c8", "light": "#444" }

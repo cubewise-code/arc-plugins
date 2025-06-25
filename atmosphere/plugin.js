@@ -404,6 +404,7 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
           var status = success.status;
           if (status === 200) {
             var data = success.data;
+
             if (filter.success !== '') {
               data.value = data.value.filter(function (i) {
                 return i.Success !== null && ("" + i.Success).toLowerCase() === filter.success;
@@ -445,12 +446,10 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
         "function_name": functionName
       };
 
-      _service.runFunctionAsyncDirectRequest(connectionName, _service.atmosphereAPILogsInfoFunctionName, parameters)
-        .then(function (success) {
-          var status = success.status;
+      _service.runFunctionAsync(connectionName, _service.atmosphereAPILogsInfoFunctionName, parameters)
+        .then(function (data) {
+          var status = data.status_code;
           if (status === 200) {
-            // defer.resolve(data.value);
-            data = success.data
             defer.resolve(data.value.map(function (i) {
               var r = _.merge({}, i, {
                 Timestamp: parseDateTime(i.Timestamp),
@@ -1538,7 +1537,8 @@ arc.directive("cubewiseAtmosphereUsageHistory", ['$rootScope', '$atmosphere', fu
         $scope.settings = {
           key: 'history',
           columns: [
-            { key: 'Function', translateKey: 'ATMOSPHEREHISTORYCOLUMNFUNCTION', display: true, width: 130 },
+            { key: 'Function', translateKey: 'ATMOSPHEREHISTORYCOLUMNFUNCTION', display: true, width: 140 },
+            { key: 'TaskId', translateKey: 'ATMOSPHEREHISTORYCOLUMNTASKID', display: true, width: 280 },
             { key: 'InvocationTime', translateKey: 'ATMOSPHEREHISTORYCOLUMNINVOCATIONTIMEUTC', display: false, width: 145 },
             { key: 'InvocationTimeLocal', translateKey: 'ATMOSPHEREHISTORYCOLUMNINVOCATIONTIMELOCAL', display: false, width: 145 },
             { key: 'StartTime', translateKey: 'ATMOSPHEREHISTORYCOLUMNSTARTTIMEUTC', display: false, width: 145 },
@@ -1772,10 +1772,11 @@ arc.directive("cubewiseAtmosphereLogs", ['$rootScope', '$atmosphere', function (
               data.forEach(function (i) {
                 i.Level = "";
                 let strs = i.Message.split(" - ");
-                if (strs.length > 1) {
-                  // if(strs.length > 1 && $scope.settings.levels.indexOf(strs[0]) >= 0){
-                  i.Message = strs[1]
+                //Level - Message
+                if (strs.length >= 2) {
                   i.Level = strs[0];
+                  strs.shift();
+                  i.Message = strs.join(" - ");
                 }
               })
               $scope.data.items = data;
@@ -1809,7 +1810,7 @@ arc.directive("cubewiseAtmosphereLogs", ['$rootScope', '$atmosphere', function (
 
         $scope.export = function () {
           let rows = [];
-          let headers = ['Function', 'Time(UTC)', 'Time(Local)', 'Level', 'Message'];
+          let headers = ['Function', 'Time(UTC)', 'Time(Local)', 'TaskId', 'Level', 'Message'];
           rows.push(headers);
 
           let index = 0;

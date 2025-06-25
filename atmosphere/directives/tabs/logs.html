@@ -100,6 +100,9 @@
               {{'ATMOSPHERETITLELOGTIMELOCAL' | translate}}
             </span>
           </th>
+          <th style="width:145px">
+            <span class="click pull-left">{{'ATMOSPHEREHISTORYCOLUMNTASKID' | translate}}</span>
+          </th>
           <th style="width:55px;">
             <span class="click pull-left" ng-click="sortBy(column.key)">
               {{'ATMOSPHERETITLELOGLEVEL' | translate}}
@@ -130,6 +133,11 @@
           <td>
             <span>
               {{item['TimestampLocal']}}
+            </span>
+          </td>
+          <td>
+            <span>
+              {{item['TaskId']}}
             </span>
           </td>
           <td>
