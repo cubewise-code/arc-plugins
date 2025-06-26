@@ -81,6 +81,23 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
       return tenant;
     };
 
+   this.getAtmosphereDomain = function () {Add commentMore actions
+        if (!$rootScope.settings || _.isEmpty($rootScope.settings.AtmosphereURL)) return null;
+      
+        try {
+          const url = new URL($rootScope.settings.AtmosphereURL);
+          const hostParts = url.hostname.split('.');
+      
+          if (hostParts.length < 3) return null;
+      
+          // Remove the first part (tenant), and join the rest to form the base domain
+          const baseDomain = hostParts.slice(1).join('.');
+          return baseDomain;
+        } catch (e) {
+          return null;
+        }
+      };
+    
     this.isLoggedIn = function () {
       return $rootScope.uiPrefs.atmosphereIsLoggedIn;
     };
@@ -1105,7 +1122,7 @@ arc.directive("atmosphereConnectionDeployProcessForm", function () {
     controller: ["$scope", "$rootScope", "$http", "$q", "$translate", "$timeout", "uuid2", "$atmosphere",
       function ($scope, $rootScope, $http, $q, $translate, $timeout, uuid2, $atmosphere) {
         $scope.id = uuid2.newuuid();
-        $scope.data.domain = $atmosphere.getAtmosphereTenant();
+        $scope.data.domain = $atmosphere.getAtmosphereDomain();
       }]
   }
 });
