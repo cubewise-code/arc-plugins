@@ -33,7 +33,7 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
 
     const atmosphereDelayFirst = 100;
     const atmosphereDelayPoll = 1000;
-    const atmosphereMaxPollAttempts = 15;
+    const atmosphereMaxPollAttempts = 120;
 
     this.atmosphereAPIRoot = '_atmosphere';
 
