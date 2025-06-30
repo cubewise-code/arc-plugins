@@ -81,7 +81,7 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
       return tenant;
     };
 
-   this.getAtmosphereDomain = function () {Add commentMore actions
+   this.getAtmosphereDomain = function () {
         if (!$rootScope.settings || _.isEmpty($rootScope.settings.AtmosphereURL)) return null;
       
         try {
