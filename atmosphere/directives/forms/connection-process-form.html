@@ -5,11 +5,11 @@
   <div ng-if="!isLoading">
     <div class="form-group mb-0">
       <label>{{'ATMOSPHERECONNECTIONCREATETITLENAME' | translate}}</label>
-      <input class="form-control" ng-disabled="true" ng-model="data.connection">
+      <input class="form-control" type="text" ng-model="data.connection" ng-disabled="true" />
     </div>
     <div class="form-group mb-0">
       <label>{{'ATMOSPHERECONNECTIONPROCESSTITLEFUNCTIONNAME' | translate}}</label>
-      <select class="form-control editor-select" ng-model="data.functionName">
+      <select class="form-control editor-select" ng-model="data.functionName" ng-disabled="!data.functions">
         <option value="">all</option>
         <option value="{{function['Function Name']}}" ng-repeat="function in data.functions track by $index">
           {{function['Function Name']}}</option>

@@ -53,7 +53,6 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
     this.atmosphereAPIIPInfoFunctionName = 'ip-info';
     this.atmosphereAPICreateProcessesFunctionName = 'create-processes';
     this.atmosphereAPIPingConnectionFunctionPrefix = 'ping-';
-    this.atmosphereAPIValueConnectionNone = null;
 
     // Turn on big buttons by default
     if (!$rootScope.uiPrefs.atmospherePortalBigButtons) {
@@ -81,23 +80,23 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
       return tenant;
     };
 
-   this.getAtmosphereDomain = function () {
-        if (!$rootScope.settings || _.isEmpty($rootScope.settings.AtmosphereURL)) return null;
-      
-        try {
-          const url = new URL($rootScope.settings.AtmosphereURL);
-          const hostParts = url.hostname.split('.');
-      
-          if (hostParts.length < 3) return null;
-      
-          // Remove the first part (tenant), and join the rest to form the base domain
-          const baseDomain = hostParts.slice(1).join('.');
-          return baseDomain;
-        } catch (e) {
-          return null;
-        }
-      };
-    
+    this.getAtmosphereDomain = function () {
+      if (!$rootScope.settings || _.isEmpty($rootScope.settings.AtmosphereURL)) return null;
+
+      try {
+        const url = new URL($rootScope.settings.AtmosphereURL);
+        const hostParts = url.hostname.split('.');
+
+        if (hostParts.length < 3) return null;
+
+        // Remove the first part (tenant), and join the rest to form the base domain
+        const baseDomain = hostParts.slice(1).join('.');
+        return baseDomain;
+      } catch (e) {
+        return null;
+      }
+    };
+
     this.isLoggedIn = function () {
       return $rootScope.uiPrefs.atmosphereIsLoggedIn;
     };
@@ -106,12 +105,15 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
       var defer = $q.defer();
 
       var url = _service.atmosphereAPIRoot + _service.atmosphereAPILoginPath;
-      var credentials = { "apiKey": apiKey };
+      var credentials = { 
+        "apiKey": apiKey
+      };
 
       $http.post(url, credentials)
         .then(function (success) {
           if (success.status === 200) {
             if ($rootScope.uiPrefs.atmosphereStoreCredentials) {
+              credentials['atmosphereUrl'] = _service.getAtmosphereUrl();
               $rootScope.uiPrefs.atmosphereCredentials = JSON.stringify(credentials);
             }
             $rootScope.uiPrefs.atmosphereIsLoggedIn = true;
@@ -142,7 +144,6 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
           if (success.status === 200) {
             $rootScope.uiPrefs.atmosphereCredentials = null;
             $rootScope.uiPrefs.atmosphereIsLoggedIn = false;
-            $rootScope.uiPrefs.atmosphereConnections = null;
             defer.resolve(success);
           } else {
             defer.reject(new Error('logoutAtmosphere status incorrect'));
@@ -173,7 +174,7 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
       return defer.promise;
     };
 
-    this.runFunctionAsyncDirectRequest = function (connectionName, functionName, functionParameters) {
+    this.runFunctionAsyncDirectRequest = function (functionName, functionParameters) {
       var _this = this;
       var url = _this.atmosphereAPIRoot + "/" + functionName;
 
@@ -181,12 +182,6 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
       var parameters = {
         run_mode: "response"
       };
-
-      if (!(functionParameters && functionParameters['no_tm1_connection'])) {
-        parameters["tm1_connection"] = connectionName;
-      } else {
-        delete functionParameters['no_tm1_connection'];
-      }
 
       // Merge any additional parameters
       if (functionParameters) {
@@ -207,22 +202,16 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
     };
 
 
-    this.runFunctionAsync = function (connectionName, functionName, functionParameters) {
+    this.runFunctionAsync = function (functionName, functionParameters) {
       var defer = $q.defer();
       var _this = this;
 
       var defaultInitPayload = {
         function_name: functionName,
         parameters: {
-          "tm1_connection": connectionName,
           "run_mode": "response"
         }
       };
-
-      if (functionParameters && functionParameters['no_tm1_connection']) {
-        delete defaultInitPayload['parameters']['tm1_connection'];
-        delete functionParameters['no_tm1_connection']
-      }
 
       var pollForResult = function (asyncId, defer, i) {
         var url = _this.atmosphereAPIRoot + _this.atmosphereAPIPollPath;
@@ -277,8 +266,6 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
       return defer.promise;
     };
 
-
-
     this.generalPOSTRequest = function (path, parameters) {
       var defer = $q.defer();
       var url = this.atmosphereAPIRoot + path;
@@ -302,20 +289,29 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
 
     this.atmosphereLoginRequired = function (options) {
       var defer = $q.defer();
+      var apiKey = null;
       if (!_.isEmpty($rootScope.uiPrefs.atmosphereCredentials)) {
-        var credentials = JSON.parse($rootScope.uiPrefs.atmosphereCredentials);
-        _service.loginAtmosphere(credentials.apiKey)
-          .then(function () {
-            defer.resolve();
-          }, function () {
-            _service.loginDialog(options)
-              .then(function () {
-                defer.resolve();
-              }, function () {
-                defer.reject();
-              });
-          });
-      } else {
+        var credentials = JSON.parse($rootScope.uiPrefs.atmosphereCredentials);        
+        if(credentials.atmosphereUrl && credentials.atmosphereUrl === this.getAtmosphereUrl()){
+          apiKey = credentials.apiKey;
+        }
+        delete $rootScope.uiPrefs.atmosphereCredentials;
+      }
+
+      if(apiKey){
+        _service.loginAtmosphere(apiKey)
+        .then(function () {
+          defer.resolve();
+        }, function () {
+          _service.loginDialog(options)
+            .then(function () {
+              defer.resolve();
+            }, function () {
+              defer.reject();
+            });
+        });
+      }
+      else {
         _service.loginDialog(options)
           .then(function () {
             defer.resolve();
@@ -328,17 +324,15 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
 
     this.getConnectionInfo = function () {
       var defer = $q.defer();
-      _service.runFunctionAsyncDirectRequest(_service.atmosphereAPIValueConnectionNone, _service.atmosphereAPIConnectionInfoFunctionName, {})
+      _service.runFunctionAsyncDirectRequest(_service.atmosphereAPIConnectionInfoFunctionName, {})
         .then(function (success) {
           var status = success.status;
           if (status === 200) {
             var connections = success.data.value;
             $tm1.instances(false)
               .then(function (instances) {
-                if (!$rootScope.uiPrefs.atmosphereConnections) $rootScope.uiPrefs.atmosphereConnections = {};
-                _.each(connections, function (connection) {
-                  // get the selected instance from localStorage
-                  connection.selectedInstance = $rootScope.uiPrefs.atmosphereConnections[connection['Connection Name']];
+                
+                _.each(connections, function (connection) {                  
                   // get the test status from localStorage
                   if ($rootScope.uiPrefs.atmosphereConnectionResult[connection['Connection Name']] && $rootScope.uiPrefs.atmosphereConnectionResult[connection['Connection Name']].status != 'testing') {
                     // valid status, load it
@@ -363,9 +357,9 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
       return defer.promise;
     };
 
-    this.getFunctionInfo = function (connectionName, functionName) {
+    this.getFunctionInfo = function () {
       var defer = $q.defer();
-      _service.runFunctionAsyncDirectRequest(connectionName, _service.atmosphereAPIFunctionInfoFunctionName, { function_name: functionName })
+      _service.runFunctionAsyncDirectRequest(_service.atmosphereAPIFunctionInfoFunctionName, {})
         .then(function (success) {
           var status = success.status;
           if (status === 200) {
@@ -407,7 +401,7 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
       return m.isValid() ? m.local().format('YYYY-MM-DD HH:mm:ss') : '';
     }
 
-    this.getUsageHistory = function (connectionName, filter) {
+    this.getUsageHistory = function (filter) {
       var defer = $q.defer();
 
       var parameters = {
@@ -416,7 +410,7 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
         since: filter.sinceDate !== '' ? parseDate(filter.sinceDate) : "",
         until: filter.untilDate !== '' ? parseDate(filter.untilDate) : ""
       };
-      _service.runFunctionAsyncDirectRequest(connectionName, _service.atmosphereAPIUsageInfoFunctionName, parameters)
+      _service.runFunctionAsyncDirectRequest(_service.atmosphereAPIUsageInfoFunctionName, parameters)
         .then(function (success) {
           var status = success.status;
           if (status === 200) {
@@ -453,20 +447,27 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
       return defer.promise;
     };
 
-    this.getFunctionLogs = function (connectionName, functionName) {
+    this.getFunctionLogs = function (functionName) {
       var defer = $q.defer();
 
       var parameters = {
-        "tm1_connection": connectionName,
+        "tm1_connection": null,
         "mail_recipients": "",
         "file": "",
         "function_name": functionName
       };
 
-      _service.runFunctionAsync(connectionName, _service.atmosphereAPILogsInfoFunctionName, parameters)
+      _service.runFunctionAsync(_service.atmosphereAPILogsInfoFunctionName, parameters)
         .then(function (data) {
           var status = data.status_code;
           if (status === 200) {
+
+            // Legacy backend logs-info handling
+            var items = data.value;
+            if (!Array.isArray(items)) {
+              data.value = JSON.parse(data.value)
+            }
+
             defer.resolve(data.value.map(function (i) {
               var r = _.merge({}, i, {
                 Timestamp: parseDateTime(i.Timestamp),
@@ -485,14 +486,14 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
       return defer.promise;
     };
 
-    this.getFunctionQuota = function (connectionName) {
+    this.getFunctionQuota = function () {
       var defer = $q.defer();
 
       var parameters = {
         'mail_recipients': ''
       };
 
-      _service.runFunctionAsyncDirectRequest(connectionName, _service.atmosphereAPIQuotaInfoFunctionName, parameters)
+      _service.runFunctionAsyncDirectRequest(_service.atmosphereAPIQuotaInfoFunctionName, parameters)
         .then(function (success) {
           var status = success.status;
           if (status === 200) {
@@ -526,7 +527,7 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
         "api_key": api_key
       };
 
-      _service.runFunctionAsync(connectionName, _service.atmosphereAPICreateProcessesFunctionName, data)
+      _service.runFunctionAsync(_service.atmosphereAPICreateProcessesFunctionName, data)
         .then(function (data) {
           var status = data.status_code;
           if (status === 200) {
@@ -557,13 +558,12 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
             }
 
             var parameters = connectionTestConfig['parameters'] || {};
-
             parameters[connectionTestConfig['connection_param_name']] = connectionName;
-            if (connectionType !== 'tm1') {
-              parameters['no_tm1_connection'] = true;
+            if (connectionType === 'tm1') {
+              parameters['tm1_connection'] = connectionName;
             }
 
-            _service.runFunctionAsync(connectionName, connectionTestConfig['function_name'], parameters)
+            _service.runFunctionAsync(connectionTestConfig['function_name'], parameters)
               .then(function (data) {
                 var status = data.status_code;
                 if (status === 200) {
@@ -590,24 +590,6 @@ arc.service('$atmosphere', ['$rootScope', '$http', '$q', '$helper', '$dialogs', 
         tm1Only: !!tm1Only
       }
       $dialogs.showDialog('atmosphereConnectionsDialog', data, null, null);
-    };
-
-    this.setConnectionInstance = function (connection, instanceName) {
-      var connectionName = connection['Connection Name'];
-      if (!$rootScope.uiPrefs.atmosphereConnections) $rootScope.uiPrefs.atmosphereConnections = {};
-      if (!_.isEmpty(instanceName)) {
-        $rootScope.uiPrefs.atmosphereConnections[connectionName] = instanceName;
-        connection.selectedInstance = instanceName;
-      } else {
-        delete $rootScope.uiPrefs.atmosphereConnections[connectionName];
-        delete connection.selectedInstance;
-      }
-      $rootScope.$broadcast('update-atmosphere-connection');
-    };
-
-    this.getConnectionInstance = function (connection) {
-      var connectionName = connection['Connection Name'];
-      return $rootScope.uiPrefs.atmosphereConnections[connectionName];
     };
 
     this.createConnectionIconStyle = function (connectionIcon, connectionType) {
@@ -762,8 +744,8 @@ arc.directive("atmosphereConnectionsForm", ['$rootScope', '$atmosphere', '$dialo
       link: function ($scope, element, attrs) {
 
       },
-      controller: ["$scope", "$rootScope", "$http", "$translate", "$timeout", "uuid2", "Notification", "$helper", "$tabs", "$tm1", "$atmosphere",
-        function ($scope, $rootScope, $http, $translate, $timeout, uuid2, Notification, $helper, $tabs, $tm1, $atmosphere) {
+      controller: ["$scope", "$rootScope", "$http", "$translate", "$timeout", "uuid2", "Notification", "$helper", "$tabs", "$tm1", "$atmosphere","$settings",
+        function ($scope, $rootScope, $http, $translate, $timeout, uuid2, Notification, $helper, $tabs, $tm1, $atmosphere,$settings) {
           $scope.id = uuid2.newuuid();
           $scope.isLoading = false;
           $scope.atmosphereTenant = $atmosphere.getAtmosphereTenant();
@@ -842,8 +824,8 @@ arc.directive("atmosphereConnectionsForm", ['$rootScope', '$atmosphere', '$dialo
             columns: [
               { key: '"Connection Name"', translateKey: 'ATMOSPHERECOLUMNHEADERCONNECTIONNAME', display: true, width: 0 },
               { key: '"Connection Type"', translateKey: 'ATMOSPHERECOLUMNHEADERCONNECTIONTYPE', display: true, width: 250 },
-              { key: 'selectedInstance', translateKey: 'ATMOSPHERECOLUMNHEADERCONNECTIONINSTANCE', display: true, width: 180 },
               { key: 'testStatus', translateKey: 'ATMOSPHERECOLUMNHEADERCONNECTIONTESTSTATUSSHORT', display: true, width: -1 },
+              { key: 'deployProcesses', translateKey: 'ATMOSPHERETITLETIDEPLOYSHORT', display: true, width: -1 },
               { key: 'delete', translateKey: 'ATMOSPHERECOLUMNHEADERCONNECTIONDELETESHORT', display: true, width: -1 }
             ],
             sortColumn: {
@@ -1062,12 +1044,51 @@ arc.directive("atmosphereConnectionsForm", ['$rootScope', '$atmosphere', '$dialo
               })
           }
 
-          $scope.setConnectionInstance = function (connection, instanceName) {
-            $atmosphere.setConnectionInstance(connection, instanceName);
-          };
+          $scope.deployProcesses = function (connection) {
+            $settings.settings()
+              .then(function (settings) {
 
-          $scope.clearConnectionInstance = function (connection) {
-            $atmosphere.setConnectionInstance(connection, null);
+                var data = {
+                  connections: $scope.data.items,
+                  connection: connection['Connection Name'],
+                  update: false,
+                  domains: settings.AtmosphereDomains,
+                  domain: settings.AtmosphereDomains && settings.AtmosphereDomains.length > 0 ? settings.AtmosphereDomains[0].value : 'atmosphere-dev.run',
+                  functionName: '',
+                  functions: $scope.functions,
+                  apiKey: "",
+                  needApiKey: true
+                };
+                if (!_.isEmpty($rootScope.uiPrefs.atmosphereCredentials)) {
+                  var credentials = JSON.parse($rootScope.uiPrefs.atmosphereCredentials);
+                  if (credentials.apiKey) {
+                    data.apiKey = credentials.apiKey;
+                    data.needApiKey = false;
+                  }
+                }
+
+                $dialogs.showDialog('atmosphereDeployConnectionTIDialog', data, null,
+                  function (result) {
+                    if (result.actionName === "OK") {
+                      $scope.executionStatus = true;
+                      $atmosphere.createProcesses(result.data.connection, result.data.update, result.data.domain, result.data.functionName, result.data.apiKey)
+                        .then(function (data) {
+                          $scope.executionStatus = false;
+                          $rootScope.$broadcast('show-success', {
+                            operationTranslation: 'ATMOSPHERETITLEDEPLOYTI',
+                            messageTranslation: 'ATMOSPHERESUCCESS'
+                          });
+                        }, function (error) {
+                          $scope.executionStatus = false;
+                          $rootScope.$broadcast('show-error', {
+                            operationTranslation: 'ATMOSPHERETITLEDEPLOYTI',
+                            messageTranslation: 'ATMOSPHEREFAILED'
+                          });
+                        });
+                    }
+                  }
+                );
+              });
           };
 
           $scope.filterByName = function (connection) {
@@ -1123,6 +1144,17 @@ arc.directive("atmosphereConnectionDeployProcessForm", function () {
       function ($scope, $rootScope, $http, $q, $translate, $timeout, uuid2, $atmosphere) {
         $scope.id = uuid2.newuuid();
         $scope.data.domain = $atmosphere.getAtmosphereDomain();
+        $scope.data.functions = null;
+        $atmosphere.getFunctionInfo()
+            .then(function (data) {
+              var functions = _.sortBy(data.functions, function (item) {
+                return item['Function Name'];
+              });
+
+              $scope.data.functions = _.filter(functions, function (item) {
+                return item['Function Type'] != 'Coordination Function' && item['Function Name'] != 'init' && item['Function Name'] != 'poll';
+              });
+            })
       }]
   }
 });
@@ -1384,52 +1416,6 @@ arc.directive("cubewiseAtmosphereFunctions", ['$rootScope', '$atmosphere', '$tm1
             }
           };
 
-          $scope.deployProcesses = function () {
-            $settings.settings()
-              .then(function (settings) {
-
-                var data = {
-                  connection: $scope.connection,
-                  update: false,
-                  domains: settings.AtmosphereDomains,
-                  domain: settings.AtmosphereDomains && settings.AtmosphereDomains.length > 0 ? settings.AtmosphereDomains[0].value : 'atmosphere-dev.run',
-                  functionName: '',
-                  functions: $scope.functions,
-                  apiKey: "",
-                  needApiKey: true
-                };
-                if (!_.isEmpty($rootScope.uiPrefs.atmosphereCredentials)) {
-                  var credentials = JSON.parse($rootScope.uiPrefs.atmosphereCredentials);
-                  if (credentials.apiKey) {
-                    data.apiKey = credentials.apiKey;
-                    data.needApiKey = false;
-                  }
-                }
-
-                $dialogs.showDialog('atmosphereDeployConnectionTIDialog', data, null,
-                  function (result) {
-                    if (result.actionName === "OK") {
-                      $scope.executionStatus = true;
-                      $atmosphere.createProcesses(result.data.connection, result.data.update, result.data.domain, result.data.functionName, result.data.apiKey)
-                        .then(function (data) {
-                          $scope.executionStatus = false;
-                          $scope.$emit('show-success', {
-                            operationTranslation: 'ATMOSPHERETITLEDEPLOYTI',
-                            messageTranslation: 'ATMOSPHERESUCCESS'
-                          });
-                        }, function (error) {
-                          $scope.executionStatus = false;
-                          $scope.$emit('show-error', {
-                            operationTranslation: 'ATMOSPHERETITLEDEPLOYTI',
-                            messageTranslation: 'ATMOSPHEREFAILED'
-                          });
-                        });
-                    }
-                  }
-                );
-              });
-          };
-
           $scope.executeProcess = function (process) {
             $tm1.processExecute($scope.instance, process['Name'], null, true);
           };
@@ -1598,7 +1584,7 @@ arc.directive("cubewiseAtmosphereUsageHistory", ['$rootScope', '$atmosphere', fu
         $scope.refreshData = function () {
           $scope.executionStatus = true;
 
-          return $atmosphere.getUsageHistory($scope.connection, $scope.settings.filter)
+          return $atmosphere.getUsageHistory($scope.settings.filter)
             .then(function (data) {
               $scope.data.items = data;
               $scope.data.itemNum = $scope.data.items.length;
@@ -1784,13 +1770,13 @@ arc.directive("cubewiseAtmosphereLogs", ['$rootScope', '$atmosphere', function (
 
           $scope.executionStatus = true;
 
-          $atmosphere.getFunctionLogs($scope.connection, $scope.settings.filter.functionName)
+          $atmosphere.getFunctionLogs($scope.settings.filter.functionName)
             .then(function (data) {
               data.forEach(function (i) {
                 i.Level = "";
                 let strs = i.Message.split(" - ");
                 //Level - Message
-                if(strs.length >= 2) {
+                if (strs.length >= 2) {
                   i.Level = strs[0];
                   strs.shift();
                   i.Message = strs.join(" - ");
@@ -1938,7 +1924,7 @@ arc.directive("cubewiseAtmosphereQuota", ['$rootScope', '$atmosphere', function 
         $scope.refreshData = function () {
           $scope.executionStatus = true;
 
-          return $atmosphere.getFunctionQuota($scope.connection)
+          return $atmosphere.getFunctionQuota()
             .then(function (data) {
               $scope.data.items = data;
               $scope.data.items.forEach(function (item) {
@@ -2076,20 +2062,11 @@ arc.directive("cubewiseAtmospherePortal", function () {
           $scope.global.activeTab = tabName;
         };
 
-        $scope.loadConnection = function () {
-          $scope.global.connection = _.findKey($rootScope.uiPrefs.atmosphereConnections, function (instanceName) {
-            return instanceName == $scope.instance;
-          });
-
-          $scope.initialized = true;
-        };
-
         $scope.loadFunctions = function () {
-          if (!$scope.global.connection) return;
           if ($scope.executionStatus) return;
           $scope.executionStatus = true;
 
-          $atmosphere.getFunctionInfo($scope.global.connection)
+          $atmosphere.getFunctionInfo()
             .then(function (data) {
               var functions = _.sortBy(data.functions, function (item) {
                 return item['Function Name'];
@@ -2110,14 +2087,10 @@ arc.directive("cubewiseAtmospherePortal", function () {
               $scope.executionStatus = false;
             }, function (error) {
               $scope.global.functions = [];
-
-              if ($scope.hasAtmosphere) $scope.showError('ATMOSPHEREERRORGETFUNCTIONINFO', 'ATMOSPHEREERRORGETFUNCTIONINFO', "(status: " + error.status + ") " + $helper.errorText(error));
-
+              // if ($scope.hasAtmosphere) $scope.showError('ATMOSPHEREERRORGETFUNCTIONINFO', 'ATMOSPHEREERRORGETFUNCTIONINFO', "(status: " + error.status + ") " + $helper.errorText(error));
               $scope.executionStatus = false;
             });
         };
-
-        $scope.loadConnection();
 
         $scope.reset = function () {
           $scope.updateHeights();
@@ -2138,7 +2111,6 @@ arc.directive("cubewiseAtmospherePortal", function () {
 
         $scope.refresh = function () {
           if ($scope.global.activeTab === 'functions') {
-            $scope.loadConnection();
             $scope.loadFunctions();
           }
           $rootScope.$broadcast('atmosphere-portal-refresh');
@@ -2152,20 +2124,10 @@ arc.directive("cubewiseAtmospherePortal", function () {
         $settings.settings()
           .then(function (settings) {
             $scope.reset();
+            $scope.refresh();
+            $scope.initialized = true;
             // $scope.atmosphereURL = settings.AtmosphereURL;
           });
-
-        $scope.$watch('global.connection', function () {
-          if ($scope.global.connection) {
-            $scope.loadFunctions();
-          } else {
-            $scope.global.functions = [];
-          }
-        });
-
-        $scope.$on("update-atmosphere-connection", function (event, args) {
-          $scope.loadConnection();
-        });
 
         $scope.$on('show-error', function (event, args) {
           var operationTranslation = args.operationTranslation || 'ATMOSPHEREERRORNORMAL';
