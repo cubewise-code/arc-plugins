@@ -44,18 +44,6 @@
         <arc-toolbar-button arc-text="HELP" arc-title="HELP" arc-icon-class="fa-question-circle" arc-click="help()">
         </arc-toolbar-button>
       </arc-toolbar-group>
-      <div class="btn-group ml-auto" ng-if="hasAtmosphere">
-        <button class="btn btn-warning btn-message" ng-if="initialized && !executionStatus && !global.connection"
-          ng-click="showConnectionsDialog('tm1Only')">
-          <i class="fa fa-exclamation-triangle icon-left"></i>
-          <span ng-bind-html="'ATMOSPHERELABELNOCONNECTIONSELECT' | translate: { instance: instance }"></span>
-        </button>
-        <button class="btn btn-info btn-message" ng-if="global.connection" ng-click="showConnectionsDialog('tm1Only')">
-          <i class="fa fa-exchange"></i>
-          <span
-            ng-bind-html="'ATMOSPHERELABELCONNECTION' | translate: { instance: instance, connection: global.connection }"></span>
-        </button>
-      </div>
     </arc-toolbar>
   </div>
 
@@ -65,12 +53,8 @@
     <i class="fa fa-refresh fa-spin fa-fw fa-5x" style="margin-top: 50px;"></i>
   </div>
 
-  <div ng-if="initialized && !executionStatus && !global.connection" translate="ATMOSPHERELABELNOCONNECTIONSET"
-    translate-values="{ instance: instance }">
-  </div>
-
   <!-- Main Tabset -->
-  <uib-tabset active="tabIndex" class="flex-grow-1" ng-if="!executionStatus && hasAtmosphere && global.connection">
+  <uib-tabset active="tabIndex" class="flex-grow-1" ng-if="!executionStatus && hasAtmosphere">
     <uib-tab class="h-100" ng-click="tabChanged('functions')">
       <uib-tab-heading>
         <span class="font-weight-bold">
@@ -79,8 +63,7 @@
         <span translate="ATMOSPHERETABLABELFUNCTIONSANDPROCESSES"></span>
       </uib-tab-heading>
       <auto-height>
-        <cubewise-atmosphere-functions is-active="global.activeTab == 'functions'" instance="instance"
-          connection="global.connection" functions="global.functions">
+        <cubewise-atmosphere-functions is-active="global.activeTab == 'functions'" instance="instance" functions="global.functions">
         </cubewise-atmosphere-functions>
       </auto-height>
     </uib-tab>
@@ -90,8 +73,7 @@
         <span translate="ATMOSPHERETABLABELHISTORY"></span>
       </uib-tab-heading>
       <auto-height>
-        <cubewise-atmosphere-usage-history is-active="global.activeTab == 'history'" instance="instance"
-          connection="global.connection" functions="global.functionsUsage">
+        <cubewise-atmosphere-usage-history is-active="global.activeTab == 'history'" instance="instance" functions="global.functionsUsage">
         </cubewise-atmosphere-usage-history>
       </auto-height>
     </uib-tab>
@@ -101,8 +83,7 @@
         <span translate="ATMOSPHERETABLABELLOGS"></span>
       </uib-tab-heading>
       <auto-height>
-        <cubewise-atmosphere-logs is-active="global.activeTab == 'log'" instance="instance"
-          connection="global.connection" functions="global.functionsLogs">
+        <cubewise-atmosphere-logs is-active="global.activeTab == 'log'" instance="instance" functions="global.functionsLogs">
         </cubewise-atmosphere-logs>
       </auto-height>
     </uib-tab>
@@ -112,8 +93,7 @@
         <span translate="ATMOSPHERETABLABELQUOTA"></span>
       </uib-tab-heading>
       <auto-height>
-        <cubewise-atmosphere-quota is-active="global.activeTab == 'quota'" instance="instance"
-          connection="global.connection">
+        <cubewise-atmosphere-quota is-active="global.activeTab == 'quota'" instance="instance">
         </cubewise-atmosphere-quota>
       </auto-height>
     </uib-tab>

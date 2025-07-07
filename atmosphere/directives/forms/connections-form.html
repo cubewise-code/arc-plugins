@@ -126,55 +126,6 @@
             </span>
           </td>
           <td>
-            <span ng-if="connection['Connection Type'] === 'tm1'" class="text-nowrap">
-              <div class="btn-group pr-3">
-                <button class="btn btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true"
-                  aria-expanded="true">
-                  <span class="mr-4 d-inline-block">
-                    {{ $root.uiPrefs.atmosphereConnections[connection['Connection Name']] ?
-                    $root.uiPrefs.atmosphereConnections[connection['Connection Name']] : '--' }}
-                  </span>
-                </button>
-                <button class="btn btn-sm btn-transparent p-0"
-                  style="position: relative; margin-left: -36px; z-index: 100;"
-                  ng-click="clearConnectionInstance(connection)"
-                  ng-disabled="!$root.uiPrefs.atmosphereConnections[connection['Connection Name']]">
-                  <i class="fa fa-fw fa-remove"></i>
-                </button>
-                <div class="dropdown-menu dropdown-menu-flex click">
-                  <div class="dropdown-menu-header mx-1 mb-2">
-                    <input type="text" class="form-control form-control-sm w-100" ng-model="searchFilter['Name']"
-                      placeholder="Search">
-                  </div>
-                  <div class="dropdown-menu-content">
-                    <span ng-repeat="instance in instances | filter: searchFilter"
-                      ng-click="setConnectionInstance(connection, instance.Name);"
-                      class="dropdown-item pt-0 pb-0 pl-2 pr-2" href="#">
-                      <span>{{instance.Name}}</span>
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <button class="btn btn-sm btn-secondary position-relative pull-right"
-                ng-if="!$root.uiPrefs.atmosphereConnections[connection['Connection Name']]">
-                <i class="fa fa-fw fa-asterisk text-warning"></i>
-              </button>
-              <button class="btn btn-sm btn-secondary position-relative pull-right"
-                ng-if="$root.uiPrefs.atmosphereConnections[connection['Connection Name']]"
-                ng-click="goToPortal(connection['Connection Name'])" title="{{'ATMOSPHERECONNECTIONGOTO' | translate}}">
-                <i class="fa fa-fw fa-globe"></i>
-                <i class="fa fa-fw fa-arrow-right fa-mark text-primary"></i>
-              </button>
-            </span>
-            <span ng-if="connection['Connection Type'] !== 'tm1'" class="text-nowrap">
-              <div class="btn-group pr-3">
-                <span class="btn btn-sm btn-no-click">
-                  <span class="mr-4 d-inline-block">--</span>
-                </span>
-              </div>
-            </span>
-          </td>
-          <td>
             <span class="pull-right">
               <button class="btn btn-sm btn-secondary"
                 title="{{ ($root.uiPrefs.atmosphereConnectionResult[connection['Connection Name']].message ? $root.uiPrefs.atmosphereConnectionResult[connection['Connection Name']].message : 'ATMOSPHERETITLECONNECTIONTEST'  | translate )}}"
@@ -183,6 +134,15 @@
                 ng-class="{ 'text-warning': $root.uiPrefs.atmosphereConnectionResult[connection['Connection Name']].status == 'fail', 'text-success': $root.uiPrefs.atmosphereConnectionResult[connection['Connection Name']].status == 'success' }">
                 <i class="fa fa-fw"
                   ng-class="{ 'fa-wifi': $root.uiPrefs.atmosphereConnectionResult[connection['Connection Name']].status != 'testing', 'fa-refresh': $root.uiPrefs.atmosphereConnectionResult[connection['Connection Name']].status == 'testing', 'fa-spin': $root.uiPrefs.atmosphereConnectionResult[connection['Connection Name']].status == 'testing' }"></i>
+              </button>
+            </span>
+          </td>
+          <td>
+            <span class="pull-right">
+              <button class="btn btn-sm btn-secondary" ng-if="connection['Connection Type'] === 'tm1'"
+                title="{{'ATMOSPHERETITLETIDEPLOY'  | translate}}"
+                ng-click="deployProcesses(connection)">
+                <i class="fa fa-fw fa-cog"></i>
               </button>
             </span>
           </td>
